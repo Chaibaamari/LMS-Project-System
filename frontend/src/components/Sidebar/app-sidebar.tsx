@@ -33,25 +33,25 @@ const data = {
   teams: [
     {
       name: "Sonatrach",
-      logo: "Sonatrach.svg",
+      logo: "/Sonatrach.svg",
       plan: "Enterprise",
     },
     {
       name: "Acme Corp.",
-      logo: "Sonatrach.svg",
+      logo: "/Sonatrach.svg",
       plan: "Startup",
     },
   ],
   navMain: [
     {
       title: "Accueil",
-      url: "#",
+      url: "/homePage",
       icon: HousePlus,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Accueil",
+          url: "/homePage",
         },
         {
           title: "Starred",
@@ -89,44 +89,21 @@ const data = {
         }
       ],
     },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
   ],
   projects: [
     {
       name: "Plan Prévision",
-      url: "#",
+      url: "planPrevision",
       icon: Frame,
     },
     {
       name: "Plan Notifié",
-      url: "#",
+      url: "planNotifie",
       icon: PieChart,
     },
     {
       name: "Bon de Command",
-      url: "#",
+      url: "Bon-de-command",
       icon: Map,
     },
     {
@@ -138,6 +115,11 @@ const data = {
       name: "Bilan",
       url: "#",
       icon: Map,
+    },
+    {
+      name: "Settings",
+      url: "Settings",
+      icon: Settings2,
     },
   ],
 }
