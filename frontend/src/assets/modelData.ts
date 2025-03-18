@@ -1,6 +1,6 @@
 export interface ActionData {
     error?: {
-        message: string;
+        msg: string | string [];
     };
     message?: string;
 }

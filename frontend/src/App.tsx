@@ -4,7 +4,7 @@ import LoginPage from "./pages/Login";
 import { action as loginAction } from "./pages/Login";
 import { action as LogoutAction} from './pages/Logout'
 import PageError from "./pages/pageError";
-// import { ProtectedRoute } from "./util/Auth";
+import { ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
 import PlanPrevision from "./pages/PlanPrevision";
 import PlanNotifie from "./pages/PlanNotifie";
@@ -21,7 +21,7 @@ export default function App() {
         {
           path: 'homePage',
           element: <Sidebar />,
-          // loader : ProtectedRoute,
+          loader : ProtectedRoute,
           children: [
             { index:true, element: <Home /> },
             { path: 'planPrevision', element: <PlanPrevision/> },

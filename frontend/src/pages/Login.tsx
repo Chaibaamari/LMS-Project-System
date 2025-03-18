@@ -30,13 +30,13 @@ export async function action({request} : {request: Request}) {
 
     const data = await request.formData();
     const dataAuth = {
-        nom : data.get('nom') as string,
-        prenom : data.get('prenom') as string,
+        name : data.get('name') as string,
         email: data.get('email') as string,
         password: data.get('password') as string,
+        password_confirmation: data.get('password_confirmation') as string,
     }
     console.log(dataAuth)
-    const response = await fetch(`http://localhost:3000/api/auth/${mode}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/${mode}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -52,6 +52,7 @@ export async function action({request} : {request: Request}) {
         throw new Response( JSON.stringify({message : ' Error de registration '}), {status : 422} )
     }
     const resData = await response.json();
+    console.log(resData)
     const token = resData.token;
     localStorage.setItem('token', token);
     return redirect('/homePage')

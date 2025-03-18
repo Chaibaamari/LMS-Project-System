@@ -52,15 +52,7 @@ const data = {
         {
           title: "Accueil",
           url: "/homePage",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
+        }
       ],
     },
     {

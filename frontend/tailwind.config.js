@@ -11,7 +11,8 @@ export default {
     		},
     		colors: {
     			background: 'hsl(var(--background))',
-    			foreground: 'hsl(var(--foreground))',
+				foreground: 'hsl(var(--foreground))',
+				sonatrachColor: '#ff8500',
     			card: {
     				DEFAULT: 'hsl(var(--card))',
     				foreground: 'hsl(var(--card-foreground))'
