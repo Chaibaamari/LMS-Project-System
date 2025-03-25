@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from './pages/Home'
+import Home  from './pages/Home'
 import LoginPage from "./pages/Login";
 import { action as loginAction } from "./pages/Login";
 import { action as LogoutAction} from './pages/Logout'

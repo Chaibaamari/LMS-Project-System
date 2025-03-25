@@ -17,4 +17,9 @@ class Direction extends Model
     protected $primaryKey = 'id_direction';
     protected $keyType = 'string';
     public $timestamps = false;
+
+    public function employe()
+    {
+        return $this->hasMany(Employe::class, 'Id_direction', 'Id_direction');
+    }
 }

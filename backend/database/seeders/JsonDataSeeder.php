@@ -14,11 +14,23 @@ class JsonDataSeeder extends Seeder
      */
     public function run()
     {
-        // Read JSON file
-        $json = Storage::get('data.json');
-        $data = json_decode($json, true);
+        // read JSON DATA DIRECTION file
+        $direction = Storage::get('direction.json');
+        $data_direction = json_decode($direction, true);
+
+
+        // Read JSON DATA EMPLOYEE file
+        $employe = Storage::get('users.json');
+        $data_employe = json_decode($employe, true);
+
+
+        // Read JSON DATA FUNCTION file
+        $fonction = Storage::get('data.json');
+        $data_fonction = json_decode($fonction, true);
 
         // Insert data into the database
-        DB::table('fonctions')->insert($data);
+        DB::table('fonctions')->insert($data_fonction);
+        DB::table('directions')->insert($data_direction);
+        DB::table('employes')->insert($data_employe);
     }
 }

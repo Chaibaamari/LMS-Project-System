@@ -1,34 +1,35 @@
 <?php
 
 return [
+// 'paths' => ['api/*'],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cross-Origin Resource Sharing (CORS) Configuration
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure your settings for cross-origin resource sharing
-    | or "CORS". This determines what cross-origin operations may execute
-    | in web browsers. You are free to adjust these settings as needed.
-    |
-    | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
-    |
-    */
+// /*
+// * Matches the request method. `['*']` allows all methods.
+// */
+// 'allowed_methods' => ['*'],
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+// /*
+//  * Matches the request origin. `['*']` allows all origins. Wildcards can be used, eg `*.mydomain.com`
+//  */
+// 'allowed_origins' => ['*'],
 
-    'allowed_methods' => ['*'],
+// /*
+//  * Patterns that can be used with `preg_match` to match the origin.
+//  */
+// 'allowed_origins_patterns' => ['*'],
 
+// /*
+//  * Sets the Access-Control-Allow-Headers response header. `['*']` allows all headers.
+//  */
+// 'allowed_headers' => ['*'],
+
+    'paths' => ['api/*'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     'allowed_origins' => ['*'],
-
     'allowed_origins_patterns' => [],
-
-    'allowed_headers' => ['*'],
-
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With'],
     'exposed_headers' => [],
-
-    'max_age' => 0,
-
-    'supports_credentials' => false,
+    'max_age' => 86400, // 24 hours
+    'supports_credentials' => true, // If using cookies/auth
 
 ];

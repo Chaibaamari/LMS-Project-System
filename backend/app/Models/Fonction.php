@@ -17,4 +17,8 @@ class Fonction extends Model
     ];
 
     public $timestamps = false;
+    public function employe()
+    {
+        return $this->hasMany(Employe::class, 'CodeFonction', 'CodeFonction');
+    }
 }

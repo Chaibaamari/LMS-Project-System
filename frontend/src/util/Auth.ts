@@ -1,3 +1,4 @@
+import { Users } from "@/assets/modelData";
 import { redirect } from "react-router-dom";
 
 export function getAuthToken(): string | null {
@@ -14,3 +15,18 @@ export function ProtectedRoute() {
     }
     return null;
 }
+
+
+export const initialFormData: Users = {
+    Matricule: "",
+    Nom: "",
+    Prénom: "",
+    Date_Naissance: "",
+    Age: 0,
+    Ancienneté: 0,
+    Sexe: "",
+    CSP: "",
+    CodeFonction: "",
+    Fonction: "",
+    Echelle: "",
+};

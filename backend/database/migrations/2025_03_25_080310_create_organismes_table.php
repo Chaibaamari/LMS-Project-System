@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('directions', function (Blueprint $table) {
-            $table->string('Id_direction')->primary();
-            $table->string('Nom_direction');
-            $table->string('Structure');
-            $table->string('NomResponsable')->nullable();
-            $table->string('Email')->nullable();
+        Schema::create('Organismes', function (Blueprint $table) {
+            $table->string('Code_Organisme');
+            $table->string('Nom_Organisme')->primary();
+            $table->string('Lieu_Formation');
+            $table->string('Pays');
         });
     }
 
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('directions');
+        Schema::dropIfExists('Organismes');
     }
 };

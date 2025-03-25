@@ -22,7 +22,11 @@ class Employe extends Model
         'Sexe',
         'CSP',
         'CodeFonction',
+        'Id_direction',
+        'Fonction',
+        'Echelle',
     ];
+    public $timestamps = false;
 
     public function fonction()
     {
@@ -30,6 +34,10 @@ class Employe extends Model
     }
     public function direction()
     {
-        return $this->belongsTo(Direction::class, 'Id-direction');
+        return $this->belongsTo(Direction::class, 'Id_direction');
+    }
+    public function plan()
+    {
+        return $this->hasMany(Plan::class, 'ID_N', 'ID_N');
     }
 }
