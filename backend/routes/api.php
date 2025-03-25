@@ -21,7 +21,8 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::prefix('employes')->group(function () {
         Route::get('/', [EmployeController::class, 'index']);
         Route::post('/new', [EmployeController::class, 'store']);
-            // ->withoutMiddleware(['auth:api']); // Disables auth requirement
+        // ->withoutMiddleware(['auth:api']); // Disables auth requirement
+        Route::put('/edit/{matricule}', [EmployeController::class , 'update']);
     });
 
     // Function routes

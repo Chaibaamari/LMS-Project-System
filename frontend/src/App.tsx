@@ -21,13 +21,14 @@ export default function App() {
         {
           path: 'homePage',
           element: <Sidebar />,
-          loader : ProtectedRoute,
+          loader: ProtectedRoute,
           children: [
-            { index:true, element: <Home /> },
-            { path: 'planPrevision', element: <PlanPrevision/> },
-            { path: 'planNotifie', element: <PlanNotifie/> },
-            { path: 'Bon-de-command', element: <BonCommand/> },
-            { path: 'Settings', element: <Settings/> },
+            { index: true, element: <Home /> },
+            { path: ':matricule', element: <Home /> },
+            { path: 'planPrevision', element: <PlanPrevision /> },
+            { path: 'planNotifie', element: <PlanNotifie /> },
+            { path: 'Bon-de-command', element: <BonCommand /> },
+            { path: 'Settings', element: <Settings /> },
           ]
         },
         { path: "logout", action: LogoutAction }

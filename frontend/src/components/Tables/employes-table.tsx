@@ -21,7 +21,7 @@ import {
 //   Download,
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-// import {useLoaderData } from "react-router-dom";
+import {Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Users , FieldConfig } from "@/assets/modelData";
 import { DynamicEditDialog } from "../Dialog"; // Import the reusable dialog
@@ -29,15 +29,15 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "../ui/input";
 import { useTableControls } from "@/hooks/useTableControls";
 import { Pagination } from "../pagination";
-import { initialFormData } from "@/util/Auth";
+import { getAuthToken, initialFormData } from "@/util/Auth";
 import { DynamicSearch } from "../Search";
-
 
 interface UsersTableProps {
     data: Users[];
 }
 
 export default function UsersTable({ data = [] }: UsersTableProps) {
+    const navigate = useNavigate();
     
     const [searchTerm, setSearchTerm] = useState("");
     const [searchField, setSearchField] = useState<keyof Users>("Matricule");
@@ -152,8 +152,49 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     };
 
     // Save the edited data
-    const handleSaveEdit = () => {
+    const params = useParams();
+    const handleSaveEdit = async () => {
         console.log("Saved data:", editFormData);
+        console.log("matricule data:", params.matricule);
+        const dataAuth = {
+            Matricule: editFormData.Matricule,
+            Nom: editFormData.Nom,
+            Prénom: editFormData.Prénom,
+            Date_Naissance: editFormData.Date_Naissance,
+            Age: Number(editFormData.Age),
+            Ancienneté: Number(editFormData.Ancienneté),
+            Sexe: editFormData.Sexe,  // Make sure this is being set in your form
+            CSP: editFormData.CSP,    // Make sure this is being set in your form
+            Fonction: editFormData.Fonction,
+            Echelle: editFormData.Echelle,
+            CodeFonction: Number(editFormData.CodeFonction),
+            Id_direction: "DIR001",
+        };
+        
+        console.log("Submitting:", dataAuth);
+        const token = getAuthToken();
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/api/employes/edit/${params.matricule}`, {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(dataAuth),
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log(errorData);
+                return;
+            }
+        
+            const data = await response.json();
+            console.log('Success:', data);
+            navigate('/homePage'); // Redirect after success
+        } catch (error) {
+            console.error('API Request Failed:', error);
+        }
         setEditDialogOpen(false);
     };
     // Open the edit dialog with the selected row's data
@@ -265,7 +306,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
 };
     return (
         <div className="space-y-4 p-4 overflow-auto max-w-full">
-                    <p className="pb-3">Affichage de {currentData.length} sur {sortedAndFilteredData.length} employés</p>
+            <p className="pb-3">Affichage de {currentData.length} sur {sortedAndFilteredData.length} employés</p>
             <div className="flex flex-col sm:flex-row justify-between items-center  sm:items-center gap-2">
                 <div className="text-sm text-muted-foreground">
                     <DynamicSearch
@@ -288,10 +329,10 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                     <Button variant="outline" onClick={resetFilters}>
                         Reset Data
                     </Button>
-                    <Button variant="outline"  onClick={handleOpenInsertDialog}>
+                    <Button variant="outline" onClick={handleOpenInsertDialog}>
                         Inserer
                     </Button>
-                    <Button variant="outline"className="bg-red-500">
+                    <Button variant="outline" className="bg-red-500">
                         Supprimer
                     </Button>
                 </div>
@@ -375,10 +416,12 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem onClick={() => handleEdit(item)}>
-                                                            <Pencil className="h-4 w-4 mr-2" />
-                                                            Edit
-                                                        </DropdownMenuItem>
+                                                        <Link to={`/homePage/${item.Matricule}`}>
+                                                            <DropdownMenuItem onClick={() => handleEdit(item)}>
+                                                                <Pencil className="h-4 w-4 mr-2" />
+                                                                Edit
+                                                            </DropdownMenuItem>
+                                                        </Link>
                                                         <DropdownMenuItem
                                                             className="text-destructive focus:text-destructive"
                                                         >

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Employe;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EmployeController extends Controller
 {
@@ -38,9 +40,32 @@ class EmployeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreEmployeeRequest $request, string $matricule)
     {
-        //
+        // $validated = $request->validated();
+        // $employe = Employe::where('Matricule', $matricule)
+        //     ->update($validated);
+
+        // if (!$employe) {
+        //     return response()->json([
+        //         'message' => 'Employee not found',
+        //         'errors' => ['matricule' => 'No employee found with this matricule']
+        //     ], 404);
+        // }
+        // return response()->json([
+        //     'message' => 'Employee updated successfully',
+        //     'data' => $employe
+        // ]);
+        $validated = $request->validated();
+        Employe::where('Matricule', $matricule)->update($validated);
+
+        // Retrieve the updated employee
+        $employe = Employe::where('Matricule', $matricule)->first();
+
+        return response()->json([
+            'message' => 'Employee updated successfully',
+            'data' => $employe
+        ]);
     }
 
     /**
