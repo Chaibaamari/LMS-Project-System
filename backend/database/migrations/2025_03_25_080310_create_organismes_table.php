@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('Organismes', function (Blueprint $table) {
             $table->string('Code_Organisme');
-            $table->string('Nom_Organisme')->primary();
+            $table->string('Nom_Organisme')->primary()->nullable();
             $table->string('Lieu_Formation');
             $table->string('Pays');
         });

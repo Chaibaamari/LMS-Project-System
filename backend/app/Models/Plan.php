@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Plan extends Model
 {
     use HasFactory;
-    protected $table = "plan";
 
     protected $fillable = [
         'ID_N',
+        'etat',
         'Observation',
         'Date',
         'Date_Deb',
@@ -22,10 +22,12 @@ class Plan extends Model
         'Frais_Pedagogiques',
         'Frais_Hebergement',
         'Frais_Transport',
+        'type',
     ];
 
     protected $casts = [
         'ID_N' => 'integer',
+        'etat' => 'string',
         'Observation' => 'string',
         'Date' => 'date',
         'Date_Deb' => 'date',
@@ -36,6 +38,7 @@ class Plan extends Model
         'Frais_Pedagogiques' => 'decimal:2',
         'Frais_Hebergement' => 'decimal:2',
         'Frais_Transport' => 'decimal:2',
+        'type'=>'string',
     ];
 
     protected $primaryKey = 'ID_N';

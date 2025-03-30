@@ -13,9 +13,16 @@ class Fonction extends Model
     protected $fillable = [
         'CodeFonction',
         'TypeFonction',
-        'IntituléFonction',
+        'IntituleFonction',
     ];
 
+    protected $casts = [
+        'CodeFonction'=>'string',	
+        'TypeFonction'=>'string', //FST wela ...
+        'IntituleFonction'=>'string', 
+    ];
+    
+    protected $keyType = 'string';
     public $timestamps = false;
     public function employe()
     {

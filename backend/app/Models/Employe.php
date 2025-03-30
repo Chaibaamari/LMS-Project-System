@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Employe extends Model
 {
     use HasFactory;
-    protected $primaryKey = 'matricule';
+    protected $primaryKey = 'Matricule';
     protected $keyType = 'string';
     public $incrementing = false;
 
-    protected $fillable = [
+    /*protected $fillable = [
         'Matricule',
         'Nom',
         'Prénom',
@@ -25,7 +25,31 @@ class Employe extends Model
         'Id_direction',
         'Fonction',
         'Echelle',
+    ];*/
+    protected $fillable=[
+        'Matricule',
+        'prenomNom',
+        'Date_Naissance',
+        'Date_Recrutement',
+        'Sexe',
+        'CSP',
+        'Echelle',
+        'CodeFonction',
+        'Id_direction',
     ];
+    protected $casts = [
+        'Matricule'=>'string',
+        'prenomNom'=>'string',
+        'Date_Naissance'=>'date', 		
+        'Date_Recrutement'=>'date',
+        'Sexe'=>'string',		
+        'CSP'=>'string',
+        'Echelle'=>'string',	
+        'CodeFonction'=>'string',
+        'Id_direction'=>'string',
+    ];
+
+
     public $timestamps = false;
 
     public function fonction()
