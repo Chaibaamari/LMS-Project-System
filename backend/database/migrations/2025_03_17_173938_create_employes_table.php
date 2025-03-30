@@ -12,19 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('Employes', function (Blueprint $table) {
-            $table->string('Matricule' , 50)->primary();
-            $table->string('Nom' , 50);
-            $table->string('Prénom' , 50);
+            $table->string('Matricule' , 50)->primary()->nullable();
+            $table->string('prenomnom' , 100);
             $table->date('Date_Naissance');
             $table->date('Date_Recrutement');
             $table->enum('Sexe', ['M', 'F']);
-            $table->enum('CSP' , ['Cadre', 'Maîtrise', 'Exécution']);
-            $table->enum('Fonction' , ['FST', 'FSM' , 'FSP']);
+            $table->string('CSP' , 50);
             $table->string('Echelle' , 50);
-            $table->integer('CodeFonction');
+            $table->string('CodeFonction');
             $table->string('Id_direction' , 50);
-            $table->foreign('CodeFonction')->references('CodeFonction')->on('Fonctions')->onDelete('cascade');
-            $table->foreign('Id_direction')->references('Id_direction')->on('directions')->onDelete('cascade');
+
+            $table->foreign('CodeFonction')->references('CodeFonction')->on('Fonctions');
+            $table->foreign('Id_direction')->references('Id_direction')->on('directions');
         });
     }
 

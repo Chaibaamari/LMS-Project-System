@@ -13,16 +13,19 @@ return new class extends Migration
     {
         Schema::create('Plans', function (Blueprint $table) {
             $table->id('ID_N');
+            $table->string('etat');
             $table->string('Observation')->nullable();
             $table->date('Date')->nullable();
             $table->date('Date_Deb')->nullable();
             $table->date('Date_fin')->nullable();
-            $table->string('Matricule');
-            $table->unsignedBigInteger('ID_Formation');
+            $table->string('Matricule')->nullable();
+            $table->unsignedBigInteger('ID_Formation')->nullable();
             $table->integer('Mode_Financement')->nullable();
             $table->decimal('Frais_Pedagogiques', 8, 2)->nullable();
             $table->decimal('Frais_Hebergement', 8, 2)->nullable();
             $table->decimal('Frais_Transport', 8, 2)->nullable();
+            $table->string('type')->nullable();
+            
 
             $table->foreign('Matricule')->references('Matricule')->on('Employes');
 

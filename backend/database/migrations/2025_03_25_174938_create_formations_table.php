@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('formations', function (Blueprint $table) {
             $table->id('ID_Formation');
-            $table->string('Domaine_Formation');
-            $table->string('Code_Domaine_Formation');
-            $table->string('Intitule_Action');
-            $table->string('Niveau_Formation');
-            $table->string('Nature_Formation');
-            $table->string('Source_Besoin');
-            $table->string('Type_Formation');
-            $table->string('Mode_Formation');
-            $table->string('Code_Formation');
-            $table->integer('Heure_jour');
-            $table->string('Nom_Organisme');
+            $table->string('Domaine_Formation')->nullable();
+            $table->string('Code_Domaine_Formation')->nullable();
+            $table->string('Intitule_Action')->nullable();
+            $table->string('Niveau_Formation')->nullable();
+            $table->string('Nature_Formation')->nullable();
+            $table->string('Source_Besoin')->nullable();
+            $table->string('Type_Formation')->nullable();
+            $table->string('Mode_Formation')->nullable();
+            $table->string('Code_Formation')->nullable();
+            $table->integer('Heure_jour')->nullable();
+            $table->string('Nom_Organisme')->nullable();
 
             $table->foreign('Nom_Organisme')->references('Nom_Organisme')->on('Organismes');
         });

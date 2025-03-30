@@ -13,8 +13,19 @@ class Direction extends Model
         'Id_direction',
         'Nom_direction',
         'Structure',
+        'NomResponsable',
+        'Email',
     ];
-    protected $primaryKey = 'id_direction';
+
+    protected $casts = [
+        'Id_direction'=>'string',
+        'Nom_direction'=>'string',
+        'Structure'=>'string', 
+        'NomResponsable'=>'string', 
+        'Email'=>'string', 
+    ];
+    
+    protected $primaryKey = 'Id_direction';
     protected $keyType = 'string';
     public $timestamps = false;
 

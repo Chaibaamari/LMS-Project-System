@@ -3,7 +3,9 @@
 use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\FonctionController;
+use App\Http\Controllers\ImportContoller;
 use App\Http\Controllers\JWTAuthController;
+use App\Http\Controllers\PlanController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -12,7 +14,7 @@ Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login']);
 
 // Protected routes (JWT authenticated)
-Route::middleware([JwtMiddleware::class])->group(function () {
+//Route::middleware([JwtMiddleware::class])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
@@ -31,12 +33,30 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('/', [FonctionController::class, 'CreateFonction']);
     });
 
-    // Direction routes partie de chaiba et wail
-    Route::get('directions', [DirectionController::class, 'index']);
-    Route::post('/new', [DirectionController::class, 'index']); // not Work
-    Route::put('/edit/{id}', [DirectionController::class, 'index']); // not work
-    Route::put('/edit/{id}', [DirectionController::class, 'index']); // not work
-});
+    // Direction routes
+    Route::get('directions', [DirectionController::class, 'getAllDirections']);
+    Route::get('directions/{id}', [DirectionController::class, 'getDirectionById']); 
+    Route::post('directions/{id}/responsable', [DirectionController::class, 'updateResponsable']);
+#});
+
+    Route::prefix('previsions')->group(function () {
+        Route::post('/import', [ImportContoller::class, 'previmport']);
+    });
+
+    Route::prefix('plannotifie')->group(function () {
+        Route::post('/import', [ImportContoller::class, 'notifieimport']);
+    });
+
+    Route::post('createBC', [PlanController::class, 'createBC']);
+    
+    Route::post('bonCommand', [PlanController::class,'consultBC']);
+
+    Route::post('TBF', [PlanController::class,'consultTBF']);
+    
+    Route::post('Bilan', [PlanController::class,'consultBilan']);
+
+    
+//});
 
 // Remove the Sanctum route if not using Sanctum
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
