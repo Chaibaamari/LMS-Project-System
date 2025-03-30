@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Models\Employe;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class EmployeController extends Controller
 {
@@ -42,30 +40,37 @@ class EmployeController extends Controller
      */
     public function update(StoreEmployeeRequest $request, string $matricule)
     {
-        // $validated = $request->validated();
-        // $employe = Employe::where('Matricule', $matricule)
-        //     ->update($validated);
+        DB::beginTransaction();
 
-        // if (!$employe) {
-        //     return response()->json([
-        //         'message' => 'Employee not found',
-        //         'errors' => ['matricule' => 'No employee found with this matricule']
-        //     ], 404);
-        // }
-        // return response()->json([
-        //     'message' => 'Employee updated successfully',
-        //     'data' => $employe
-        // ]);
-        $validated = $request->validated();
-        Employe::where('Matricule', $matricule)->update($validated);
+        try {
+            $validated = $request->validated();
 
-        // Retrieve the updated employee
-        $employe = Employe::where('Matricule', $matricule)->first();
+            $updated = Employe::where('Matricule', $matricule)->update($validated);
 
-        return response()->json([
-            'message' => 'Employee updated successfully',
-            'data' => $employe
-        ]);
+            if (!$updated) {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'Employee not found or no changes made',
+                    'success' => false
+                ], 404);
+            }
+
+            $employe = Employe::where('Matricule', $matricule)->first();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Employee updated successfully',
+                'data' => $employe,
+                'success' => true
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Failed to update employee: ' . $e->getMessage(),
+                'success' => false
+            ], 500);
+        }
     }
 
     /**

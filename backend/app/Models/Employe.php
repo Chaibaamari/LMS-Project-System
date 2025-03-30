@@ -17,10 +17,9 @@ class Employe extends Model
         'Nom',
         'Prénom',
         'Date_Naissance',
-        'Age',
-        'Ancienneté',
+        'Date_Recrutement',
         'Sexe',
-        'CSP',
+        'CSP', // ce pour formation
         'CodeFonction',
         'Id_direction',
         'Fonction',

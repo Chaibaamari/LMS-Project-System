@@ -56,6 +56,21 @@ const data = {
       ],
     },
     {
+      title: "Donné entreprise",
+      url: "#",
+      icon: BookOpen,
+      items: [
+        {
+          title: "Liste Employee",
+          url: "Employee",
+        },
+        {
+          title: "Liste Direction",
+          url: "Direction",
+        }
+      ],
+    },
+    {
       title: "Formation",
       url: "#",
       icon: Bot,
@@ -68,17 +83,6 @@ const data = {
           title: "Extern",
           url: "#",
         },
-      ],
-    },
-    {
-      title: "Employee",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Liste Employee",
-          url: "#",
-        }
       ],
     },
   ],

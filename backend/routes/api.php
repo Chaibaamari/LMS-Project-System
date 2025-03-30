@@ -17,7 +17,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
 
-    // Employee routes
+    // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
         Route::get('/', [EmployeController::class, 'index']);
         Route::post('/new', [EmployeController::class, 'store']);
@@ -31,8 +31,11 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('/', [FonctionController::class, 'CreateFonction']);
     });
 
-    // Direction routes
-    Route::get('directions', [DirectionController::class, 'getAllDirections']);
+    // Direction routes partie de chaiba et wail
+    Route::get('directions', [DirectionController::class, 'index']);
+    Route::post('/new', [DirectionController::class, 'index']); // not Work
+    Route::put('/edit/{id}', [DirectionController::class, 'index']); // not work
+    Route::put('/edit/{id}', [DirectionController::class, 'index']); // not work
 });
 
 // Remove the Sanctum route if not using Sanctum

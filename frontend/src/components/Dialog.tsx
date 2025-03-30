@@ -10,9 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Form, useNavigate, useNavigation } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getAuthToken } from "@/util/Auth";
+import { Form, useNavigation } from "react-router-dom";
+
 
 interface FieldConfig {
     type: "input" | "select" | "date" | "number";
@@ -31,6 +30,7 @@ interface DynamicEditDialogProps {
     formData: Record<string, any>; // Corrected type definition
     onChange: (name: string, value: string) => void;
     onSave: () => void;
+    methode: string;
     onCancel: () => void;
 }
 
@@ -46,85 +46,88 @@ export function DynamicEditDialog({
     onCancel,
 }: DynamicEditDialogProps) {
     const navigation = useNavigation();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const isSubmitting = navigation.state === "submitting";
-    const [errors, setErrors] = useState<Record<string, string[]>>({});
-    const [success, setSuccess] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    // const [errors, setErrors] = useState<Record<string, string[]>>({});
+    // const [success, setSuccess] = useState(false);
+    // const [isLoading, setIsLoading] = useState(false);
      // Reset form states when dialog opens/closes
-    useEffect(() => {
-        if (!isOpen) {
-            setErrors({});
-            setSuccess(false);
-            setIsLoading(false);
-        }
-    }, [isOpen]);
+    // useEffect(() => {
+    //     if (!isOpen) {
+    //         setErrors({});
+    //         setSuccess(false);
+    //         setIsLoading(false);
+    //     }
+    // }, [isOpen]);
 
     // Auto-hide success message after 3 seconds
-    useEffect(() => {
-        if (success) {
-            const timer = setTimeout(() => {
-                setSuccess(false);
-                onOpenChange(false); // Optionally close the dialog on success
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [success, onOpenChange]);
+    // useEffect(() => {
+    //     if (success) {
+    //         const timer = setTimeout(() => {
+    //             setSuccess(false);
+    //             onOpenChange(false); // Optionally close the dialog on success
+    //         }, 3000);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [success, onOpenChange]);
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         // Create the data object directly from formData prop which is already controlled
-        const dataAuth = {
-            Matricule: formData.Matricule,
-            Nom: formData.Nom,
-            Prénom: formData.Prénom,
-            Date_Naissance: formData.Date_Naissance,
-            Age: Number(formData.Age),
-            Ancienneté: Number(formData.Ancienneté),
-            Sexe: formData.Sexe,  // Make sure this is being set in your form
-            CSP: formData.CSP,    // Make sure this is being set in your form
-            Fonction: formData.Fonction,
-            Echelle: formData.Echelle,
-            CodeFonction: Number(formData.CodeFonction),
-            Id_direction: "DIR001",
-        };
+        // const dataAuth = {
+        //     Matricule: formData.Matricule,
+        //     Nom: formData.Nom,
+        //     Prénom: formData.Prénom,
+        //     Date_Naissance: formData.Date_Naissance,
+        //     Date_Recrutement : formData.Date_Recrutement,
+        //     Sexe: formData.Sexe,  // Make sure this is being set in your form
+        //     CSP: formData.CSP,    // Make sure this is being set in your form
+        //     Fonction: formData.Fonction,
+        //     Echelle: formData.Echelle,
+        //     CodeFonction: Number(formData.CodeFonction),
+        //     Id_direction: "DIR001",
+        // };
         
-        console.log("Submitting:", dataAuth);
-        onSave(); // Call the parent's save handler
+        // console.log("Submitting:", dataAuth);
+         onSave(); // Call the parent's save handler
 
-        setIsLoading(true);
-        setErrors({});
-        setSuccess(false);
-        const token = getAuthToken();
-        try {
-            const response = await fetch("http://127.0.0.1:8000/api/employes/new", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(dataAuth),
-            });
-            if (!response.ok) {
-                const errorData = await response.json();
-                if (errorData.errors) {
-                    setErrors(errorData.errors);
-                } else {
-                    setErrors({ general: [errorData.message || 'Unknown error occurred'] });
-                }
-                return;
-            }
+        // setIsLoading(true);
+        // setErrors({});
+        // setSuccess(false);
+        // const token = getAuthToken();
+        // if (methode == "POST") {
+        //     try {
+        //     const response = await fetch("http://127.0.0.1:8000/api/employes/new", {
+        //         method: "POST",
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'Accept': 'application/json',
+        //             "Authorization": `Bearer ${token}`
+        //         },
+        //         body: JSON.stringify(dataAuth),
+        //     });
+        //     if (!response.ok) {
+        //         const errorData = await response.json();
+        //         if (errorData.errors) {
+        //             setErrors(errorData.errors);
+        //         } else {
+        //             setErrors({ general: [errorData.message || 'Unknown error occurred'] });
+        //         }
+        //         return;
+        //     }
         
-            const data = await response.json();
-            console.log('Success:', data);
-            setSuccess(true);
-            navigate('/homePage'); // Redirect after success
-        } catch (error) {
-            console.error('API Request Failed:', error);
-            setErrors({ general: ['Network error or server unavailable'] });
-        } finally {
-            setIsLoading(false);
-        }
+        //     const data = await response.json();
+        //     console.log('Success:', data);
+        //     setSuccess(true);
+        //     navigate('/homePage'); // Redirect after success
+        // } catch (error) {
+        //     console.error('API Request Failed:', error);
+        //     setErrors({ general: ['Network error or server unavailable'] });
+        // } finally {
+        //     setIsLoading(false);
+        // }
+        // } else {
+        //     console.log("not post reqeust")
+        //}
     };
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>

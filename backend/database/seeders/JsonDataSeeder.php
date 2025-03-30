@@ -32,5 +32,6 @@ class JsonDataSeeder extends Seeder
         DB::table('fonctions')->insert($data_fonction);
         DB::table('directions')->insert($data_direction);
         DB::table('employes')->insert($data_employe);
+
     }
 }

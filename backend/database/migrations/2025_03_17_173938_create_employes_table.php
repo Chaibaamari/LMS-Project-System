@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('Nom' , 50);
             $table->string('Prénom' , 50);
             $table->date('Date_Naissance');
-            $table->integer('Age')->nullable();
-            $table->integer('Ancienneté')->default(0);
+            $table->date('Date_Recrutement');
             $table->enum('Sexe', ['M', 'F']);
             $table->enum('CSP' , ['Cadre', 'Maîtrise', 'Exécution']);
             $table->enum('Fonction' , ['FST', 'FSM' , 'FSP']);

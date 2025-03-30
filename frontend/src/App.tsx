@@ -10,6 +10,8 @@ import PlanPrevision from "./pages/PlanPrevision";
 import PlanNotifie from "./pages/PlanNotifie";
 import BonCommand from "./pages/BonCommand";
 import Settings from "./pages/Settings";
+import Employee from "./pages/Employe-Section";
+import Direction from "./pages/direction-Section";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -24,7 +26,13 @@ export default function App() {
           loader: ProtectedRoute,
           children: [
             { index: true, element: <Home /> },
-            { path: ':matricule', element: <Home /> },
+            {
+              path: 'Employee', element: <Employee />,
+              children: [
+                { path: ':matricule', element: <Employee /> },
+              ]
+            },
+            { path: 'Direction', element: <Direction /> },
             { path: 'planPrevision', element: <PlanPrevision /> },
             { path: 'planNotifie', element: <PlanNotifie /> },
             { path: 'Bon-de-command', element: <BonCommand /> },

@@ -30,6 +30,10 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Form } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { getAuthToken } from "@/util/Auth"
+import { currentUser } from "@/assets/modelData"
+
 
 export function NavUser({
   user,
@@ -38,8 +42,28 @@ export function NavUser({
     name: string 
     email: string
     avatar: string
-  }
-}) {
+    }
+  }) {
+  const [currentUser, setCurrentUser] = useState<currentUser | null>(null);
+  const token = getAuthToken();
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("http://127.0.0.1:8000/api/user", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          'Accept': 'application/json',
+          "Authorization": `Bearer ${token}` // Include the token in the request
+        }
+      });
+      const data = await response.json();
+      setCurrentUser(data.user);
+      return data.user;
+    };
+  
+          
+    fetchData();
+  }, [token]);
   const { isMobile } = useSidebar()
 
   return (
@@ -56,8 +80,8 @@ export function NavUser({
                 <AvatarFallback className="rounded-lg">CH</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold">{currentUser?.name}</span>
+                <span className="truncate text-xs">{currentUser?.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>

@@ -3,7 +3,8 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { Button } from "./ui/button";
+// import { Button } from "./ui/button";
+import { Search } from "lucide-react";
 
 interface DynamicSearchProps<T extends string> {
   fields: { name: string; label: string }[]; // Fields to search on
@@ -34,9 +35,12 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
                     </SelectContent>
                 </Select>
             </div>
+            <div className="relative w-full sm:w-auto">
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-                placeholder="Search..."
+                placeholder="Search Employee..."
                 value={searchTerm}
+                className="pl-8 w-full border-none outline-none shadow-none"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -44,7 +48,16 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
                     }
                 }}
             />
-            <Button onClick={handleSearch} variant="outline" >Search</Button>
+            </div>
+            {/* <Button onClick={handleSearch} variant="outline" >Search</Button> */}
         </div>
     );
 }
+{/* <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search memes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8 w-full"
+          />
+        </div> */}

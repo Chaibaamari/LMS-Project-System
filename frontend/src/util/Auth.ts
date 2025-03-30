@@ -24,9 +24,33 @@ export const initialFormData: Users = {
     Date_Naissance: "",
     Age: 0,
     Ancienneté: 0,
-    Sexe: "",
-    CSP: "",
-    CodeFonction: "",
+    Date_Recrutement : "",
+    Sexe: "M",
+    CSP: "Cadre",
+    CodeFonction: 0,
+    Id_direction: "", // Added missing property
     Fonction: "",
     Echelle: "",
 };
+export function calculateAge(dateOfBirth : Date): number {
+    const birthDate = new Date(dateOfBirth);
+    const today = new Date();
+    
+    const age  = today.getFullYear() - birthDate.getFullYear();
+    
+    // Adjust age if the current month is before the birth month,
+    // or if it's the birth month but the day hasn't occurred yet
+    
+    return age;
+}
+export function calculeAnciennete(date : Date): number {
+    const birthDate = new Date(date);
+    const today = new Date();
+    
+    const Anciennete  = today.getFullYear() - birthDate.getFullYear();
+    
+    // Adjust age if the current month is before the birth month,
+    // or if it's the birth month but the day hasn't occurred yet
+    
+    return Anciennete;
+}
