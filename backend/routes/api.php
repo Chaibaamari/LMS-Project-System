@@ -41,10 +41,20 @@ Route::post('login', [JWTAuthController::class, 'login']);
 
     Route::prefix('previsions')->group(function () {
         Route::post('/import', [ImportContoller::class, 'previmport']);
+        Route::get('/export', [ImportContoller::class, 'prevexport']);
+        Route::get('/', [PlanController::class, 'consultprev']);
+        Route::post('/add', [PlanController::class, 'prevadd']);
+        Route::post('/modify', [PlanController::class, 'prevmodify']);
+        Route::post('/delete', [PlanController::class, 'prevdelete']);
     });
 
     Route::prefix('plannotifie')->group(function () {
         Route::post('/import', [ImportContoller::class, 'notifieimport']);
+        Route::get('/export', [ImportContoller::class, 'notifieexport']);
+        Route::get('/', [PlanController::class, 'consultnotifie']);
+        Route::post('/add', [PlanController::class, 'notifieadd']);
+        Route::post('/modify', [PlanController::class, 'notifiemodify']);
+        Route::post('/delete', [PlanController::class, 'notifiedelete']);
     });
 
     Route::post('createBC', [PlanController::class, 'createBC']);

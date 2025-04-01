@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\NotifieExport;
+use App\Exports\PrevExport;
 use App\Imports\NotifieImport;
 use App\Imports\PrevImport;
 use Illuminate\Http\Request;
@@ -25,4 +27,15 @@ class ImportContoller extends Controller
         
         return response()->json(['message' => 'Data received successfully!']);
     }
+
+    public function prevexport()
+    {
+        return Excel::download(new PrevExport, 'previsionsexporté.xlsx');
+    }
+
+    public function Notifieexport()
+    {
+        return Excel::download(new NotifieExport, 'plannotifieexporté.xlsx');
+    }
+
 }

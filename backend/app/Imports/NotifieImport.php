@@ -81,9 +81,9 @@ class NotifieImport implements ToCollection, WithHeadingRow
                     'Date_Deb'=>$row[''],
                     'Date_fin'=>$row[''],*/
                     'Mode_Financement'=>$row['mode_de_financement'],
-                    /*'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
+                    'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
                     'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
-                    'Frais_Transport'=>$row['frais_transport'],*/
+                    'Frais_Transport'=>$row['frais_transport'],
                 ]);
             } else {
                 Plan::create([
@@ -95,9 +95,9 @@ class NotifieImport implements ToCollection, WithHeadingRow
                     'Matricule'=>$row['matricule'],
                     'ID_Formation'=>$formation->ID_Formation,
                     'Mode_Financement'=>$row['mode_de_financement'],
-                    /*'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
+                    'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
                     'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
-                    'Frais_Transport'=>$row['frais_transport'],*/
+                    'Frais_Transport'=>$row['frais_transport'],
                 ]);
             }
 

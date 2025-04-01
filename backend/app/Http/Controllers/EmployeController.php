@@ -13,7 +13,8 @@ class EmployeController extends Controller
      */
     public function index()
     {
-        $employes = Employe::all(); // Assuming your model is named "Employe"
+        $employes = Employe::with('Fonction')->get();
+
         return response()->json(['employes' => $employes]);
     }
 
