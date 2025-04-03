@@ -14,8 +14,9 @@ class EmployeController extends Controller
      */
     public function index()
     {
-        $employees = Employe::with('Fonction')->get(); // Assuming your model is named "Employe"
-        return response()->json(['employes' => $employees]);
+        $employes = Employe::with('Fonction')->get();
+
+        return response()->json(['employes' => $employes]);
     }
 
     public function store(StoreEmployeeRequest $request)
