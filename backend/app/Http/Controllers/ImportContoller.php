@@ -10,19 +10,19 @@ use Maatwebsite\Excel\Facades\Excel;
 class ImportContoller extends Controller
 {
     //
-    public function previmport(Request $request) 
+    public function previmport(Request $request)
     {
 
         Excel::import(new PrevImport, request()->file('previsions'));
-        
-        return response()->json(['message' => 'Data received successfully!']);
+
+        return response()->json(['message' => 'PV Data received successfully!']);
     }
 
-    public function notifieimport(Request $request) 
+    public function notifieimport(Request $request)
     {
 
         Excel::import(new NotifieImport, request()->file('plan'));
-        
-        return response()->json(['message' => 'Data received successfully!']);
+
+        return response()->json(['message' => ' NT Data received successfully!']);
     }
 }

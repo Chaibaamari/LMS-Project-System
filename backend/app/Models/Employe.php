@@ -12,22 +12,9 @@ class Employe extends Model
     protected $keyType = 'string';
     public $incrementing = false;
 
-    /*protected $fillable = [
-        'Matricule',
-        'Nom',
-        'Prénom',
-        'Date_Naissance',
-        'Date_Recrutement',
-        'Sexe',
-        'CSP', // ce pour formation
-        'CodeFonction',
-        'Id_direction',
-        'Fonction',
-        'Echelle',
-    ];*/
     protected $fillable=[
         'Matricule',
-        'prenomNom',
+        'prenomnom',
         'Date_Naissance',
         'Date_Recrutement',
         'Sexe',
@@ -38,12 +25,12 @@ class Employe extends Model
     ];
     protected $casts = [
         'Matricule'=>'string',
-        'prenomNom'=>'string',
-        'Date_Naissance'=>'date', 		
-        'Date_Recrutement'=>'date',
-        'Sexe'=>'string',		
+        'prenomnom'=>'string',
+        'Date_Naissance'=>'date:Y-m-d',
+        'Date_Recrutement'=>'date:Y-m-d',
+        'Sexe'=>'string',
         'CSP'=>'string',
-        'Echelle'=>'string',	
+        'Echelle'=>'string',
         'CodeFonction'=>'string',
         'Id_direction'=>'string',
     ];

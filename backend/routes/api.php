@@ -14,7 +14,7 @@ Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login']);
 
 // Protected routes (JWT authenticated)
-//Route::middleware([JwtMiddleware::class])->group(function () {
+Route::middleware([JwtMiddleware::class])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
@@ -24,7 +24,10 @@ Route::post('login', [JWTAuthController::class, 'login']);
         Route::get('/', [EmployeController::class, 'index']);
         Route::post('/new', [EmployeController::class, 'store']);
         // ->withoutMiddleware(['auth:api']); // Disables auth requirement
-        Route::put('/edit/{matricule}', [EmployeController::class , 'update']);
+        Route::get('/edit/{matricule}', [EmployeController::class , 'getEmployee']);
+        Route::put('/edit/{matricule}', [EmployeController::class, 'update']);
+        Route::delete('/delete/{matricule}', [EmployeController::class, 'destroy']);
+        Route::delete('/delete-multiple', [EmployeController::class, 'destroyMultiple']);
     });
 
     // Function routes
@@ -35,9 +38,9 @@ Route::post('login', [JWTAuthController::class, 'login']);
 
     // Direction routes
     Route::get('directions', [DirectionController::class, 'getAllDirections']);
-    Route::get('directions/{id}', [DirectionController::class, 'getDirectionById']); 
+    Route::get('directions/{id}', [DirectionController::class, 'getDirectionById']);
     Route::post('directions/{id}/responsable', [DirectionController::class, 'updateResponsable']);
-#});
+});
 
     Route::prefix('previsions')->group(function () {
         Route::post('/import', [ImportContoller::class, 'previmport']);
@@ -48,14 +51,14 @@ Route::post('login', [JWTAuthController::class, 'login']);
     });
 
     Route::post('createBC', [PlanController::class, 'createBC']);
-    
+
     Route::post('bonCommand', [PlanController::class,'consultBC']);
 
     Route::post('TBF', [PlanController::class,'consultTBF']);
-    
+
     Route::post('Bilan', [PlanController::class,'consultBilan']);
 
-    
+
 //});
 
 // Remove the Sanctum route if not using Sanctum

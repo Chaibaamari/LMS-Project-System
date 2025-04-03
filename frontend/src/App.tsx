@@ -12,6 +12,8 @@ import BonCommand from "./pages/BonCommand";
 import Settings from "./pages/Settings";
 import Employee from "./pages/Employe-Section";
 import Direction from "./pages/direction-Section";
+import EmployeFormUpdate from "./pages/Employe-Form";
+import EmployeFormInsert from "./pages/InsertEmploye";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -20,18 +22,15 @@ export default function App() {
       errorElement: <PageError />,
       children: [
         { index: true, element: <LoginPage />, action: loginAction },
+        { path: 'Emp/update/:matricule', element: <EmployeFormUpdate /> },
+        { path: 'Emp/insert', element: <EmployeFormInsert /> },
         {
           path: 'homePage',
           element: <Sidebar />,
           loader: ProtectedRoute,
           children: [
             { index: true, element: <Home /> },
-            {
-              path: 'Employee', element: <Employee />,
-              children: [
-                { path: ':matricule', element: <Employee /> },
-              ]
-            },
+            { path: 'Employee', element: <Employee />},
             { path: 'Direction', element: <Direction /> },
             { path: 'planPrevision', element: <PlanPrevision /> },
             { path: 'planNotifie', element: <PlanNotifie /> },

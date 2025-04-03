@@ -25,15 +25,13 @@ class StoreEmployeeRequest extends FormRequest
     {
         return [
             'Matricule' => 'required | max:50',
-            'Nom' => 'required|max:50',
-            'Prénom' => 'required | max:50',
+            'prenomnom' => 'required|max:50',
             'Date_Naissance' => 'required |date_format:Y-m-d',
             'Date_Recrutement' => 'required ',
             'Sexe' => ['required ', Rule::in(['M', 'F'])],
             'CSP' => ['required ', Rule::in(['Exécution', 'Maîtrise', 'Cadre'])],
             'CodeFonction' =>  ' required | integer  ',
             'Id_direction' => 'required | max:50',
-            'Fonction' => ['required ', Rule::in(['FST', 'FSM', 'FSP'])],
             'Echelle' => 'required | max:50',
         ];
     }

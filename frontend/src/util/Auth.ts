@@ -19,18 +19,20 @@ export function ProtectedRoute() {
 
 export const initialFormData: Users = {
     Matricule: "",
-    Nom: "",
-    Prénom: "",
+    prenomnom: "",
     Date_Naissance: "",
+    Date_Recrutement: "",
     Age: 0,
     Ancienneté: 0,
-    Date_Recrutement : "",
-    Sexe: "M",
-    CSP: "Cadre",
-    CodeFonction: 0,
-    Id_direction: "", // Added missing property
-    Fonction: "",
+    Sexe: "",
+    CSP: "",
+    fonction: {
+        TypeFonction: "",
+        IntituleFonction: "",
+    },
+    CodeFonction: "",
     Echelle: "",
+    Id_direction: "" // Added missing property
 };
 export function calculateAge(dateOfBirth : Date): number {
     const birthDate = new Date(dateOfBirth);

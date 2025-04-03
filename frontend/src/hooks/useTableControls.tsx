@@ -1,11 +1,26 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export const useTableControls = <T extends Record<string, unknown>>(
     initialData: T[],
     searchTerm: string,
-    searchField: keyof T) => {
-    const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: "asc" | "desc" } | null>(null);
-    const [columnFilters, setColumnFilters] = useState<Record<keyof T, string>>({} as Record<keyof T, string>);
+    searchField: keyof T
+) => {
+    const [sortConfig, setSortConfig] = useState<{
+        key: keyof T;
+        direction: "asc" | "desc";
+    } | null>(null);
+     // Initialize filters with empty strings for all possible keys
+    const [columnFilters, setColumnFilters] = useState<Record<keyof T, string>>(
+        () => {
+            const filters = {} as Record<keyof T, string>;
+            if (initialData.length > 0) {
+                Object.keys(initialData[0]).forEach((key) => {
+                    filters[key as keyof T] = "";
+                });
+            }
+            return filters;
+        }
+    );
 
     const handleSort = (column: keyof T) => {
         let direction: "asc" | "desc" = "asc";
@@ -14,7 +29,7 @@ export const useTableControls = <T extends Record<string, unknown>>(
         }
         setSortConfig({ key: column, direction });
     };
-    
+
     const applyColumnFilter = (column: keyof T, value: string) => {
         setColumnFilters((prev) => ({ ...prev, [column]: value }));
     };
@@ -22,29 +37,65 @@ export const useTableControls = <T extends Record<string, unknown>>(
     const clearColumnFilter = (column: keyof T) => {
         setColumnFilters((prev) => ({ ...prev, [column]: "" }));
     };
+    
+    const resetAllFilters = () => {
+        setSortConfig(null);
+        setColumnFilters({} as Record<keyof T, string>);
+    };
+    const sortedAndFilteredData = useMemo(() => {
+        return initialData
+            .filter((item) => {
+                // Apply search filter
+                const matchesSearch =
+                    searchTerm === "" ||
+                    String(item[searchField])
+                        .toLowerCase()
+                        .includes(searchTerm.toLowerCase());
 
-    const sortedAndFilteredData = initialData
-        .filter((item) => {
-            // Apply search filter
-            const matchesSearch =
-                searchTerm === "" ||
-                String(item[searchField]).toLowerCase().includes(searchTerm.toLowerCase());
+                // Apply column filters
+                const matchesColumnFilters = Object.entries(columnFilters).every(
+                    ([column, filterValue]) => {
+                        if (!filterValue) return true;
+            
+                        // Handle nested properties if needed
+                        let value = item[column as keyof T];
+                        if (column === 'TypeFonction' && 'fonction' in item) {
+                            value = (item as any).fonction?.TypeFonction;
+                        }
+                        if (column === 'IntituleFonction' && 'fonction' in item) {
+                            value = (item as any).fonction?.IntituleFonction;
+                        }
 
-            // Apply column filters
-            const matchesColumnFilters = Object.entries(columnFilters).every(([column, filterValue]) => {
-                if (!filterValue) return true;
-                return String(item[column]).toLowerCase().includes(filterValue.toLowerCase());
+                        return String(value)
+                            .toLowerCase()
+                            .includes(filterValue.toLowerCase());
+                    }
+                );
+
+                return matchesSearch && matchesColumnFilters;
+            })
+            .sort((a, b) => {
+                if (!sortConfig) return 0;
+                const { key, direction } = sortConfig;
+        
+                let valueA = a[key];
+                let valueB = b[key];
+        
+                // Handle nested properties for sorting
+                if (key === 'TypeFonction' && 'fonction' in a && 'fonction' in b) {
+                    valueA = (a as any).fonction.TypeFonction;
+                    valueB = (b as any).fonction.TypeFonction;
+                }
+                if (key === 'IntituleFonction' && 'fonction' in a && 'fonction' in b) {
+                    valueA = (a as any).fonction.IntituleFonction;
+                    valueB = (b as any).fonction.IntituleFonction;
+                }
+
+                if (valueA < valueB) return direction === "asc" ? -1 : 1;
+                if (valueA > valueB) return direction === "asc" ? 1 : -1;
+                return 0;
             });
-
-            return matchesSearch && matchesColumnFilters;
-        })
-        .sort((a, b) => {
-            if (!sortConfig) return 0;
-            const { key, direction } = sortConfig;
-            if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
-            if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
-            return 0;
-        });
+    }, [initialData, searchTerm, searchField, columnFilters, sortConfig]);
 
     return {
         sortedAndFilteredData,
@@ -53,5 +104,6 @@ export const useTableControls = <T extends Record<string, unknown>>(
         handleSort,
         applyColumnFilter,
         clearColumnFilter,
+        resetAllFilters,
     };
 };

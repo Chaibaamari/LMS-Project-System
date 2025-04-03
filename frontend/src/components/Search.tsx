@@ -13,7 +13,7 @@ interface DynamicSearchProps<T extends string> {
 
 export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSearchProps<T>) {
     const [searchTerm, setSearchTerm] = useState("");
-    const [searchField, setSearchField] = useState(fields[0].name); // Default to the first field
+    const [searchField, setSearchField] = useState(fields[0].name);
 
     const handleSearch = () => {
         onSearch(searchTerm, searchField as T);
@@ -49,15 +49,6 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
                 }}
             />
             </div>
-            {/* <Button onClick={handleSearch} variant="outline" >Search</Button> */}
         </div>
     );
 }
-{/* <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search memes..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8 w-full"
-          />
-        </div> */}

@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('CodeFonction');
             $table->string('Id_direction' , 50);
 
-            $table->foreign('CodeFonction')->references('CodeFonction')->on('Fonctions');
-            $table->foreign('Id_direction')->references('Id_direction')->on('directions');
+            $table->foreign('CodeFonction')->references('CodeFonction')->on('Fonctions')->onDelete('cascade');;
+            $table->foreign('Id_direction')->references('Id_direction')->on('directions')->onDelete('cascade');;
         });
     }
 

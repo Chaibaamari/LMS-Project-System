@@ -12,10 +12,10 @@ import {
 
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import {Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Users , FieldConfig } from "@/assets/modelData";
-import { DynamicEditDialog } from "../Dialog"; // Import the reusable dialog
+import { DynamicEditDialog } from "../DynamicForm"; // Import the reusable dialog
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "../ui/input";
 import { useTableControls } from "@/hooks/useTableControls";
@@ -45,8 +45,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
     const [editFormData, setEditFormData] = useState({
         Matricule: "",
-        Nom: "",
-        Prénom: "",
+        prenomNom: "",
         Date_Naissance: "",
         Ancienneté: 0,
         Age : 0,
@@ -192,8 +191,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     const handleEdit = (item: Users) => {
         setEditFormData({
             Matricule: item.Matricule,
-            Nom: item.Nom,
-            Prénom: item.Prénom,
+            prenomNom: item.prenomNom,
             Date_Naissance: item.Date_Naissance,
             Ancienneté: item.Ancienneté,
             Age: item.Age,

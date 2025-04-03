@@ -1,5 +1,5 @@
 "use client";
-import {  useMemo, useState } from "react";
+import {useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -11,21 +11,22 @@ import {
   ArrowDown,
   RotateCcw,
   Plus,
+  Loader2,
 
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import {Link, useParams } from "react-router-dom";
+import {Link} from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Users , FieldConfig } from "@/assets/modelData";
-import { DynamicEditDialog } from "../Dialog"; // Import the reusable dialog
+import { Users} from "@/assets/modelData";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "../ui/input";
 import { useTableControls } from "@/hooks/useTableControls";
 import { Pagination } from "../pagination";
-import { calculateAge, calculeAnciennete, initialFormData } from "@/util/Auth";
+import { calculateAge, calculeAnciennete, getAuthToken } from "@/util/Auth";
 import { DynamicSearch } from "../Search";
 import { useDispatch } from "react-redux";
-import { addEmployee, AppDispatch, fetchEmployees, updateEmployee } from "@/app/store";
+import { EmployeeActions } from "@/store/EmployesSlice";
+
 
 interface UsersTableProps {
     data: Users[];
@@ -33,47 +34,115 @@ interface UsersTableProps {
 
 
 export default function UsersTable({ data = [] }: UsersTableProps) {
-    // const navigate = useNavigate();
-    
     const [searchTerm, setSearchTerm] = useState("");
     const [searchField, setSearchField] = useState<keyof Users>("Matricule");
     // pagination 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10); // Default to 10 items per page
-
     // State for selected rows
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     // filter and sort
-    const { sortedAndFilteredData, sortConfig, columnFilters, handleSort, applyColumnFilter, clearColumnFilter } = useTableControls(data, searchTerm, searchField);
-    // Edit Dialog State
-    const [editDialogOpen, setEditDialogOpen] = useState(false);
-    const [editFormData, setEditFormData] = useState({
-        Matricule: "",
-        Nom: "",
-        Prénom: "",
-        Date_Naissance: "",
-        Date_Recrutement :"",
-        Sexe: "",
-        CSP: "",
-        CodeFonction: 0,
-        Fonction: "",
-        Echelle: "",
-    });
+    const { sortedAndFilteredData, sortConfig, columnFilters, handleSort, applyColumnFilter, clearColumnFilter , resetAllFilters } = useTableControls(data, searchTerm, searchField);
+    
+    const [isDeleting, setIsDeleting] = useState(false);
+    const token = getAuthToken()
+    const dispatch = useDispatch();
+    const deleteSingleEmployee = async (matricule: string) => {
+        try {
+            setIsDeleting(false)
+            dispatch(EmployeeActions.ShowNotificationDelete({
+                IsVisible:true,
+                status: 'pending',
+                message: 'Chargement des employés en cours...'
+            }));
+            setIsDeleting(true);
+            const response = await fetch(`http://127.0.0.1:8000/api/employes/delete/${matricule}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    },
+                }
+            );
+            if (!response.ok) {
+                throw new Error('Failed to delete employee');
+            }
+            setIsDeleting(false)
+            dispatch(EmployeeActions.ShowNotificationDelete({
+                IsVisible:true,
+                status: 'success',
+                message: 'Delete employé chargée avec succès'
+            }));
+            dispatch(EmployeeActions.ReferchLatestData(true));
+        } catch (err) {
+            console.log(err)
+            dispatch(EmployeeActions.ShowNotificationDelete({
+                IsVisible:true,
+                status: 'failed',
+                message: 'Erreur lors du chargement des employés'
+            }));
+        }
+    };
+
+    const deleteMultipleEmployees = async () => {
+        if (selectedRows.length === 0) return;
+
+        try {
+            setIsDeleting(true);
+            dispatch(EmployeeActions.ShowNotificationDelete({
+                IsVisible:true,
+                status: 'pending',
+                message: 'Chargement des employés en cours...'
+            }));
+            const response = await fetch(
+                'http://127.0.0.1:8000/api/employes/delete-multiple',
+                {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ matricules: selectedRows }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Failed to delete employees');
+            }
+
+            setSelectedRows([]);
+            setIsDeleting(false);
+            dispatch(EmployeeActions.ShowNotificationDelete({
+                IsVisible:true,
+                status: 'success',
+                message: 'Delete employé chargée avec succès'
+            }));
+            dispatch(EmployeeActions.ReferchLatestData(true));
+        } catch (err) {
+            console.log(err)
+            dispatch(EmployeeActions.ShowNotificationDelete({
+                IsVisible:true,
+                status: 'failed',
+                message: 'Erreur lors du chargement des employés'
+            }));
+        }
+    };
+
+
     const resetFilters = () => {
         setCurrentPage(1);
         setSearchTerm("");
-        
-    } // still must to modify
+        setSearchField("Matricule");
+        resetAllFilters(); // This comes from useTableControls
+        setSelectedRows([]);
+    };// still must to modify
     // Handle search
     const handleSearch = (term: string, field: keyof Users) => {
         setSearchTerm(term);
         setSearchField(field);
     };
-    // Insert New Data
-    const [insertDialogOpen, setInsertDialogOpen] = useState({
-        isOpen: false,
-        formData: initialFormData,
-    });
     //pagination Logic
     const totalPages = Math.ceil(sortedAndFilteredData.length / itemsPerPage);
 
@@ -100,97 +169,6 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
             setCurrentPage(page);
         }
     };
-    // Define the fields for the edit dialog
-    const fields: FieldConfig[] = [
-        { type: "input", name: "Matricule", label: "Matricule" },
-        { type: "input", name: "Nom", label: "Nom" },
-        { type: "input", name: "Prénom", label: "Prénom" },
-        { type: "date", name: "Date_Naissance", label: "Date de Naissance" },
-        { type: "date", name: "Date_Recrutement", label: "Date de Recrutement" },
-        { type: "number", name: "CodeFonction", label: "Fonction Employe" },
-        { type: "input", name: "Echelle", label: "Echelle (degree)" },
-        { type : "input", name: "Id_direction", label: "Direction" },
-        {
-            type: "select",
-            name: "Sexe",
-            label: "Sexe",
-            options: [
-                { value: "M", label: "M" },
-                { value: "F", label: "F" },
-            ],
-        },
-        {
-            type: "select",
-            name: "CSP",
-            label: "CSP",
-            options: [
-                { value: "Cadre", label: "Cadre" },
-                { value: "Maîtrise", label: "Maîtrise" },
-                { value: "Exécution", label: "Exécution" },
-            ],
-        },
-        {
-            type: "select",
-            name: "Fonction",
-            label: "Fonction",
-            options: [
-                { value: "FST", label: "FST" },
-                { value: "FSP", label: "FSP" },
-                { value: "FSM", label: "FSM" },
-            ],
-        },
-    ];
-
-    // Handle input changes in the edit form
-    const handleInputChange = (name: string, value: string) => {
-        setEditFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const dispatch = useDispatch<AppDispatch>();
-    // Save the edited data
-    const params = useParams();
-    const handleSaveEdit = async () => {
-        try {
-            dispatch(updateEmployee({
-                matricule: params.matricule!,
-                employeeData: editFormData,
-            })).unwrap();
-            setEditDialogOpen(false);
-            await dispatch(fetchEmployees());
-        } catch (error) { 
-            console.error('Failed to update employee:', error);
-        };
-    };
-    // Open the edit dialog with the selected row's data
-    const handleEdit = (item: Users) => {
-        setEditFormData({
-            Matricule: item.Matricule,
-            Nom: item.Nom,
-            Prénom: item.Prénom,
-            Date_Naissance: item.Date_Naissance,
-            Date_Recrutement : item.Date_Recrutement,
-            Sexe: item.Sexe,
-            CSP: item.CSP,
-            CodeFonction: item.CodeFonction,
-            Fonction: item.Fonction,
-            Echelle: item.Echelle,
-        });
-        setEditDialogOpen(true);
-    };
-    // handle insert dialog
-    const handleOpenInsertDialog = () => {
-        setInsertDialogOpen({ ...insertDialogOpen, isOpen: true });
-    };
-
-    const handleSaveInsert = async () => {
-        try {
-            await dispatch(addEmployee(insertDialogOpen.formData)).unwrap();
-            await dispatch(fetchEmployees());
-            setInsertDialogOpen({ ...insertDialogOpen, isOpen: false });
-        } catch (error) {
-            console.error('Failed to add employee:', error);
-        }
-    };
     // Toggle row selection
     const toggleRowSelection = (Matricule: string) => {
         setSelectedRows((prev) =>
@@ -208,11 +186,12 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
         return null;
     };
     
+    // In your UsersTable component, modify the renderColumnHeader function:
     const renderColumnHeader = (column: keyof Users, label: string, filterOptions?: string[]) => {
     return (
         <TableHead className="cursor-pointer select-none" onClick={() => handleSort(column)}>
             <div className="flex items-center justify-between">
-                <div className="flex items-center">
+                <div className="flex items-center text-center">
                     {label}
                     {renderSortIndicator(column)}
                 </div>
@@ -241,7 +220,10 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                                 variant="ghost"
                                                 size="sm"
                                                 className="w-full justify-start text-sm h-7"
-                                                onClick={() => applyColumnFilter(column, option)}
+                                                onClick={() => {
+                                                    applyColumnFilter(column, option);
+                                                    document.body.click(); // Close popover after selection
+                                                }}
                                             >
                                                 {option}
                                             </Button>
@@ -249,15 +231,16 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                     </div>
                                 )}
                                 <div className="flex justify-between mt-2">
-                                    <Button variant="outline" size="sm" onClick={() => clearColumnFilter(column)} className="text-xs">
-                                        Clear
-                                    </Button>
                                     <Button
+                                        variant="outline"
                                         size="sm"
-                                        onClick={() => document.body.click()} // Close popover
+                                        onClick={() => {
+                                            clearColumnFilter(column);
+                                            document.body.click(); // Close popover
+                                        }}
                                         className="text-xs"
                                     >
-                                        Apply
+                                        Clear
                                     </Button>
                                 </div>
                             </div>
@@ -276,7 +259,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                     <DynamicSearch
                         fields={[
                             { name: "Matricule", label: "Matricule" },
-                            { name: "Nom", label: "Nom" },
+                            { name: "prenomnom", label: "Nom & Prénom" },
                             // Add other fields here
                         ]}
                         onSearch={handleSearch}
@@ -293,20 +276,28 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                     <Button variant="outline" size="sm" onClick={resetFilters}>
                         <RotateCcw className="h-4 w-4 mr-1" />
                         Reset
-                        {/* onClick={handleReset} */}
                     </Button>
-                    <Button size="sm" onClick={handleOpenInsertDialog}>
-                        <Plus className="h-4 w-4 mr-1" />
-                        Inserer
-                    </Button>
-                    <Button variant="destructive" size="sm" disabled={selectedRows.length === 0}>
-                        <Trash2 className="h-4 w-4 mr-1" />
+                    <Link to={`/Emp/insert`}>
+                        <Button size="sm" >
+                            <Plus className="h-4 w-4 mr-1" />
+                            Inserer
+                        </Button>
+                    </Link>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={selectedRows.length === 0 || isDeleting}
+                        onClick={deleteMultipleEmployees}
+                    >
+                        {isDeleting ? (
+                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        ) : (
+                            <Trash2 className="h-4 w-4 mr-1" />
+                        )}
                         Delete
                     </Button>
-                    {/* onClick={handleDelete} */}
                 </div>
             </div>
-            {/* Table with horizontal scroll for many columns */}
             <div className="rounded-md border overflow-hidden">
                 <div className="overflow-x-auto">
                     <Table>
@@ -326,16 +317,18 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                     />
                                 </TableHead>
                                 {renderColumnHeader("Matricule", "Matricule")}
-                                {renderColumnHeader("Nom", "Nom & Prénom")}
+                                {renderColumnHeader("prenomnom", "Nom & Prénom")}
                                 {renderColumnHeader("Date_Naissance", "Date Naissance")}
                                 {renderColumnHeader("Date_Recrutement", "Date Recrutement")}
-                                {renderColumnHeader("Age", "Age")}
+                                {renderColumnHeader("Age", "  Age  ")}
                                 {renderColumnHeader("Ancienneté", "Ancienneté")}
                                 {renderColumnHeader("Sexe", "Sexe", ["M", "F"])}
                                 {renderColumnHeader("CSP", "CSP", ["Cadre", "Maîtrise", "Exécution"])}
-                                {renderColumnHeader("Fonction", "Fonction", ["FST", "FSM", "FSP"])}
+                                {renderColumnHeader("TypeFonction", "TypeFonction", ["FST", "FSM", "FSP"])}
+                                {renderColumnHeader("IntituleFonction", "IntituleFonction")}
                                 {renderColumnHeader("Echelle", "Echelle")}
                                 {renderColumnHeader("CodeFonction", "CodeFonction")}
+                                {renderColumnHeader("Id_direction", "CodeDirection")}
                                 <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -354,12 +347,12 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                             />
                                         </TableCell>
                                         <TableCell className="font-medium ">{item.Matricule}</TableCell>
-                                        <TableCell className="text-center w-fit">{item.Nom} {item.Prénom}</TableCell>
-                                        <TableCell className="text-center">{item.Date_Naissance}</TableCell>
-                                        <TableCell className="text-center">{item.Date_Recrutement}</TableCell>
-                                        <TableCell className="text-center">{calculateAge(new Date(item.Date_Naissance))}</TableCell>
-                                        <TableCell className="text-center">{calculeAnciennete(new Date(item.Date_Recrutement))}</TableCell>
-                                        <TableCell className="text-center">{item.Sexe}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{item.prenomnom}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{item.Date_Naissance}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{item.Date_Recrutement}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{calculateAge(new Date(item.Date_Naissance))} ans</TableCell>
+                                        <TableCell className="text-center w-[100%]">{calculeAnciennete(new Date(item.Date_Recrutement))} ans</TableCell>
+                                        <TableCell className="text-center ">{item.Sexe}</TableCell>
                                         <TableCell>
                                             <span
                                                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${item.CSP === "Cadre"
@@ -372,9 +365,11 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                                 {item.CSP}
                                             </span>
                                         </TableCell>
-                                        <TableCell className="text-center">{item.Fonction}</TableCell>
+                                        <TableCell className="text-center">{item.fonction.TypeFonction}</TableCell>
+                                        <TableCell className="text-center">{item.fonction.IntituleFonction}</TableCell>
                                         <TableCell className="text-center">{item.Echelle}</TableCell>
                                         <TableCell className="text-center">{item.CodeFonction}</TableCell>
+                                        <TableCell className="text-center">{item.Id_direction}</TableCell>
                                         <TableCell className="sticky right-0 bg-background z-10">
                                             <div className="flex items-center gap-2">
                                                 <DropdownMenu>
@@ -385,14 +380,15 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <Link to={`/homePage/Employee/${item.Matricule}`}>
-                                                            <DropdownMenuItem onClick={() => handleEdit(item)}>
+                                                        <Link to={`/Emp/update/${item.Matricule}`}>
+                                                            <DropdownMenuItem>
                                                                 <Pencil className="h-4 w-4 mr-2" />
                                                                 Edit
                                                             </DropdownMenuItem>
                                                         </Link>
                                                         <DropdownMenuItem
                                                             className="text-destructive focus:text-destructive"
+                                                            onClick={() => deleteSingleEmployee(item.Matricule)}
                                                         >
                                                             <Trash2 className="h-4 w-4 mr-2" />
                                                             Delete
@@ -423,34 +419,6 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                     goToPreviousPage={goToPreviousPage}
                 />
             )}
-            {insertDialogOpen.isOpen && (
-                <DynamicEditDialog
-                    isOpen={insertDialogOpen.isOpen}
-                    onOpenChange={(isOpen) => setInsertDialogOpen({ ...insertDialogOpen, isOpen })}
-                    title="Insert New User"
-                    description="Fill in the user details below and click save."
-                    fields={fields}
-                    formData={insertDialogOpen.formData}
-                    onChange={(name, value) => setInsertDialogOpen({ ...insertDialogOpen, formData: { ...insertDialogOpen.formData, [name]: value } })}
-                    onSave={handleSaveInsert}
-                    methode="POST"
-                    onCancel={() => setInsertDialogOpen({ ...insertDialogOpen, isOpen: false })}
-                />
-            )}
-            
-            {/* Reusable Edit Dialog */}
-            <DynamicEditDialog
-                isOpen={editDialogOpen}
-                onOpenChange={setEditDialogOpen}
-                title="Edit User"
-                description="Make changes to the user details here. Click save when you're done."
-                fields={fields}
-                formData={editFormData}
-                onChange={handleInputChange}
-                onSave={handleSaveEdit}
-                methode="PUT"
-                onCancel={() => setEditDialogOpen(false)}
-            />
         </div>
     );
 }

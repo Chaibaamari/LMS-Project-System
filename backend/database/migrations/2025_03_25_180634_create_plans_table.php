@@ -25,11 +25,11 @@ return new class extends Migration
             $table->decimal('Frais_Hebergement', 8, 2)->nullable();
             $table->decimal('Frais_Transport', 8, 2)->nullable();
             $table->string('type')->nullable();
-            
 
-            $table->foreign('Matricule')->references('Matricule')->on('Employes');
 
-            $table->foreign('ID_Formation')->references('ID_Formation')->on('formations');
+            $table->foreign('Matricule')->references('Matricule')->on('Employes')->onDelete('cascade');;
+
+            $table->foreign('ID_Formation')->references('ID_Formation')->on('formations')->onDelete('cascade');;
         });
     }
 

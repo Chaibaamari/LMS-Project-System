@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 
 class PlanController extends Controller
 {
- 
     public function createBC(Request $request)
     {
         $ids = $request->input("ids");
@@ -25,11 +24,11 @@ class PlanController extends Controller
 
     public function consultBC(Request $request)
     {
-        
+
         $formation=Formation::where('Intitule_Action', $request->input('nomFormation'))->where('Nom_Organisme', $request->input('nomOrganisme'))->first();
         $plans=Plan::where('ID_Formation', $formation->ID_Formation)->where('etat', 'confirmé')->get();
 
-        
+
 
 
         return response()->json(['message' => 'bon de commande crée','Plan'=> $plans]);
@@ -37,7 +36,7 @@ class PlanController extends Controller
 
     public function consultTBF(Request $request)
     {
-        
+
         $plans=Plan::whereMonth('Date_Deb',$request->input('month') )->orWhereMonth('Date_Fin',$request->input('month'))->where('etat', 'confirmé')->get();
 
         return response()->json(['message' => 'bon de commande crée','Plan'=> $plans]);
@@ -45,7 +44,7 @@ class PlanController extends Controller
 
     public function consultBilan(Request $request)
     {
-        
+
         $plans=Plan::where('etat', 'confirmé')->get();
 
         return response()->json(['message' => 'bon de commande crée','Plan'=> $plans]);

@@ -17,11 +17,11 @@ class Fonction extends Model
     ];
 
     protected $casts = [
-        'CodeFonction'=>'string',	
+        'CodeFonction'=>'string',
         'TypeFonction'=>'string', //FST wela ...
-        'IntituleFonction'=>'string', 
+        'IntituleFonction'=>'string',
     ];
-    
+
     protected $keyType = 'string';
     public $timestamps = false;
     public function employe()
