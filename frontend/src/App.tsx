@@ -6,14 +6,15 @@ import { action as LogoutAction} from './pages/Logout'
 import PageError from "./pages/pageError";
 import { ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
-import PlanPrevision from "./pages/PlanPrevision";
+import PlanPrevision from "./pages/PlanPrevision/PlanPrevision";
 import PlanNotifie from "./pages/PlanNotifie";
 import BonCommand from "./pages/BonCommand";
 import Settings from "./pages/Settings";
-import Employee from "./pages/Employe-Section";
+import Employee from "./pages/Employe/Employe-Section";
 import Direction from "./pages/direction-Section";
-import EmployeFormUpdate from "./pages/Employe-Form";
-import EmployeFormInsert from "./pages/InsertEmploye";
+import EmployeFormUpdate from "./pages/Employe/Employe-Form";
+import EmployeFormInsert from "./pages/Employe/InsertEmploye";
+import InsertPrevision from "./pages/PlanPrevision/InsertPrevision";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -24,6 +25,7 @@ export default function App() {
         { index: true, element: <LoginPage />, action: loginAction },
         { path: 'Emp/update/:matricule', element: <EmployeFormUpdate /> },
         { path: 'Emp/insert', element: <EmployeFormInsert /> },
+        { path: 'PrevPlan/insert', element: <InsertPrevision /> },
         {
           path: 'homePage',
           element: <Sidebar />,

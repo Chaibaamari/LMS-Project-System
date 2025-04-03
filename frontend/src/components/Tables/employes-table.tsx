@@ -179,19 +179,37 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
         console.log(selectedRows);
     };
 
-    const renderSortIndicator = (column: keyof Users) => {
+    
+    type Join<K, P> = K extends string | number
+    ? P extends string | number
+    ? `${K}.${P}`
+    : never
+    : never;
+    
+    type Prev = [never, 0, 1, 2, 3, ...0[]];
+    type Paths<T, D extends number = 3> = [D] extends [never]
+    ? never
+    : T extends object
+    ? {
+        [K in keyof T]-?: K extends string | number
+        ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+        : never
+    }[keyof T]
+    : '';
+    type PlanPrevisionKeys = Paths<Users>
+    
+    const renderSortIndicator = (column: PlanPrevisionKeys) => {
         if (sortConfig?.key === column) {
             return sortConfig.direction === "asc" ? <ArrowUp className="h-4 w-4 ml-1" /> : <ArrowDown className="h-4 w-4 ml-1" />;
         }
         return null;
     };
-    
     // In your UsersTable component, modify the renderColumnHeader function:
-    const renderColumnHeader = (column: keyof Users, label: string, filterOptions?: string[]) => {
+    const renderColumnHeader = (column: PlanPrevisionKeys, label: string, filterOptions?: string[]) => {
     return (
         <TableHead className="cursor-pointer select-none" onClick={() => handleSort(column)}>
             <div className="flex items-center justify-between">
-                <div className="flex items-center text-center">
+                <div className="flex items-center text-center text-xs font-medium ">
                     {label}
                     {renderSortIndicator(column)}
                 </div>
@@ -199,7 +217,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                 {filterOptions && (
                     <Popover>
                         <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 ml-1">
+                            <Button variant="ghost" size="icon" className="h-5 w-5 ml-1 p-0">
                                 <ChevronDown className="h-4 w-4" />
                             </Button>
                         </PopoverTrigger>
@@ -213,7 +231,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                     className="h-8 text-sm"
                                 />
                                 {filterOptions && (
-                                    <div className="space-y-1 mt-2">
+                                    <div className="space-y-1 mt-2 max-h-32 overflow-y-auto">
                                         {filterOptions.map((option) => (
                                             <Button
                                                 key={option}
@@ -253,7 +271,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     };
     return (
         <div className="space-y-4 p-4 overflow-auto max-w-full">
-            <p className=" text-sm text-muted-foreground">Affichage de {currentData.length} sur {sortedAndFilteredData.length} employés</p>
+            <p className="text-xs text-muted-foreground whitespace-nowrap">Affichage de {currentData.length} sur {sortedAndFilteredData.length} employés</p>
             <div className="flex flex-col sm:flex-row justify-between items-start  sm:items-center gap-2">
                 <div className="text-sm text-muted-foreground">
                     <DynamicSearch
@@ -324,8 +342,8 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                 {renderColumnHeader("Ancienneté", "Ancienneté")}
                                 {renderColumnHeader("Sexe", "Sexe", ["M", "F"])}
                                 {renderColumnHeader("CSP", "CSP", ["Cadre", "Maîtrise", "Exécution"])}
-                                {renderColumnHeader("TypeFonction", "TypeFonction", ["FST", "FSM", "FSP"])}
-                                {renderColumnHeader("IntituleFonction", "IntituleFonction")}
+                                {renderColumnHeader("fonction.TypeFonction", "TypeFonction", ["FST", "FSM", "FSP"])}
+                                {renderColumnHeader("fonction.IntituleFonction", "IntituleFonction")}
                                 {renderColumnHeader("Echelle", "Echelle")}
                                 {renderColumnHeader("CodeFonction", "CodeFonction")}
                                 {renderColumnHeader("Id_direction", "CodeDirection")}

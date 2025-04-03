@@ -1,4 +1,4 @@
-import { DynamicEditForm } from "@/components/DynamicForm";
+import { DynamicEditForm } from "@/components/UpdateForm";
 
 export default function EmployeFormUpdate() {
     return (

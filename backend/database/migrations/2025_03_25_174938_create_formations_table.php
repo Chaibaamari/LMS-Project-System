@@ -25,7 +25,7 @@ return new class extends Migration
             $table->integer('Heure_jour')->nullable();
             $table->string('Nom_Organisme')->nullable();
 
-            $table->foreign('Nom_Organisme')->references('Nom_Organisme')->on('Organismes');
+            $table->foreign('Nom_Organisme')->references('Nom_Organisme')->on('Organismes')->onDelete('cascade');
         });
     }
 

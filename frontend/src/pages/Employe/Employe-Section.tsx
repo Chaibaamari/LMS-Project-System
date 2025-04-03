@@ -86,17 +86,3 @@ function Employee() {
 }
 
 export default Employee;
-
-
-
-
-
-            // <div className="space-y-4">
-            //     <div className="flex items-center justify-between">
-            //         <h2 className="text-2xl font-bold">Employees</h2>
-            //         <Skeleton className="h-9 w-24" /> {/* Placeholder for any action button */}
-            //     </div>
-            //     <TableSkeleton rows={15} columns={5} />
-            // </div>
-//         body: JSON.stringify(dataAuth),
-//     });

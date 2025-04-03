@@ -4,11 +4,76 @@ export interface ActionData {
     };
     message?: string;
 };
-// interface Fonction {
-//     CodeFonction: number;
-//     TypeFonction: string; // Assuming these are the possible values
-//     IntituleFonction: string;
-// }
+export interface Direction {
+    Id_direction: string;
+    Nom_direction: string;
+    Structure: string;
+    NomResponsable: string | null;
+    Email: string | null;
+}
+export interface Fonction {
+    CodeFonction: string;
+    TypeFonction: string; // Assuming these are the possible values
+    IntituleFonction: string;
+}
+
+export interface Employe {
+    Matricule: string;
+    prenomnom: string;
+    Date_Naissance: string;
+    Date_Recrutement: string;
+    Sexe: string;
+    CSP: string;
+    Echelle: string;
+    CodeFonction: string;
+    Id_direction: string;
+    direction: Direction;
+    fonction: Fonction;
+}
+
+export interface Organisme {
+    Code_Organisme: string;
+    Nom_Organisme: string;
+    Lieu_Formation: string;
+    Pays: string;
+}
+
+export interface Formation {
+    ID_Formation: number;
+    Domaine_Formation: string;
+    Code_Domaine_Formation: string;
+    Intitule_Action: string;
+    Niveau_Formation: string;
+    Nature_Formation: string;
+    Source_Besoin: string;
+    Type_Formation: string;
+    Mode_Formation: string;
+    Code_Formation: string;
+    Heure_jour: number;
+    Nom_Organisme: string;
+    organisme: Organisme;
+}
+
+export interface PlanPrevision extends Record<string, unknown> {
+    ID_N: number;
+    etat: string;
+    Observation: string | null;
+    Date: string | null;
+    // Date_Deb: string | null;
+    // Date_fin: string | null;
+    // Budget: strign | null;
+    Matricule: string;
+    ID_Formation: number;
+    Mode_Financement: string | null;
+    Frais_Pedagogiques: number | null;
+    Frais_Hebergement: number | null;
+    Frais_Transport: number | null;
+    type: string | null;
+    employe: Employe;
+    formation: Formation;
+}
+
+
 
 export type Users = {
     Matricule: string
@@ -52,6 +117,13 @@ export type FieldConfig = {
     options?: { value: string; label: string }[]; // Options for select fields
 };
 
+export type FieldConfigPlan = {
+    type: "input" | "select" | "date" | "number"; // Type of the field
+    name: keyof PlanPrevision; // Name of the field (used for form data)
+    label: string; // Label for the field
+    placeholder?: string; // Optional placeholder text
+    options?: { value: string; label: string }[]; // Options for select fields
+};
 // Define sort direction type
 export type SortDirection = "asc" | "desc" | null
 
@@ -89,3 +161,5 @@ export const fields: FieldConfig[] = [
         ],
     },
 ];
+
+

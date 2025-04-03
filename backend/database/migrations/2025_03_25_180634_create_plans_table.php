@@ -25,6 +25,7 @@ return new class extends Migration
             $table->decimal('Frais_Hebergement', 8, 2)->nullable();
             $table->decimal('Frais_Transport', 8, 2)->nullable();
             $table->string('type')->nullable();
+            // $table->string('Budget')->nullable();
 
 
             $table->foreign('Matricule')->references('Matricule')->on('Employes')->onDelete('cascade');;

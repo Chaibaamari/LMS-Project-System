@@ -3,6 +3,7 @@
 use App\Http\Controllers\DirectionController;
 use App\Http\Controllers\EmployeController;
 use App\Http\Controllers\FonctionController;
+use App\Http\Controllers\FormationController;
 use App\Http\Controllers\ImportContoller;
 use App\Http\Controllers\JWTAuthController;
 use App\Http\Controllers\PlanController;
@@ -36,6 +37,10 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('/', [FonctionController::class, 'CreateFonction']);
     });
 
+    Route::prefix('Formation')->group(function () {
+        Route::get('/ListeFormation', [FormationController::class, 'getAllIntituleActions']);
+    });
+
     // Direction routes
     Route::get('directions', [DirectionController::class, 'getAllDirections']);
     Route::get('directions/{id}', [DirectionController::class, 'getDirectionById']);
@@ -48,7 +53,9 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::get('/', [PlanController::class, 'consultprev']);
         Route::post('/add', [PlanController::class, 'prevadd']);
         Route::post('/modify', [PlanController::class, 'prevmodify']);
-        Route::post('/delete', [PlanController::class, 'prevdelete']);
+    // Route::post('/delete', [PlanController::class, 'prevdelete']);
+        Route::delete('/delete/{id}', [PlanController::class, 'destroy']);
+        Route::delete('/delete-multiple', [PlanController::class, 'destroyMultiple']);
     });
 
     Route::prefix('plannotifie')->group(function () {
