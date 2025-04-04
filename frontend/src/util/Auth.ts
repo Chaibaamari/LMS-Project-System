@@ -8,7 +8,7 @@ export function getTokenExpiration():number {
     const duration = expirationDate.getTime() - now.getTime();
     return duration;
 }
-export function getAuthToken(): string | null {
+export function getAuthToken(): string | null | 'EXPIRED' {
     const token = localStorage.getItem('token');
     const TokenExpiration = getTokenExpiration();
 
@@ -22,8 +22,13 @@ export function getAuthToken(): string | null {
     return token;
 
 }
-export function LoadToken(): string | null {
-    return getAuthToken();
+export function LoadToken(): string {
+  const token = getAuthToken();
+  if (!token || token === "EXPIRED") {
+      // This will trigger the errorElement (PageError)
+    throw new Response( JSON.stringify({message : 'Unauthorized'}), {status : 401} )
+  }
+  return token;
 }
 
 export function ProtectedRoute() {

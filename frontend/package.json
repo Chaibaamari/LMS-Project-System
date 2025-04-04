@@ -29,6 +29,7 @@
     "date-fns": "^3.6.0",
     "export-to-csv": "^1.4.0",
     "express": "^4.21.2",
+    "framer-motion": "^12.6.3",
     "frontend": "file:",
     "lucide-react": "^0.475.0",
     "react": "^19.0.0",

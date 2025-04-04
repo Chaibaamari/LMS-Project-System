@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/Sidebar/app-sidebar"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import {
   SidebarInset,
@@ -10,7 +11,7 @@ import { useEffect } from "react"
 import { Outlet, useRouteLoaderData, useSubmit } from "react-router-dom"
 
 export default function Sidebar() {
-  const token = useRouteLoaderData("root") as string;
+  const token = useRouteLoaderData("root");
   const submit = useSubmit();
   useEffect(() => { 
       if (!token) {
@@ -35,10 +36,10 @@ export default function Sidebar() {
             <div className="flex items-center gap-2 px-4 overflow-hidden">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              {/* <Breadcrumb>
+              <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
+                  <BreadcrumbLink href="/homePage">
                     Building Your Application
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -47,7 +48,7 @@ export default function Sidebar() {
                   <BreadcrumbPage>Data Fetching</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
-            </Breadcrumb> */}
+            </Breadcrumb>
             </div>
           </header>
           {/* <div className="flex flex-1 flex-col gap-4 p-4 pt-0">

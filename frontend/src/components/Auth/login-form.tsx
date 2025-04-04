@@ -14,36 +14,34 @@ import { Eye, EyeOff, Lock, Mail, User, AlertCircle} from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
-  const [searchParams] = useSearchParams()
-  const isLogin = searchParams.get("mode") !== "register"
-  const data = useActionData<ActionData>()
-  const navigation = useNavigation()
-  const isSubmitting = navigation.state === "submitting"
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false)
-  const [resetEmail, setResetEmail] = useState("")
-  const [resetEmailSent, setResetEmailSent] = useState(false)
+    const [searchParams] = useSearchParams();
+    const isLogin = searchParams.get("mode") !== "register";
+    const data = useActionData<ActionData>();
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === "submitting";
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+    const [resetEmail, setResetEmail] = useState("");
+    const [resetEmailSent, setResetEmailSent] = useState(false);
 
-  const handleResetPassword = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Simulate password reset email being sent
-    setResetEmailSent(true)
-    // In a real app, you would call your API here
-  }
+    const handleResetPassword = (e: React.FormEvent) => {
+        e.preventDefault()
+        setResetEmailSent(true)
+    };
 
     return (
-        <div className={cn("flex flex-col gap-6 w-max max-w-md mx-auto", className)} {...props}>
+        <div className={cn("flex flex-col gap-6 w-[400px]  mx-auto", className)} {...props}>
             <Card className="w-full shadow-lg border-2">
                 <CardHeader className="space-y-4 text-center pb-6">
                     <div className="mx-auto w-20 h-20 mb-2">
@@ -256,10 +254,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 </CardFooter>
             </Card>
 
-            <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
+            {/* <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
                 En cliquant sur Continuer, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre{" "}
                 <a href="#">Politique de confidentialité</a>
-            </div>
+            </div> */}
         </div>
     );
 }

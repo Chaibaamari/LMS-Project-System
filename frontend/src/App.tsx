@@ -3,7 +3,7 @@ import Home  from './pages/Home'
 import LoginPage from "./pages/Login";
 import { action as loginAction } from "./pages/Login";
 import { action as LogoutAction} from './pages/Logout'
-import PageError from "./pages/pageError";
+import PageError from "./pages/Error/pageError";
 import { LoadToken, ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
 import PlanPrevision from "./pages/PlanPrevision/PlanPrevision";
@@ -21,22 +21,22 @@ export default function App() {
     {
       path: "",
       errorElement: <PageError />,
-      id:"root",
-      loader: LoadToken,
       children: [
         { index: true, element: <LoginPage />, action: loginAction },
         {
           path: 'homePage',
           element: <Sidebar />,
-          loader: ProtectedRoute,
+          id:"root",
+          loader: LoadToken,
+          // loader: ProtectedRoute,
           children: [
-            { index: true, element: <Home /> },
-            { path: 'Employee', element: <Employee />},
-            { path: 'Direction', element: <Direction /> },
-            { path: 'planPrevision', element: <PlanPrevision /> },
-            { path: 'planNotifie', element: <PlanNotifie /> },
-            { path: 'Bon-de-command', element: <BonCommand /> },
-            { path: 'Settings', element: <Settings /> },
+            { index: true, element: <Home /> , loader: ProtectedRoute },
+            { path: 'Employee', element: <Employee /> , loader: ProtectedRoute },
+            { path: 'Direction', element: <Direction /> , loader: ProtectedRoute },
+            { path: 'planPrevision', element: <PlanPrevision /> , loader: ProtectedRoute },
+            { path: 'planNotifie', element: <PlanNotifie /> , loader: ProtectedRoute },
+            { path: 'Bon-de-command', element: <BonCommand /> , loader: ProtectedRoute },
+            { path: 'Settings', element: <Settings /> , loader: ProtectedRoute },
           ]
         },
         { path: 'Emp/update/:matricule', element: <EmployeFormUpdate /> , loader: ProtectedRoute },

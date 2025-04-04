@@ -18,7 +18,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import {Link} from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {PlanPrevision} from "@/assets/modelData";
+import {PlanPrevision, Users} from "@/assets/modelData";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "../ui/input";
 import { useTableControls } from "@/hooks/useTableControls";
@@ -202,7 +202,7 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
         }
         return null;
     };
-    const handleSearch = (term: string, field: keyof PlanPrevision) => {
+    const handleSearch = (term: string, field: keyof Users) => {
         setSearchTerm(term);
         setSearchField(field);
     };
@@ -280,7 +280,7 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                         fields={[
                             { name: "Matricule", label: "Matricule" },
                             { name: "prenomnom", label: "Nom & Prénom" },
-                            { name: "IntituleFonction", label: "IntituleFonction" },
+                            // { name: "IntituleFonction", label: "IntituleFonction" },
                             // Add other fields here
                         ]}
                         onSearch={handleSearch}
@@ -387,13 +387,13 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                                 aria-label={`Select row ${item.ID_N}`}
                                             />
                                         </TableCell>
-                                        <TableCell className="text-center w-[100%]">{item.employe.direction.Structure}</TableCell>
-                                        <TableCell className="text-center w-[100%]">{item.employe.direction.Nom_direction}</TableCell>
-                                        <TableCell className="font-medium ">{item.employe.Matricule}</TableCell>
-                                        <TableCell className="text-center w-[100%]">{item.employe.prenomnom}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Date_Naissance}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Date_Recrutement}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Sexe}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{item.employe.direction.Structure ?? "—"}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{item.employe.direction.Nom_direction ?? "—"}</TableCell>
+                                        <TableCell className="font-medium ">{item.employe.Matricule ?? "—"}</TableCell>
+                                        <TableCell className="text-center w-[100%]">{item.employe.prenomnom ?? "—"}</TableCell>
+                                        <TableCell className="text-center ">{item.employe.Date_Naissance ?? "—"}</TableCell>
+                                        <TableCell className="text-center ">{item.employe.Date_Recrutement ?? "—"}</TableCell>
+                                        <TableCell className="text-center ">{item.employe.Sexe ?? "—"}</TableCell>
                                         <TableCell>
                                             <span
                                                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${item.employe.CSP === "Cadre"
@@ -403,34 +403,34 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                                         : "bg-yellow-100 text-yellow-800"
                                                     }`}
                                             >
-                                                {item.employe.CSP}
+                                                {item.employe.CSP ?? "—"}
                                             </span>
                                         </TableCell>
-                                        <TableCell className="text-center">{item.employe.Echelle}</TableCell>
-                                        <TableCell className="text-center">{item.employe.fonction.TypeFonction}</TableCell>
-                                        <TableCell className="text-center">{item.employe.CodeFonction}</TableCell>
-                                        <TableCell className="text-center">{item.employe.fonction.IntituleFonction}</TableCell>
-                                        <TableCell className="text-center">{item.employe.Id_direction}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Domaine_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Code_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Intitule_Action}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Nature_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Niveau_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Source_Besoin}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Type_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Mode_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Code_Domaine_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.organisme.Code_Organisme}</TableCell>
-                                        <TableCell className="text-center">{item.formation.organisme.Nom_Organisme}</TableCell>
-                                        <TableCell className="text-center">{item.formation.organisme.Lieu_Formation}</TableCell>
-                                        <TableCell className="text-center">{item.formation.organisme.Pays}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Heure_jour}</TableCell>
-                                        <TableCell className="text-center">{item.Frais_Pedagogiques}</TableCell>
-                                        <TableCell className="text-center">{item.Frais_Hebergement}</TableCell>
-                                        <TableCell className="text-center">{item.Frais_Transport}</TableCell>
-                                        <TableCell className="text-center">{item.type}</TableCell>
-                                        <TableCell className="text-center">{item.etat}</TableCell>
-                                        <TableCell className="text-center">{item.Observation}</TableCell>
+                                        <TableCell className="text-center">{item.employe.Echelle ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.employe.fonction.TypeFonction ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.employe.CodeFonction ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.employe.fonction.IntituleFonction ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.employe.Id_direction ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Domaine_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Code_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Intitule_Action ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Nature_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Niveau_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Source_Besoin ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Type_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Mode_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation?.Code_Domaine_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.organisme?.Code_Organisme ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.organisme?.Nom_Organisme ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.organisme?.Lieu_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.organisme?.Pays ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation?.Heure_jour ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Frais_Pedagogiques ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Frais_Hebergement ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Frais_Transport ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.type?? "—" }</TableCell>
+                                        <TableCell className="text-center">{item.etat ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Observation ?? "—"}</TableCell>
                                         <TableCell className="sticky right-0 bg-background z-10">
                                             <div className="flex items-center gap-2">
                                                 <DropdownMenu>

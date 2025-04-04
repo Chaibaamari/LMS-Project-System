@@ -81,4 +81,10 @@ class JWTAuthController extends Controller
 
         return response()->json(['message' => 'Successfully logged out']);
     }
+    
+    public function usercount()
+    {
+        $user = User::count();
+        return response()->json(compact('user'));
+    }
 }

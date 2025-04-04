@@ -18,6 +18,7 @@ Route::post('login', [JWTAuthController::class, 'login']);
 Route::middleware([JwtMiddleware::class])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
+    Route::get('usercount', [JWTAuthController::class, 'usercount']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
 
     // Employee routes partie de chaiba
