@@ -43,7 +43,6 @@ export async function action({request} : {request: Request}) {
         },
         body: JSON.stringify(dataAuth),
     });
-    // localStorage.setItem('emailUser' , dataAuth.email)
     if (response.status === 422 || response.status === 401 || response.status === 500) {
         return response;
     }
@@ -55,6 +54,9 @@ export async function action({request} : {request: Request}) {
     console.log(resData)
     const token = resData.token;
     localStorage.setItem('token', token);
+    const expiration = new Date();
+    expiration.setHours(expiration.getHours() + 1); // Set expiration to 1 hour from now
+    localStorage.setItem('expiration', expiration.toISOString());
     return redirect('/homePage')
     
 }

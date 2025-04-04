@@ -5,9 +5,28 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Outlet } from "react-router-dom"
+import { getTokenExpiration } from "@/util/Auth"
+import { useEffect } from "react"
+import { Outlet, useRouteLoaderData, useSubmit } from "react-router-dom"
 
 export default function Sidebar() {
+  const token = useRouteLoaderData("root") as string;
+  const submit = useSubmit();
+  useEffect(() => { 
+      if (!token) {
+        return;
+    }
+    if (token === 'EXPIRED') {
+      submit(null, { method: "post", action: "/logout" });
+    }
+
+    const expirationTime = getTokenExpiration();
+
+
+    setTimeout(() => {
+      submit(null, { method: "post", action: "/logout" });
+    }, expirationTime); // 1 hour in milliseconds
+  }, [token , submit]);
   return (
     <SidebarProvider>
       <AppSidebar />

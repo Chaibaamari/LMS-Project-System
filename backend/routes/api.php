@@ -41,11 +41,12 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::get('/ListeFormation', [FormationController::class, 'getAllIntituleActions']);
     });
 
-    // Direction routes
-    Route::get('directions', [DirectionController::class, 'getAllDirections']);
-    Route::get('directions/{id}', [DirectionController::class, 'getDirectionById']);
-    Route::post('directions/{id}/responsable', [DirectionController::class, 'updateResponsable']);
-});
+        // Direction routes
+    Route::prefix('directions')->group(function () {
+    Route::get('/', [DirectionController::class, 'getAllDirections']);
+    Route::get('/{id}', [DirectionController::class, 'getDirectionById']);
+    Route::post('/{id}/responsable', [DirectionController::class, 'updateResponsable']);
+    });
 
     Route::prefix('previsions')->group(function () {
         Route::post('/import', [ImportContoller::class, 'previmport']);
@@ -53,7 +54,6 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::get('/', [PlanController::class, 'consultprev']);
         Route::post('/add', [PlanController::class, 'prevadd']);
         Route::post('/modify', [PlanController::class, 'prevmodify']);
-    // Route::post('/delete', [PlanController::class, 'prevdelete']);
         Route::delete('/delete/{id}', [PlanController::class, 'destroy']);
         Route::delete('/delete-multiple', [PlanController::class, 'destroyMultiple']);
     });
@@ -66,6 +66,11 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('/modify', [PlanController::class, 'notifiemodify']);
         Route::post('/delete', [PlanController::class, 'notifiedelete']);
     });
+
+});
+
+
+
 
     Route::post('createBC', [PlanController::class, 'createBC']);
 

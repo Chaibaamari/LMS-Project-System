@@ -1,11 +1,29 @@
 import { Users } from "@/assets/modelData";
 import { redirect } from "react-router-dom";
 
-export function getAuthToken(): string | null {
-    return localStorage.getItem('token');
+export function getTokenExpiration():number {
+    const Storeexpiration = localStorage.getItem('expiration');
+    const expirationDate = new Date(Storeexpiration || '');
+    const now = new Date();
+    const duration = expirationDate.getTime() - now.getTime();
+    return duration;
 }
-export function getAuthEmail(): string |null{
-    return localStorage.getItem('emailUser');
+export function getAuthToken(): string | null {
+    const token = localStorage.getItem('token');
+    const TokenExpiration = getTokenExpiration();
+
+    if (!token) {
+        return null;
+    }
+    if (TokenExpiration <= 0) {
+        return 'EXPIRED';
+    }
+
+    return token;
+
+}
+export function LoadToken(): string | null {
+    return getAuthToken();
 }
 
 export function ProtectedRoute() {

@@ -22,9 +22,11 @@ function PageError() {
     console.log(error?.status); // ✅ Added optional chaining to prevent crashes
 
     return (
-        <PageContentError title={title}>
-            <p>{message}</p>
-        </PageContentError>
+        <PageContentError
+            staus="400"
+            title={title}
+            messge={message}
+        />
     );
 }
 

@@ -209,7 +209,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     return (
         <TableHead className="cursor-pointer select-none" onClick={() => handleSort(column)}>
             <div className="flex items-center justify-between">
-                <div className="flex items-center text-center text-xs font-medium ">
+                <div className="flex items-center text-center text-xs text-center font-medium ">
                     {label}
                     {renderSortIndicator(column)}
                 </div>

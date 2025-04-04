@@ -45,6 +45,9 @@ class JWTAuthController extends Controller
                 return response()->json(['error' => ["msg" => 'Invalid credentials' ] ], 401);
             }
 
+            $customClaims = ['exp' => now()->addHours(1)->timestamp];
+            $token = JWTAuth::claims($customClaims)->attempt($credentials);
+
             // Get the authenticated user.
             $user = auth()->user();
 

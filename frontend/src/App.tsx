@@ -4,7 +4,7 @@ import LoginPage from "./pages/Login";
 import { action as loginAction } from "./pages/Login";
 import { action as LogoutAction} from './pages/Logout'
 import PageError from "./pages/pageError";
-import { ProtectedRoute } from "./util/Auth";
+import { LoadToken, ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
 import PlanPrevision from "./pages/PlanPrevision/PlanPrevision";
 import PlanNotifie from "./pages/PlanNotifie";
@@ -21,11 +21,10 @@ export default function App() {
     {
       path: "",
       errorElement: <PageError />,
+      id:"root",
+      loader: LoadToken,
       children: [
         { index: true, element: <LoginPage />, action: loginAction },
-        { path: 'Emp/update/:matricule', element: <EmployeFormUpdate /> },
-        { path: 'Emp/insert', element: <EmployeFormInsert /> },
-        { path: 'PrevPlan/insert', element: <InsertPrevision /> },
         {
           path: 'homePage',
           element: <Sidebar />,
@@ -40,6 +39,9 @@ export default function App() {
             { path: 'Settings', element: <Settings /> },
           ]
         },
+        { path: 'Emp/update/:matricule', element: <EmployeFormUpdate /> , loader: ProtectedRoute },
+        { path: 'Emp/insert', element: <EmployeFormInsert /> ,  loader: ProtectedRoute },
+        { path: 'PrevPlan/insert', element: <InsertPrevision /> ,  loader: ProtectedRoute },
         { path: "logout", action: LogoutAction }
       ]
     },
