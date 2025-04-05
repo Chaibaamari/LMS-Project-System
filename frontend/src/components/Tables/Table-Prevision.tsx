@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, Loader2 } from "lucide-react"
+import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, Loader2, SearchX } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -554,8 +554,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                         <TableCell className="text-center">{item.formation.organisme?.Code_Organisme ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.organisme?.Nom_Organisme ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.organisme?.Lieu_Formation ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation.organisme?.Pays ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation?.Heure_jour ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.organisme?.Pays}</TableCell>
+                                        <TableCell className="text-center">{item.formation?.Heure_jour }</TableCell>
                                         <TableCell className="text-center">{item.Frais_Pedagogiques ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Hebergement ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Transport ?? "—"}</TableCell>
@@ -593,9 +593,17 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={13} className="h-24 text-center">
-                                        Data Not Founde
-                                    </TableCell>
+                                <TableCell colSpan={20} className="h-40 text-center">
+                                    <div className="flex flex-col items-center justify-center space-y-3 py-6">
+                                        <div className="rounded-full bg-muted p-3">
+                                            <SearchX className="h-6 w-6 text-muted-foreground" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-base font-medium">No data available</p>
+                                            <p className="text-sm text-muted-foreground">No matching records found</p>
+                                        </div>
+                                    </div>
+                                </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

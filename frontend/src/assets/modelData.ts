@@ -32,6 +32,7 @@ export interface Employe {
 }
 
 export interface Organisme {
+    Id_Organisme: number;
     Code_Organisme: string;
     Nom_Organisme: string;
     Lieu_Formation: string;
@@ -50,7 +51,7 @@ export interface Formation {
     Mode_Formation: string;
     Code_Formation: string;
     Heure_jour: number;
-    Nom_Organisme: string;
+    Id_Organisme: number;
     organisme: Organisme;
 }
 
