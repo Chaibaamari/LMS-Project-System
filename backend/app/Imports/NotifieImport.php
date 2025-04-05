@@ -9,19 +9,84 @@ use App\Models\Formation;
 use App\Models\Organisme;
 use App\Models\Plan;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Validators\Failure;
 
-class NotifieImport implements ToCollection, WithHeadingRow
+class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormulas
 {
+    private $errors = [];
+    private $rowsSuccess = 0;
+    private $rowsFailed = 0;
+    // public function rules(): array
+    // { WithValidation
+    //     // return [
+    //     //     '*.direction' => 'required',
+    //     //     '*.structure' => 'required',
+    //     //     '*.code_fonction' => 'required',
+    //     //     '*.fonction_fcmfstfsp' => ['required ', Rule::in(['FST', 'FSM', 'FSP'])],
+    //     //     '*.intitule_de_fonction' => 'required',
+    //     //     '*.code_organisme_de_formation' => ['required ', Rule::in(['ETR', 'SMA', 'IAP', 'CFA' , 'AO'])],
+    //     //     '*.organisme_de_formation' => 'required',
+    //     //     '*.lieu_du_deroulement_de_la_formation' => 'required',
+    //     //     '*.intitule_de_laction' => 'required',
+    //     //     '*.matricule' => 'required',
+    //     //     '*.nom_prenom' => 'required',
+    //     //     // 'date_de_naissance_jjmmaaaa' => 'required |date_format:Y-m-d',
+    //     //     // 'date_de_recrutement_jjmmaaaa' => 'required ',
+    //     // ];
+    // }
+    public function onFailure(Failure ...$failures)
+    {
+        foreach ($failures as $failure) {
+            $this->errors[] = [
+                'row' => $failure->row(),
+                'errors' => $failure->errors(),
+                'values' => $failure->values()
+            ];
+            $this->rowsFailed++;
+        }
+    }
+    private function convertFrenchDate(?string $date): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        try {
+            // Handle Excel numeric dates (like 45000)
+            if (is_numeric($date)) {
+                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($date)
+                    ->format('Y-m-d');
+            }
+
+            // Handle French format (JJ/MM/AAAA)
+            return \Carbon\Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return null; // Will be rejected by validation
+        }
+    }
+    private function translateCSP(?string $code): ?string
+    {
+        return match (strtoupper($code)) {
+            'C' => 'Cadre',
+            'M' => 'Maîtrise',
+            'S' => 'Exécution',
+            default => null,
+        };
+    }
     /**
     * @param Collection $collection
     */
     public function collection(Collection $collection)
     {
         //
+        DB::beginTransaction();
+        try{
         foreach ($collection as $row) {
-
+            $this->rowsSuccess++;
 
             Direction::insertOrIgnore([
                 'Id_direction' => $row['unitecomplexedirection_regionalegroupement'],
@@ -35,14 +100,17 @@ class NotifieImport implements ToCollection, WithHeadingRow
                 'IntituleFonction'=> $row['intitule_de_fonction'],
             ]);
             
-            Organisme::insertOrIgnore([
+            $organisme=Organisme::where('Nom_Organisme',$row['organisme_de_formation'])->where('Lieu_Formation', $row['lieu_du_deroulement_de_la_formation'])->first();
+            if(!$organisme){
+            $organisme = Organisme::create([
                     'Code_Organisme'=>$row['code_organisme_de_formation'], 
                     'Nom_Organisme'=>$row['organisme_de_formation'],
                     'Lieu_Formation'=>$row['lieu_du_deroulement_de_la_formation'],	
                     'Pays'=>$row['lieu_pays'],
             ]);
+            }
             
-            $formation=Formation::where('Intitule_Action', $row['intitule_de_laction'])->where('Nom_Organisme', $row['organisme_de_formation'])->first();
+            $formation=Formation::where('Intitule_Action', $row['intitule_de_laction'])->where('Id_Organisme', $organisme->Id_Organisme)->first();
             if (!$formation) {
                 $formation = Formation::updateOrCreate([
                     'Domaine_Formation'=>$row['domaine_formation_fcm_fst_fsp'],
@@ -54,7 +122,7 @@ class NotifieImport implements ToCollection, WithHeadingRow
                     'Type_Formation'=>$row['type_formation'],
                     'Mode_Formation'=>$row['mode_formation'],
                     'Code_Formation'=>$row['code_formation'],
-                    'Nom_Organisme'=>$row['organisme_de_formation'],
+                    'Id_Organisme'=>$organisme->Id_Organisme,
                     'Heure_jour'=>$row['hj'],
                 ]);
             }
@@ -63,10 +131,10 @@ class NotifieImport implements ToCollection, WithHeadingRow
                 //
                 'Matricule'=>$row['matricule'],
                 'prenomNom'=>$row['nom_prenom'],
-                'Date_Naissance'=>$row['date_de_naissance_jjmmaaaa'],
-                'Date_Recrutement'=>$row['date_de_recrutement_jjmmaaaa'],
+                'Date_Naissance'=>$this->convertFrenchDate($row['date_de_naissance_jjmmaaaa']),
+                'Date_Recrutement'=>$this->convertFrenchDate($row['date_de_recrutement_jjmmaaaa']),
                 'Sexe'=>$row['sexe'],
-                'CSP'=>$row['csp_cadre_maitrise_execution'],
+                'CSP'=>$this -> translateCSP($row['csp_cadre_maitrise_execution']),
                 'Echelle'=>$row['echelle'],
                 'CodeFonction'=>$row['code_fonction'],
                 'Id_direction'=>$row['unitecomplexedirection_regionalegroupement'],
@@ -100,8 +168,25 @@ class NotifieImport implements ToCollection, WithHeadingRow
                     'Frais_Transport'=>$row['frais_transport'],
                 ]);
             }
-
         }
+            DB::commit();
+            
+        }catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+    public function getErrors()
+    {
+        return $this->errors;
+    }
 
+    public function getImportStats()
+    {
+        return [
+            'success' => $this->rowsSuccess,
+            'failed' => $this->rowsFailed,
+            'total' => $this->rowsSuccess + $this->rowsFailed
+        ];
     }
 }

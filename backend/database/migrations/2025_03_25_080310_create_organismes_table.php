@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('Organismes', function (Blueprint $table) {
+            $table->id('Id_Organisme');
             $table->string('Code_Organisme');
-            $table->string('Nom_Organisme')->primary()->nullable();
+            $table->string('Nom_Organisme')->nullable();
             $table->string('Lieu_Formation');
             $table->string('Pays');
         });

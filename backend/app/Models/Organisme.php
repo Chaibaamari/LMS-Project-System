@@ -11,6 +11,7 @@ class Organisme extends Model
 
 
     protected $fillable = [
+        'Id_Organisme',
         'Code_Organisme',
         'Nom_Organisme',
         'Lieu_Formation',
@@ -18,18 +19,18 @@ class Organisme extends Model
     ];
 
     protected $casts = [
+        'Id_Organisme'=>'integer',
         'Code_Organisme' => 'string',
         'Nom_Organisme' => 'string',
         'Lieu_Formation' => 'string',
         'Pays' => 'string',
     ];
 
-    protected $primaryKey = 'Nom_Organisme';
-    protected $keyType = 'string';
+    protected $primaryKey = 'Id_Organisme';
     public $timestamps = false;
 
     public function formation()
     {
-        return $this->hasMany(Formation::class, 'Nom_Organisme', 'Nom_Organisme');
+        return $this->hasMany(Formation::class, 'Id_Organisme', 'Id_Organisme');
     }
 }

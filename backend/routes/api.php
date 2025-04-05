@@ -15,7 +15,7 @@ Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login']);
 
 // Protected routes (JWT authenticated)
-Route::middleware([JwtMiddleware::class])->group(function () {
+//Route::middleware([JwtMiddleware::class])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
@@ -68,7 +68,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::post('/delete', [PlanController::class, 'notifiedelete']);
     });
 
-});
+//});
 
 
 

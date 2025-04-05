@@ -23,9 +23,9 @@ return new class extends Migration
             $table->string('Mode_Formation')->nullable();
             $table->string('Code_Formation')->nullable();
             $table->integer('Heure_jour')->nullable();
-            $table->string('Nom_Organisme')->nullable();
+            $table->unsignedBigInteger('Id_Organisme')->nullable();
 
-            $table->foreign('Nom_Organisme')->references('Nom_Organisme')->on('Organismes')->onDelete('cascade');
+            $table->foreign('Id_Organisme')->references('Id_Organisme')->on('Organismes')->onDelete('cascade');
         });
     }
 

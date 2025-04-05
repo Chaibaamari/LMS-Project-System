@@ -101,14 +101,17 @@ class PrevImport implements ToCollection, WithHeadingRow
                     'IntituleFonction' => $row['intitule_de_fonction'],
                 ]);
 
-                Organisme::insertOrIgnore([
+                $organisme=Organisme::where('Nom_Organisme',$row['organisme_de_formation'])->where('Lieu_Formation', $row['lieu_du_deroulement_de_la_formation'])->first();
+                if(!$organisme){
+                $organisme=Organisme::create([
                     'Code_Organisme' => $row['code_organisme_de_formation'],
                     'Nom_Organisme' => $row['organisme_de_formation'],
                     'Lieu_Formation' => $row['lieu_du_deroulement_de_la_formation'],
                     'Pays' => $row['lieu_pays'],
                 ]);
+                }
 
-                $formation = Formation::where('Intitule_Action', $row['intitule_de_laction'])->where('Nom_Organisme', $row['organisme_de_formation'])->first();
+                $formation=Formation::where('Intitule_Action', $row['intitule_de_laction'])->where('Id_Organisme', $organisme->Id_Organisme)->first();
                 if (!$formation) {
                     $formation = Formation::create([
                         'Domaine_Formation' => $row['domaine_formation_fcm_fst_fsp'],
@@ -120,7 +123,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                         'Type_Formation' => $row['type_formation'],
                         'Mode_Formation' => $row['mode_formation'],
                         'Code_Formation' => $row['code_formation'],
-                        'Nom_Organisme' => $row['organisme_de_formation'],
+                        'Id_Organisme'=>$organisme->Id_Organisme,
                         'Heure_jour' => $row['hj'],
                     ]);
                 }
@@ -153,6 +156,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                 ]);
             }
             DB::commit();
+            
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

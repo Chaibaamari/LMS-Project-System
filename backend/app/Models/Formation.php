@@ -20,7 +20,7 @@ class Formation extends Model
         'Type_Formation',
         'Mode_Formation',
         'Code_Formation',
-        'Nom_Organisme',
+        'Id_Organisme',
         'Heure_jour',
     ];
 
@@ -36,7 +36,7 @@ class Formation extends Model
         'Mode_Formation' => 'string',
         'Code_Formation' => 'string',
         'Heure_jour' => 'integer',
-        'Nom_Organisme' => 'string',
+        'Id_Organisme' => 'integer',
     ];
 
 
@@ -46,7 +46,7 @@ class Formation extends Model
 
     public function organisme()
     {
-        return $this->belongsTo(Organisme::class, 'Nom_Organisme', 'Nom_Organisme');
+        return $this->belongsTo(Organisme::class, 'Id_Organisme', 'Id_Organisme');
     }
 
     public function plan()
