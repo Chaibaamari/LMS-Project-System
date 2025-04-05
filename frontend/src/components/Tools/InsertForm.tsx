@@ -24,7 +24,7 @@ interface DynamicInsertFormProps<T extends Record<string, unknown>> {
         name: keyof PlanPrevision
         label: string
         placeholder?: string
-        options?: { value: string; label: string }[]
+        options?: {  value: string; label: string }[]
         errorMessage?: string
     }>;
     UrlRelaod: string;
@@ -209,8 +209,8 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
                                                         <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {field.options?.map((option) => (
-                                                            <SelectItem key={option.value} value={option.value}>
+                                                        {field.options?.map((option ) => (
+                                                            <SelectItem key={option.value} value={ option.value } >
                                                                 {option.label}
                                                             </SelectItem>
                                                         ))}

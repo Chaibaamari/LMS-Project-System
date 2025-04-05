@@ -50,6 +50,15 @@ class PrevImport implements ToCollection, WithHeadingRow
             $this->rowsFailed++;
         }
     }
+    private function normalizeRowValues(array $row): array
+    {
+        return array_map(function ($value) {
+            if (is_string($value)) {
+                return mb_strtoupper(trim($value));
+            }
+            return $value;
+        }, $row);
+    }
     private function convertFrenchDate(?string $date): ?string
     {
         if (empty($date)) {
@@ -87,6 +96,7 @@ class PrevImport implements ToCollection, WithHeadingRow
         DB::beginTransaction();
         try {
             foreach ($collection as $row) {
+                $row = $this->normalizeRowValues($row->toArray());
                 $this->rowsSuccess++;
 
                 Direction::insertOrIgnore([

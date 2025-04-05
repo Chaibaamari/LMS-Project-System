@@ -32,12 +32,12 @@ const PageContentError: React.FC<{ title: string; status: string; message: strin
                             <ArrowLeft size={18} />
                             Go Back
                         </button>
-                        <Link to="/homePage">
+                        <Link to="/">
                         <button
                             className="flex items-center justify-center gap-2 px-4 py-2 bg-sonatrachColor text-white rounded-md hover:bg-red-700 transition-colors"
                         >
                             <HomeIcon size={18} />
-                            Return Home
+                            Login
                         </button>
                         </Link>
                     </div>

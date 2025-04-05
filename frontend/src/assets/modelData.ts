@@ -122,7 +122,7 @@ export type FieldConfigPlan = {
     name: keyof PlanPrevision; // Name of the field (used for form data)
     label: string; // Label for the field
     placeholder?: string; // Optional placeholder text
-    options?: { value: string; label: string }[]; // Options for select fields
+    options?: { value: string; label: string; }[];
 };
 // Define sort direction type
 export type SortDirection = "asc" | "desc" | null
@@ -138,7 +138,7 @@ export const fields: FieldConfig[] = [
     { type: "input", name: "prenomnom", label: "Nom & Prénom" },
     { type: "date", name: "Date_Naissance", label: "Date de Naissance" },
     { type: "date", name: "Date_Recrutement", label: "Date de Recrutement" },
-    { type: "number", name: "CodeFonction", label: "Code Fonction" },
+    { type: "input", name: "CodeFonction", label: "Code Fonction" },
     { type: "input", name: "Echelle", label: "Echelle (degree)" },
     { type: "input", name: "Id_direction", label: "Direction" },
     {

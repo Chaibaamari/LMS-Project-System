@@ -30,7 +30,7 @@ class StoreEmployeeRequest extends FormRequest
             'Date_Recrutement' => 'required ',
             'Sexe' => ['required ', Rule::in(['M', 'F'])],
             'CSP' => ['required ', Rule::in(['Exécution', 'Maîtrise', 'Cadre'])],
-            'CodeFonction' =>  ' required | integer  ',
+            'CodeFonction' =>  ' required | max:50',
             'Id_direction' => 'required | max:50',
             'Echelle' => 'required | max:50',
         ];

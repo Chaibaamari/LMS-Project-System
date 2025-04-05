@@ -21,9 +21,9 @@ import { Users} from "@/assets/modelData";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "../ui/input";
 import { useTableControls } from "@/hooks/useTableControls";
-import { Pagination } from "../pagination";
+import { Pagination } from "../Tools/pagination";
 import { calculateAge, calculeAnciennete, getAuthToken } from "@/util/Auth";
-import { DynamicSearch } from "../Search";
+import { DynamicSearch } from "../Tools/Search";
 import { useDispatch } from "react-redux";
 import { EmployeeActions } from "@/store/EmployesSlice";
 
@@ -176,7 +176,6 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                 ? prev.filter((rowId) => rowId !== Matricule)
                 : [...prev, Matricule]
         );
-        console.log(selectedRows);
     };
 
     
@@ -209,7 +208,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     return (
         <TableHead className="cursor-pointer select-none" onClick={() => handleSort(column)}>
             <div className="flex items-center justify-between">
-                <div className="flex items-center text-center text-xs text-center font-medium ">
+                <div className="flex items-center  text-xs text-center font-medium ">
                     {label}
                     {renderSortIndicator(column)}
                 </div>
@@ -288,7 +287,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                 <div className="flex items-center gap-2">
                     {selectedRows.length > 0 && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span className="text-sm font-medium">{selectedRows.length} selected</span>
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">{selectedRows.length} selected</span>
                         </div>
                     )}
                     <Button variant="outline" size="sm" onClick={resetFilters}>

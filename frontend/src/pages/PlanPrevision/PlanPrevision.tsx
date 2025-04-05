@@ -15,6 +15,13 @@ export default function PlanPrevision() {
     const { IsVisible, status, message } = useSelector((state: RootState) => state.PlanPrevision.notification);
     const token = getAuthToken();  
     useEffect(() => {
+        if (IsVisible) {
+            setTimeout(() => {
+                dispatch(PrevisionActions.ClearNotification());
+            }, 8000);
+        }
+    }, [dispatch, IsVisible]);
+    useEffect(() => {
         const SendEmployeData = async () => {
             dispatch(PrevisionActions.ShowNotificationRefrech(true));
             const response = await fetch("http://127.0.0.1:8000/api/previsions", {
@@ -31,13 +38,6 @@ export default function PlanPrevision() {
         }
         SendEmployeData()
     }, [token, dispatch , refrchData]);
-    useEffect(() => {
-        if (IsVisible) {
-            setTimeout(() => {
-                dispatch(PrevisionActions.ClearNotification());
-            }, 5000);
-        }
-    }, [dispatch, IsVisible]);
     const getNotificationStyle = () => {
         switch (status) {
             case 'pending':

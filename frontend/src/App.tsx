@@ -1,15 +1,15 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home  from './pages/Home'
-import LoginPage from "./pages/Login";
-import { action as loginAction } from "./pages/Login";
-import { action as LogoutAction} from './pages/Logout'
+import LoginPage from "./pages/JWT/Login";
+import { action as loginAction } from "./pages/JWT/Login";
+import { action as LogoutAction} from './pages/JWT/Logout'
 import PageError from "./pages/Error/pageError";
 import { LoadToken, ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
 import PlanPrevision from "./pages/PlanPrevision/PlanPrevision";
 import PlanNotifie from "./pages/PlanNotifie";
 import BonCommand from "./pages/BonCommand";
-import Settings from "./pages/Settings";
+import Settings from "./pages/JWT/Settings";
 import Employee from "./pages/Employe/Employe-Section";
 import Direction from "./pages/direction-Section";
 import EmployeFormUpdate from "./pages/Employe/Employe-Form";

@@ -1,5 +1,5 @@
 import { fields, User } from "@/assets/modelData";
-import { DynamicInsertForm } from "@/components/InsertForm";
+import { DynamicInsertForm } from "@/components/Tools/InsertForm";
 import { getAuthToken } from "@/util/Auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";

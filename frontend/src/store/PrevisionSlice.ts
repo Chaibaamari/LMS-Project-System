@@ -12,7 +12,11 @@ interface PlanPrevisionState {
     }
     IsLoading:boolean,
     refrechData: boolean,
-    ListeIntitulAction : string[],
+    // ListeIntitulAction: {
+    //     value: string;
+    //     label: string;
+    // }[],
+    ListeIntitulAction: [],
 }
 
 const initialState: PlanPrevisionState = {

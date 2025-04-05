@@ -30,6 +30,12 @@ function PageError() {
                 status: "422",
                 message: error.data.message,
             }));
+        } else if (error?.status === 401) {
+            dispatch(ErrorActions.ShowNotification({
+                title: "Unauthorized",
+                status: "401",
+                message: "You are not authorized to access this resource.",
+            }));
         }
     }, [dispatch, error]);
 

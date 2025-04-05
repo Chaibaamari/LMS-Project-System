@@ -1,5 +1,5 @@
 import { FieldConfigPlan } from "@/assets/modelData";
-import { DynamicInsertForm } from "@/components/InsertForm";
+import { DynamicInsertForm } from "@/components/Tools/InsertForm";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { PrevisionActions } from "@/store/PrevisionSlice";
 import { getAuthToken } from "@/util/Auth";
@@ -11,6 +11,10 @@ export default function EmployeFormInsert() {
     const navigate = useNavigate();
     const token = getAuthToken();
     const dispatch = useDispatch<AppDispatch>();
+//     interface FormationOption {
+//     value: string;
+//     label: string;
+// }
     const Formation = useSelector((state: RootState) => state.PlanPrevision.ListeIntitulAction);
     useEffect(() => {
         const fetchAllFormation = async () => {
@@ -23,6 +27,7 @@ export default function EmployeFormInsert() {
                 }
             });
             const data = await response.json();
+
             dispatch(PrevisionActions.GetAllFormation(data.Formation))
         }
         fetchAllFormation()
@@ -44,17 +49,44 @@ export default function EmployeFormInsert() {
             type: "select",
             name: "Intitule_Action",
             label: "Formation",
+            // options: [
+            //     // Use a special value like "null" instead of empty string
+            //     { id : 0 ,  value: "null", label: "Select a formation" },
+            //     ...Formation.map((formation: FormationOption) => ({
+            //         id: formation.id,
+            //         value: formation.value,
+            //         label: formation.label,
+            //     }))
+            // ]
             options: Formation.map(intitule => ({
                 value: intitule,
                 label: intitule
             }))
+
         },
     ];
+    // <option value="">Select a formation</option>
+    //     {formations.map((formation, index) => (
+    //       <option 
+    //         key={index} 
+    //         value={formation.Intitule_Action}
+    //       >
+    //         {formation.Intitule_Action} - {formation.Nom_Organisme} ({formation.Lieu_Formation})
+    //       </option>
+    //     ))}
     const handleInputChange = (name: keyof typeof editFormData, value: string) => {
         setEditFormData((prev) => ({ ...prev, [name]: value }))
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        if (editFormData.Intitule_Action === "null" || !editFormData.Intitule_Action) {
+        dispatch(PrevisionActions.ShowNotification({
+            IsVisible: true,
+            status: 'failed',
+            message: 'Please select a valid formation'
+        }));
+        return;
+    }
         try {
             event.preventDefault();
             dispatch(PrevisionActions.ShowNotification({
@@ -96,6 +128,7 @@ export default function EmployeFormInsert() {
                 status: 'failed',
                 message: err || "Erreur lors de la création de la prévision"
             }));
+            return navigate('/homePage/PlanPrevision');
         }
     };
     return (
