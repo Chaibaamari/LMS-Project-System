@@ -117,6 +117,7 @@ class PlanController extends Controller
 
     public function getPlanPV(string $ID_N)
     {
+
         $plan = Plan::where('ID_N', $ID_N)->first();
         return response()->json([
             'data' => $plan,
@@ -128,13 +129,10 @@ class PlanController extends Controller
     public function prevmodify(Request $request)
     {
 
-        $id = $request->input('id_n');
+        $id = $request->input('ID_N');
         Plan::where('ID_N', $id)->update([
-            'Matricule' => $request->input('matricule'),
-            'ID_Formation' => $request->input('id_formation'),
+            'ID_Formation' => $request->input('ID_Formation'),
         ]);
-
-
 
         return response()->json(['message' => 'previsions modifié']);
     }

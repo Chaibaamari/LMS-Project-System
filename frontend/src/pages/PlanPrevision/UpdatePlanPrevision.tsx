@@ -89,8 +89,13 @@ export default function PlanPrevisionFormUpdate() {
         }
 
         const data = await response.json();
-        console.log('Update successful:', data.success);
-        navigate('/homePage/Employee')
+        console.log('Update successful:', data);
+        dispatch(PrevisionActions.ShowNotification({
+            IsVisible: true,
+            status: "success",
+            message: data.message,
+        }));
+        navigate('/homePage/planPrevision');
     };
     useEffect(() => {
         const fetchData = async () => {
