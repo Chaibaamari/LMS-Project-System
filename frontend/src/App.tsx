@@ -12,9 +12,10 @@ import BonCommand from "./pages/BonCommand";
 import Settings from "./pages/JWT/Settings";
 import Employee from "./pages/Employe/Employe-Section";
 import Direction from "./pages/direction-Section";
-import EmployeFormUpdate from "./pages/Employe/Employe-Form";
+import EmployeFormUpdate from "./pages/Employe/UpdateEmploye";
 import EmployeFormInsert from "./pages/Employe/InsertEmploye";
 import InsertPrevision from "./pages/PlanPrevision/InsertPrevision";
+import PlanPrevisionFormUpdate from "./pages/PlanPrevision/UpdatePlanPrevision";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -28,7 +29,6 @@ export default function App() {
           element: <Sidebar />,
           id:"root",
           loader: LoadToken,
-          // loader: ProtectedRoute,
           children: [
             { index: true, element: <Home /> , loader: ProtectedRoute },
             { path: 'Employee', element: <Employee /> , loader: ProtectedRoute },
@@ -40,6 +40,7 @@ export default function App() {
           ]
         },
         { path: 'Emp/update/:matricule', element: <EmployeFormUpdate /> , loader: ProtectedRoute },
+        { path: 'prev/update/:ID_N', element: <PlanPrevisionFormUpdate /> , loader: ProtectedRoute },
         { path: 'Emp/insert', element: <EmployeFormInsert /> ,  loader: ProtectedRoute },
         { path: 'PrevPlan/insert', element: <InsertPrevision /> ,  loader: ProtectedRoute },
         { path: "logout", action: LogoutAction }

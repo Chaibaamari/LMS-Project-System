@@ -123,7 +123,7 @@ export type FieldConfigPlan = {
     name: keyof PlanPrevision; // Name of the field (used for form data)
     label: string; // Label for the field
     placeholder?: string; // Optional placeholder text
-    options?: { value: string; label: string; }[];
+    options?: { value: number; label: string; }[];
 };
 // Define sort direction type
 export type SortDirection = "asc" | "desc" | null

@@ -14,10 +14,19 @@ class ImportContoller extends Controller
     //
     public function previmport(Request $request)
     {
+        try {
+            Excel::import(new PrevImport, $request->file('previsions'));
 
-        Excel::import(new PrevImport, request()->file('previsions'));
-
-        return response()->json(['message' => 'PV Data received successfully!']);
+            return response()->json([
+                'success' => true,
+                'message' => 'Importation des données PV réussie !'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'importation du fichier : ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function notifieimport(Request $request)

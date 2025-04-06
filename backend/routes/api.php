@@ -7,6 +7,7 @@ use App\Http\Controllers\FormationController;
 use App\Http\Controllers\ImportContoller;
 use App\Http\Controllers\JWTAuthController;
 use App\Http\Controllers\PlanController;
+use App\Http\Controllers\StatistiqueController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -54,7 +55,8 @@ Route::post('login', [JWTAuthController::class, 'login']);
         Route::get('/export', [ImportContoller::class, 'prevexport']);
         Route::get('/', [PlanController::class, 'consultprev']);
         Route::post('/add', [PlanController::class, 'prevadd']);
-        Route::post('/modify', [PlanController::class, 'prevmodify']);
+        Route::get('/modify/{ID_N}', [PlanController::class, 'getPlanPV']);
+        Route::put('/modify/{ID_N}', [PlanController::class, 'prevmodify']);
         Route::delete('/delete/{id}', [PlanController::class, 'destroy']);
         Route::delete('/delete-multiple', [PlanController::class, 'destroyMultiple']);
     });
@@ -71,7 +73,10 @@ Route::post('login', [JWTAuthController::class, 'login']);
 //});
 
 
-
+// statistique
+    Route::get('Role', [StatistiqueController::class, 'StRole']);
+    Route::get('PrévisionsTotal', [StatistiqueController::class, 'StPrvtotal']);
+    Route::get('Prévisions', [StatistiqueController::class, 'StPrv']);
 
     Route::post('createBC', [PlanController::class, 'createBC']);
 

@@ -26,9 +26,20 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select field" />
                     </SelectTrigger>
-                    <SelectContent>
+                    {/* <SelectContent>
                         {fields.map((field) => (
-                            <SelectItem key={field.name} value={field.name}>
+                            <SelectItem key={field.name} value={field.name} className=" text-red-800">
+                                {field.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent> */}
+                    <SelectContent className="bg-white border-gray-200 shadow-lg">
+                        {fields.map((field) => (
+                            <SelectItem
+                                key={field.name}
+                                value={field.name}
+                                className=" hover:bg-[#fff5e6]  focus:bg-[#fff5e6]  data-[state=checked]:bg-[#ffebcc] data-[state=checked]:text-[#994f00]"
+                            >
                                 {field.label}
                             </SelectItem>
                         ))}
@@ -36,18 +47,18 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
                 </Select>
             </div>
             <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-                placeholder="Search Employee..."
-                value={searchTerm}
-                className="pl-8 w-full border-none outline-none shadow-none"
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                        handleSearch();
-                    }
-                }}
-            />
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder="Search Employee..."
+                    value={searchTerm}
+                    className="pl-8 w-full border-none outline-none shadow-none"
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
+                />
             </div>
         </div>
     );
