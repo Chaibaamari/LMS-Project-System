@@ -74,28 +74,34 @@ React.useEffect(() => {
       return res.json();
     })
     .then((res) => {
-      const data = res.data; // <-- هنا نأخذ الـ data من داخل الـ response
+      let data = res.data; // <-- هنا نأخذ الـ data من داخل الـ response
       const transformed = data.map((item:RoleDataItem) => ({
-        browser: item.etat,                // اسم الفئة
+        etat: item.etat,                // اسم الفئة
         Employé: item.count,              // عدد الموظفين
         fill: getColor(item.etat),         // لون الفئة
       }));
       setChartData(transformed);
     })
     .catch((err) => console.error("خطأ أثناء جلب البيانات:", err));
-}, []);
-
-
-    const totalEmployé = React.useMemo(() => {
-        return chartData.reduce((acc, curr) => acc + curr.Employé,0)
-      }, [chartData])
+  }, []);
+  
+  
+  const totalEmployé = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.Employé,0)
+  }, [chartData])
     return (
+
         <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
-                <CardTitle>Les Statistiques Des Prévisions </CardTitle>
+                <CardTitle>Les Statistiques Des Prévisions Total </CardTitle>
                 <CardDescription> <CurrentMonth /> </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
+            {chartData.length === 0 ? (
+              <div className="flex h-[250px] items-center justify-center text-muted-foreground text-sm">
+                لا توجد بيانات لعرضها.
+              </div>
+              ) : (
                 <ChartContainer
                     config={chartConfig}
                     className="mx-auto aspect-square max-h-[250px]"
@@ -108,7 +114,7 @@ React.useEffect(() => {
                         <Pie
                             data={chartData}
                             dataKey="Employé"
-                            nameKey="browser"
+                            nameKey="etat"
                             innerRadius={60}
                             strokeWidth={5}
                         >
@@ -144,6 +150,7 @@ React.useEffect(() => {
                         </Pie>
                     </PieChart>
                 </ChartContainer>
+                )}
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
                 <div className="flex items-center gap-2 font-medium leading-none">

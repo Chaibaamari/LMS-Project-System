@@ -57,9 +57,9 @@ const [chartData, setChartData] = React.useState<{ browser: string; Employé: nu
   // دالة ترجع لون لكل فئة
   const getColor = (category: string) => {
     switch (category) {
-      case "C":
+      case "Cadre":
         return "var(--color-chrome)";
-      case "M":
+      case "Maîtrise":
         return "var(--color-safari)";
       case "Exécution":
         return "var(--color-firefox)";
@@ -76,9 +76,12 @@ React.useEffect(() => {
       return res.json();
     })
     .then((res) => {
-      const data = res.data; // <-- هنا نأخذ الـ data من داخل الـ response
+      let data = res.data;
+      if (data.length === 0) { // إذا كانت البيانات فارغة
+        console.log("لا توجد بيانات للعرض")
+      } // <-- هنا نأخذ الـ data من داخل الـ response
       const transformed = data.map((item:RoleDataItem) => ({
-        browser: item.CSP,                // اسم الفئة
+        CSP: item.CSP,                // اسم الفئة
         Employé: item.count,              // عدد الموظفين
         fill: getColor(item.CSP),         // لون الفئة
       }));
@@ -110,7 +113,7 @@ React.useEffect(() => {
                         <Pie
                             data={chartData}
                             dataKey="Employé"
-                            nameKey="browser"
+                            nameKey="CSP"
                             innerRadius={60}
                             strokeWidth={5}
                             animationDuration={1000}

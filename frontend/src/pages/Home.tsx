@@ -10,40 +10,33 @@
 import Role from "../components/Role";
 import {Formation}  from "../components/Formation";
 import {Tabs, Tab, Card, CardBody} from "@heroui/react";
-import { SelectDemo } from "../components/filtering";
 import PrévisionsTotal from "../components/PrévisionsTotal";
+import Prévisions from "../components/Prévisions";
 
 
 
 export default function Home() {
-    const total: any[] = [
-        <Role />,
-        <br />,
-        <PrévisionsTotal />
-    ];
     const tabs = [
         {
             id: "total",
             label: "Les Statistiques Générales",
-            content: total
-        },
-        {
-            id: "prévision",
-            label: "Les Statistiques Des Prévisions",
             content: [
-                <SelectDemo />,
+                <Role />,
                 <br />,
                 <PrévisionsTotal />
             ]
         },
         {
+            id: "prévision",
+            label: "Les Statistiques Des Prévisions",
+            content: 
+                <Prévisions />
+        },
+        {
             id: "formation",
             label: "Les Statistiques Des Formations",
-            content: [
-                <SelectDemo />,
-                <br />,
+            content: 
                 <Formation />
-            ]
         },
     ];
     

@@ -4,6 +4,7 @@ import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
 import CurrentMonth from "./CurrentMonth"
+import { SelectDemo } from "../components/filtering"
 
 import {
   Card,
@@ -45,6 +46,12 @@ const chartConfig = {
 export function Formation() {
 
     return (
+        <>
+        <SelectDemo 
+            value="" 
+            onChange={(newValue) => console.log(newValue)} 
+        />
+        <br />
         <Card>
             <CardHeader>
                 <CardTitle>Les Statistique Des Formations</CardTitle>
@@ -105,5 +112,6 @@ export function Formation() {
                 </div>
             </CardFooter>
         </Card>
+        </>
     );
 }
