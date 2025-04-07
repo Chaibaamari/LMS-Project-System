@@ -8,7 +8,6 @@
 // }
 
 import Role from "../components/Role";
-import {Formation}  from "../components/Formation";
 import {Tabs, Tab, Card, CardBody} from "@heroui/react";
 import PrévisionsTotal from "../components/PrévisionsTotal";
 import Prévisions from "../components/Prévisions";
@@ -31,12 +30,6 @@ export default function Home() {
             label: "Les Statistiques Des Prévisions",
             content: 
                 <Prévisions />
-        },
-        {
-            id: "formation",
-            label: "Les Statistiques Des Formations",
-            content: 
-                <Formation />
         },
     ];
     
