@@ -22,7 +22,13 @@ class Plan extends Model
         'Frais_Pedagogiques',
         'Frais_Hebergement',
         'Frais_Transport',
-        'type',
+        'Type_Pension',
+        'Budget',
+        'Observation_pre_arbitrage',
+        'Observation_arbitrage',
+        'Autres_charges',
+        'Presalaire',
+        'Dont_Devise',
     ];
 
     protected $casts = [
@@ -35,10 +41,16 @@ class Plan extends Model
         'Matricule' => 'string', //
         'ID_Formation' => 'integer', //
         'Mode_Financement' => 'integer',
-        'Frais_Pedagogiques' => 'decimal:2',
-        'Frais_Hebergement' => 'decimal:2',
-        'Frais_Transport' => 'decimal:2',
-        'type'=>'string',
+        'Frais_Pedagogiques' => 'integer',
+        'Frais_Hebergement' => 'integer',
+        'Frais_Transport' => 'integer',
+        'Type_Pension'=>'string',
+        'Budget'=>'string',
+        'Observation_pre_arbitrage'=>'string',
+        'Observation_arbitrage'=>'string',
+        'Autres_charges'=>'integer',
+        'Presalaire'=>'integer',
+        'Dont_Devise'=>'integer',
     ];
 
     protected $primaryKey = 'ID_N';

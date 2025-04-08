@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('Fonctions', function (Blueprint $table) {
             $table->string('CodeFonction')->primary();
-            $table->string('TypeFonction' , 100);
+            $table->enum('TypeFonction' ,['FCM','FST','FSP'])->default('FCM');
             $table->text('IntituleFonction');
         });
     }

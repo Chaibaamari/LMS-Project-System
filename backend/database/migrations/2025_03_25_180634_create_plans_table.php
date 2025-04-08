@@ -21,11 +21,16 @@ return new class extends Migration
             $table->string('Matricule')->nullable();
             $table->unsignedBigInteger('ID_Formation')->nullable();
             $table->integer('Mode_Financement')->nullable();
-            $table->decimal('Frais_Pedagogiques', 8, 2)->nullable();
-            $table->decimal('Frais_Hebergement', 8, 2)->nullable();
-            $table->decimal('Frais_Transport', 8, 2)->nullable();
-            $table->string('type')->nullable();
-            // $table->string('Budget')->nullable();
+            $table->integer('Frais_Pedagogiques')->nullable();
+            $table->integer('Frais_Hebergement')->nullable();
+            $table->integer('Frais_Transport')->nullable();
+            $table->string('Type_Pension')->nullable();
+            $table->string('Budget')->nullable();
+            $table->string('Observation_pre_arbitrage')->nullable();
+            $table->string('Observation_arbitrage')->nullable();
+            $table->integer('Autres_charges')->nullable();
+            $table->integer('Presalaire')->nullable();
+            $table->integer('Dont_Devise')->nullable();
 
 
             $table->foreign('Matricule')->references('Matricule')->on('Employes')->onDelete('cascade');;

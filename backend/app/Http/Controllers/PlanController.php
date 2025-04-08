@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Plan\StorePlanRequest;
 use App\Models\Formation;
 use App\Models\Plan;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class PlanController extends Controller
         $ids = $request->input("ids");
         Plan::whereIn('ID_N', $ids)->update([
             'etat' => 'confirmé',
-            'type' => $request->input('type'),
+            'Budget' => $request->input('Budget'),
             'Date_Deb' => $request->input('date_deb'),
             'Date_fin' => $request->input('date_fin'),
 
@@ -170,7 +171,7 @@ class PlanController extends Controller
 
         return response()->json(['message' => 'plan notifié loaded succesfully', 'Plan' => $plans]);
     }
-    public function notifieadd(Request $request)
+    public function notifieadd(StorePlanRequest $request)
     {
         Plan::create([
             'etat' => 'validé',

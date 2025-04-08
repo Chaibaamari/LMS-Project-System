@@ -152,6 +152,11 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
                     'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
                     'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
                     'Frais_Transport'=>$row['frais_transport'],
+                    'observation_pre_arbitrage'=>$row['observation_pre_arbitrage'],
+                    'observation_arbitrage'=>$row['observation_arbitrage'],
+                    'Dont_Devise'=>$row['dont_devise'],
+                    'Presalaire'=>$row['presalaire'],
+                    'Autres_charges'=>$row['autres_charges'],
                 ]);
             } else {
                 Plan::create([
@@ -166,6 +171,11 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
                     'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
                     'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
                     'Frais_Transport'=>$row['frais_transport'],
+                    'Observation_pre_arbitrage'=>$row['observation_pre_arbitrage'],
+                    'Observation_arbitrage'=>$row['observation_arbitrage'],
+                    'Dont_Devise'=>$row['dont_devise'],
+                    'Presalaire'=>$row['presalaire'],
+                    'Autres_charges'=>$row['autres_charges'],
                 ]);
             }
         }
