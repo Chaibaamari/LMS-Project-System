@@ -64,13 +64,13 @@ class PlanController extends Controller
     {
         $validatedData = $request->validate([
             'Matricule' => 'required|string|exists:employes,Matricule',
-            'Intitule_Action' => 'required|string|exists:formations,Intitule_Action',
+            'ID_Formation' => 'required|exists:formations,ID_Formation',
             // Add other required fields if needed
         ]);
 
         try {
             // Find the formation to get its ID
-            $formation = Formation::where('Intitule_Action', $validatedData['Intitule_Action'])->firstOrFail();
+            $formation = Formation::where('ID_Formation', $validatedData['ID_Formation'])->firstOrFail();
             $existingPlan = Plan::where('Matricule', $validatedData['Matricule'])
                 ->where('ID_Formation', $formation->ID_Formation)
                 ->where('etat', 'prévision')
@@ -78,6 +78,7 @@ class PlanController extends Controller
 
             if ($existingPlan) {
                 return response()->json([
+                    'status' => 409,
                     'success' => false,
                     'message' => 'Une prévision existe déjà pour cet employé et cette formation'
                 ], 409);
@@ -94,17 +95,20 @@ class PlanController extends Controller
                 'formation.organisme'
             ]);
             return response()->json([
+                'status' => 201,
                 'success' => true,
                 'message' => 'Prévision ajoutée avec succès',
                 'data' => $plan
             ], 201);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
+                'status' => 404,
                 'success' => false,
                 'message' => 'Employé ou formation introuvable'
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
+                'status' => 500,
                 'success' => false,
                 'message' => 'Erreur lors de la création de la prévision',
                 'error' => $e->getMessage()
@@ -112,16 +116,24 @@ class PlanController extends Controller
         }
     }
 
+    public function getPlanPV(string $ID_N)
+    {
+
+        $plan = Plan::where('ID_N', $ID_N)->first();
+        return response()->json([
+            'data' => $plan,
+            'success' => true,
+            'message' => 'Employee updated successfully'
+        ]);
+    }
+
     public function prevmodify(Request $request)
     {
 
-        $id = $request->input('id_n');
+        $id = $request->input('ID_N');
         Plan::where('ID_N', $id)->update([
-            'Matricule' => $request->input('matricule'),
-            'ID_Formation' => $request->input('id_formation'),
+            'ID_Formation' => $request->input('ID_Formation'),
         ]);
-
-
 
         return response()->json(['message' => 'previsions modifié']);
     }

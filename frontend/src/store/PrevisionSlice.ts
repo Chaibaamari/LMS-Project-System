@@ -12,11 +12,10 @@ interface PlanPrevisionState {
     }
     IsLoading:boolean,
     refrechData: boolean,
-    // ListeIntitulAction: {
-    //     value: string;
-    //     label: string;
-    // }[],
-    ListeIntitulAction: [],
+    ListeIntitulAction: {
+        value: number;
+        label: string;
+    }[],
 }
 
 const initialState: PlanPrevisionState = {
@@ -28,7 +27,8 @@ const initialState: PlanPrevisionState = {
     },
     IsLoading : false,
     refrechData: false,
-    ListeIntitulAction : []
+    ListeIntitulAction:[],
+
 };
 
 const PrevisionPlanSlice = createSlice({
@@ -60,6 +60,12 @@ const PrevisionPlanSlice = createSlice({
             state.IsLoading = action.payload;
         },
         GetAllFormation(state, action) {
+            // state.ListeIntitulAction = [
+            //     {
+            //         value: action.payload.value,
+            //         label: action.payload.label,
+            //     }
+            // ];
             state.ListeIntitulAction = action.payload;
         }
     }

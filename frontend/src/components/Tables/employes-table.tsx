@@ -12,6 +12,7 @@ import {
   RotateCcw,
   Plus,
   Loader2,
+  SearchX,
 
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -418,9 +419,17 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={13} className="h-24 text-center">
-                                        Data Not Founde
-                                    </TableCell>
+                                <TableCell colSpan={15} className="h-40 text-center">
+                                    <div className="flex flex-col items-center justify-center space-y-3 py-6">
+                                        <div className="rounded-full bg-muted p-3">
+                                            <SearchX className="h-6 w-6 text-muted-foreground" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-base font-medium">No data available</p>
+                                            <p className="text-sm text-muted-foreground">No matching records found</p>
+                                        </div>
+                                    </div>
+                                </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

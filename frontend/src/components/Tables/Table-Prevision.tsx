@@ -2,11 +2,11 @@
 import { useMemo, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, Loader2 } from "lucide-react"
+import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, Loader2, SearchX } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import type { PlanPrevision, Users } from "@/assets/modelData"
+import type { PlanPrevision } from "@/assets/modelData"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "../ui/input"
 import { useTableControls } from "@/hooks/useTableControls"
@@ -24,6 +24,7 @@ interface PlanPrevisionTableProps {
 
 export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
   const [searchTerm, setSearchTerm] = useState("")
+  const navigate = useNavigate()
   const [searchField, setSearchField] = useState<keyof PlanPrevision>("Matricule")
   // pagination
   const [currentPage, setCurrentPage] = useState(1)
@@ -161,14 +162,21 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
           Authorization: `Bearer ${token}`,
         },
       })
+      const resData = await response.json();
       if (!response.ok) {
-        throw new Error("Failed to import prévisions")
+        PrevisionActions.ShowNotification({
+          IsVisible: true,
+          status: resData.success ? "success" : "failed",
+          message: resData.message,
+        });
+          return navigate("/homePage/PlanPrevision");
       }
+      
       dispatch(
         PrevisionActions.ShowNotification({
           IsVisible: true,
-          status: "success",
-          message: "PV Data imported successfully!",
+          status: resData.success ? "success" : "failed",
+          message: resData.message,
         }),
       )
       dispatch(PrevisionActions.ReferchLatestData(true))
@@ -291,7 +299,7 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
     }
     return null
   }
-  const handleSearch = (term: string, field: keyof Users) => {
+  const handleSearch = (term: string, field: keyof PlanPrevision) => {
     setSearchTerm(term)
     setSearchField(field)
   }
@@ -370,8 +378,11 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                     <DynamicSearch
                         fields={[
                             { name: "Matricule", label: "Matricule" },
-                            { name: "prenomnom", label: "Nom & Prénom" },
-                            // { name: "IntituleFonction", label: "IntituleFonction" },
+                            { name: "employe.prenomnom", label: "Nom & Prénom" },
+                            { name: "employe.fonction.IntituleFonction", label: "IntituleFonction" },
+                            { name: "formation.Intitule_Action", label: "IntituleAction" },
+                            { name: "formation.organisme.Lieu_Formation", label: "Lieu" },
+                            { name: "formation.organisme.Pays", label: "Pays" },
                             // Add other fields here
                         ]}
                         onSearch={handleSearch}
@@ -480,9 +491,10 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                 {renderColumnHeader("formation.Type_Formation", "Type Formation")}
                                 {renderColumnHeader("formation.Mode_Formation", "Mode Formation", [
                                     "PRESENTIEL",
-                                    "Blended",
+                                    "BLENDED",
                                     "OJT",
-                                    "E-learning",
+                                    "DISTANCIEL",
+                                    "E-LEARNING",
                                 ])}
                                 {renderColumnHeader("formation.Code_Domaine_Formation", "Code Domaine Formation")}
                                 {renderColumnHeader("formation.organisme.Code_Organisme", "Code Organisme", [
@@ -554,8 +566,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                         <TableCell className="text-center">{item.formation.organisme?.Code_Organisme ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.organisme?.Nom_Organisme ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.organisme?.Lieu_Formation ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation.organisme?.Pays ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation?.Heure_jour ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.organisme?.Pays}</TableCell>
+                                        <TableCell className="text-center">{item.formation?.Heure_jour }</TableCell>
                                         <TableCell className="text-center">{item.Frais_Pedagogiques ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Hebergement ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Transport ?? "—"}</TableCell>
@@ -572,7 +584,7 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <Link to={`/Emp/update/${item.ID_N}`}>
+                                                        <Link to={`/prev/update/${item.ID_N}`}>
                                                             <DropdownMenuItem>
                                                                 <Pencil className="h-4 w-4 mr-2" />
                                                                 Edit
@@ -593,9 +605,17 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={13} className="h-24 text-center">
-                                        Data Not Founde
-                                    </TableCell>
+                                <TableCell colSpan={20} className="h-40 text-center">
+                                    <div className="flex flex-col items-center justify-center space-y-3 py-6">
+                                        <div className="rounded-full bg-muted p-3">
+                                            <SearchX className="h-6 w-6 text-muted-foreground" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <p className="text-base font-medium">No data available</p>
+                                            <p className="text-sm text-muted-foreground">No matching records found</p>
+                                        </div>
+                                    </div>
+                                </TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
