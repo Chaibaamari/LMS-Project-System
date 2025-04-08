@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import EmployeeSlice from './EmployesSlice';
 import PrevisionPlanSlice from './PrevisionSlice';
 import ErrorPageSlice from './ErrorSlice';
+import PlanNotifeeSlice from './NotifeSlice';
 
 
 
@@ -10,7 +11,7 @@ export const store = configureStore({
         employees: EmployeeSlice.reducer,
         PlanPrevision: PrevisionPlanSlice.reducer,
         Errors : ErrorPageSlice.reducer,
-        // Add other reducers here as needed
+        PlanNotifee : PlanNotifeeSlice.reducer,
     }
 });
 export type RootState = ReturnType<typeof store.getState>;

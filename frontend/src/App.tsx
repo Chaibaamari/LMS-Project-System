@@ -7,7 +7,7 @@ import PageError from "./pages/Error/pageError";
 import { LoadToken, ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
 import PlanPrevision from "./pages/PlanPrevision/PlanPrevision";
-import PlanNotifie from "./pages/PlanNotifie";
+import PlanNotifie from "./pages/PlanNotifé/PlanNotifie";
 import BonCommand from "./pages/BonCommand";
 import Settings from "./pages/JWT/Settings";
 import Employee from "./pages/Employe/Employe-Section";

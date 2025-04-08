@@ -74,6 +74,25 @@ export interface PlanPrevision extends Record<string, unknown> {
     formation: Formation;
 }
 
+export interface PlanNotifee extends Record<string, unknown>{
+    ID_N: number;
+    etat: string;
+    Observation: string | null;
+    Date: string | null;
+    Date_Deb: string | null;
+    Date_fin: string | null;
+    Budget: string | null;
+    Matricule: string;
+    ID_Formation: number;
+    Mode_Financement: string | null;
+    Frais_Pedagogiques: number | null;
+    Frais_Hebergement: number | null;
+    Frais_Transport: number | null;
+    type: string | null;
+    employe: Employe;
+    formation: Formation;
+}
+
 
 
 export type Users = {

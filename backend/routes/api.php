@@ -66,8 +66,8 @@ Route::post('login', [JWTAuthController::class, 'login']);
         Route::get('/export', [ImportContoller::class, 'notifieexport']);
         Route::get('/', [PlanController::class, 'consultnotifie']);
         Route::post('/add', [PlanController::class, 'notifieadd']);
+        Route::get('/modify/{ID_N}', [PlanController::class, 'getPlanNT']);
         Route::post('/modify', [PlanController::class, 'notifiemodify']);
-        Route::post('/delete', [PlanController::class, 'notifiedelete']);
     });
 
 //});

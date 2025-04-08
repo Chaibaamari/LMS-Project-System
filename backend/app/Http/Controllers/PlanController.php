@@ -213,11 +213,4 @@ class PlanController extends Controller
 
         return response()->json(['message' => 'notifié modifié']);
     }
-    public function notifiedelete(Request $request)
-    {
-        $id = $request->input('id_n');
-        Plan::where('ID_N', $id)->delete();
-
-        return response()->json(['message' => 'notifié supprimé']);
-    }
 }
