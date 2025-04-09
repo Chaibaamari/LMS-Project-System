@@ -101,6 +101,11 @@ React.useEffect(() => {
                 <CardDescription> <CurrentMonth /> </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 pb-0">
+            {chartData.length === 0 ? (
+            <div className="flex h-[250px] items-center justify-center text-muted-foreground text-sm">
+              لا توجد بيانات لعرضها.
+            </div>
+            ) : (
                 <ChartContainer
                     config={chartConfig}
                     className="mx-auto aspect-square max-h-[250px]"
@@ -150,6 +155,7 @@ React.useEffect(() => {
                         </Pie>
                     </PieChart>
                 </ChartContainer>
+              )}
             </CardContent>
             <CardFooter className="flex-col gap-2 text-sm">
                 <div className="flex items-center gap-2 font-medium leading-none">
