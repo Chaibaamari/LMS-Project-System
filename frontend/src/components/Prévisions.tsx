@@ -45,7 +45,7 @@ const getCurrentMonth = () => {
 
 export default function Prévisions() {
   const [chartData, setChartData] = React.useState<
-    { label: string; Employé: number; fill: string }[]
+    { label: string; Prévision: number; fill: string }[]
   >([])
   const [selectedMonth, setSelectedMonth] = React.useState<string>(getCurrentMonth())
 
@@ -80,19 +80,19 @@ export default function Prévisions() {
 
           return {
             label: `${item.etat} - ${category}`,
-            Employé: item.count,
+            Prévision: item.count,
             fill: getColorByEtatAndCategory(item.etat, category),
           }
         })
-
+        
         // ✅ دمج العناصر المتشابهة (نفس التسمية)
-        const merged: { [key: string]: { Employé: number; fill: string } } = {}
+        const merged: { [key: string]: { Prévision: number; fill: string } } = {}
         for (const item of categorized) {
           if (!item.label) continue
           if (merged[item.label]) {
-            merged[item.label].Employé += item.Employé
+            merged[item.label].Prévision += item.Prévision
           } else {
-            merged[item.label] = { Employé: item.Employé, fill: item.fill }
+            merged[item.label] = { Prévision: item.Prévision, fill: item.fill }
           }
         }
 
@@ -106,8 +106,8 @@ export default function Prévisions() {
       .catch((err) => console.error("خطأ أثناء جلب البيانات:", err))
   }, [selectedMonth])
 
-  const totalEmployé = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.Employé, 0)
+  const totalPrévision = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.Prévision,0)
   }, [chartData])
 
   return (
@@ -138,7 +138,7 @@ export default function Prévisions() {
             >
               <PieChart>
                 <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                <Pie data={chartData} dataKey="Employé" nameKey="label" innerRadius={60} strokeWidth={5}>
+                <Pie data={chartData} dataKey="Prévision" nameKey="label" innerRadius={60} strokeWidth={5}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
@@ -157,7 +157,7 @@ export default function Prévisions() {
                               y={viewBox.cy}
                               className="fill-foreground text-3xl font-bold"
                             >
-                              {totalEmployé.toLocaleString()}
+                              {totalPrévision.toLocaleString()}
                             </tspan>
                             <tspan
                               x={viewBox.cx}

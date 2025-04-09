@@ -90,7 +90,6 @@ React.useEffect(() => {
     .catch((err) => console.error("خطأ أثناء جلب البيانات:", err));
 }, []);
 
-
     const totalEmployé = React.useMemo(() => {
         return chartData.reduce((acc, curr) => acc + curr.Employé,0)
       }, [chartData])
@@ -121,7 +120,7 @@ React.useEffect(() => {
                             nameKey="CSP"
                             innerRadius={60}
                             strokeWidth={5}
-                            animationDuration={1000}
+                            animationDuration={800}
                         >
                             <Label
                                 content={({ viewBox }) => {
