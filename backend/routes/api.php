@@ -8,7 +8,6 @@ use App\Http\Controllers\ImportContoller;
 use App\Http\Controllers\JWTAuthController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\StatistiqueController;
-use App\Http\Controllers\SettingsController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -73,8 +72,6 @@ Route::post('login', [JWTAuthController::class, 'login']);
 
 //});
 
-// Settings
-    Route::get('/Settings', [SettingsController::class, 'store']);
 
 // statistique
     Route::get('Role', [StatistiqueController::class, 'StRole']);
