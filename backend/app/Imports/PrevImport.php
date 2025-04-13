@@ -151,6 +151,8 @@ class PrevImport implements ToCollection, WithHeadingRow
                     'Id_direction' => $row['direction'],
                 ]);
 
+                $plan=Plan::where('Matricule',$row['matricule'])->where('ID_Formation',$formation->ID_Formation)->first();
+                if(!$plan){
                 Plan::create([
                     'etat' => 'prévision',
                     /*'Observation'=>$row['observation'],
@@ -164,6 +166,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                 'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
                 'Frais_Transport'=>$row['frais_transport'],*/
                 ]);
+                }
             }
             DB::commit();
             

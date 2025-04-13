@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\StoreUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -86,5 +87,28 @@ class JWTAuthController extends Controller
     {
         $user = User::count();
         return response()->json(compact('user'));
+    }
+
+    public function createUser(StoreUserRequest $request)
+    {
+        $validated = $request->validated();
+        $user = User::create($validated);
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json(compact('user', 'token'), 201);
+    }
+
+    public function activateUser($id)
+    {
+        $user = User::find($id)->update([
+            'active' => True]);
+        return response()->json(['message' => 'User Activated Successfully']);
+    }
+
+    public function deactivateUser($id)
+    {
+        $user = User::find($id)->update([
+            'active' => False]);
+        return response()->json(['message' => 'User Dectivated Successfully']);
     }
 }

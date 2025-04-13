@@ -21,6 +21,11 @@ Route::post('login', [JWTAuthController::class, 'login']);
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
+    Route::post('createUser', [JWTAuthController::class, 'createUser']);
+    Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
+    Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
+
+
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {

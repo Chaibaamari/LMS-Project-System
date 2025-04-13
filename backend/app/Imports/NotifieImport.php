@@ -140,7 +140,7 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
                 'Id_direction'=>$row['unitecomplexedirection_regionalegroupement'],
             ]);
 
-            $plan=Plan::where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first();
+            $plan=Plan::where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first(); //where etat prevision
             if ($plan) {
                 $plan->update([
                     'etat'=>'validé',
