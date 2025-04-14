@@ -220,4 +220,5 @@ class PlanController extends Controller
 
         return response()->json(['message' => 'notifié supprimé']);
     }
+    
 }

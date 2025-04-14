@@ -84,6 +84,8 @@ Route::post('login', [JWTAuthController::class, 'login']);
     Route::get('Prévisions', [StatistiqueController::class, 'StPrv']);
 
     Route::post('createBC', [PlanController::class, 'createBC']);
+    Route::post('createDC', [ImportContoller::class, 'createDC']);
+    
 
     Route::post('bonCommand', [PlanController::class,'consultBC']);
 

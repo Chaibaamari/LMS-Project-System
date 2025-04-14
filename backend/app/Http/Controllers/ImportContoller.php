@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DemandeConfirmationExport;
 use App\Exports\NotifieExport;
 use App\Exports\PrevExport;
 use App\Imports\NotifieImport;
@@ -45,6 +46,13 @@ class ImportContoller extends Controller
     public function Notifieexport()
     {
         return Excel::download(new NotifieExport, 'plannotifieexporté.xlsx');
+    }
+
+    public function createDC(Request $request)
+    {
+        $ids = $request->input('ids');
+        return Excel::download(new DemandeConfirmationExport($ids), 'demandedeconfirmation.xlsx');
+
     }
 
 }

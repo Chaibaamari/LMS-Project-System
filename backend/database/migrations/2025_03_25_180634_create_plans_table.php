@@ -18,8 +18,8 @@ return new class extends Migration
             $table->date('Date')->nullable();
             $table->date('Date_Deb')->nullable();
             $table->date('Date_fin')->nullable();
-            $table->string('Matricule')->nullable();
-            $table->unsignedBigInteger('ID_Formation')->nullable();
+            $table->string('Matricule');
+            $table->unsignedBigInteger('ID_Formation');
             $table->integer('Mode_Financement')->nullable();
             $table->integer('Frais_Pedagogiques')->nullable();
             $table->integer('Frais_Hebergement')->nullable();
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->integer('Autres_charges')->nullable();
             $table->integer('Presalaire')->nullable();
             $table->integer('Dont_Devise')->nullable();
+            $table->integer('Exercice')->nullable();
 
 
             $table->foreign('Matricule')->references('Matricule')->on('Employes')->onDelete('cascade');;
