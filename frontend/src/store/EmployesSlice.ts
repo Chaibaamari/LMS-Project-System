@@ -5,22 +5,24 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface EmployeesState {
     employees: Users[];
-    notificationDelete: {
+    notification: {
         IsVisible:boolean,
         status: string,
         message : string,
     }
-    refrechData:boolean,
+    refrechData: boolean,
+    IsLoading:boolean,
 }
 
 const initialState: EmployeesState = {
     employees: [],
-    notificationDelete: {
+    notification: {
         IsVisible : false,
         status: '',
         message:'',
     },
-    refrechData :false,
+    refrechData: false,
+    IsLoading : false,
 };
 
 const EmployeeSlice = createSlice({
@@ -30,20 +32,23 @@ const EmployeeSlice = createSlice({
         FetchDataEmployee(state, action) {
             state.employees = action.payload;
         },
-        ShowNotificationDelete(state, action) {
-            state.notificationDelete = {
+        ShowNotification(state, action) {
+            state.notification = {
                 IsVisible : action.payload.IsVisible,
                 status: action.payload.status,
                 message : action.payload.message,
             }
         },
-        ClearNotificationDelete(state) {
-            state.notificationDelete = {
+        ClearNotification(state) {
+            state.notification = {
                 IsVisible : false,
                 status: '',
                 message : '',
             }
             state.refrechData = false
+        },
+        ShowNotificationRefrech(state , action) {
+            state.IsLoading = action.payload;
         },
         ReferchLatestData(state , action) {
             state.refrechData = action.payload.refrechData

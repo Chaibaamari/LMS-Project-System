@@ -28,30 +28,30 @@ class StatistiqueController extends Controller
             ->get();
         return response()->json(['message' => 'success', 'data' => $Prvt], 200);
     }
-        public function StPrv(Request $request)
-        {
-            $month = $request->query('month'); // مثال: "2025-04"
-            if (!$month) {
-                $month = now()->format('Y-m'); // الشهر الحالي
-            }
-        
-            // نحسب أول وآخر يوم في الشهر
-            $startOfMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
-            $endOfMonth = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
-        
-            $data = DB::table('plans')
-                ->selectRaw('etat, Date_Deb, Date_fin, count(*) as count')
-                ->where(function($query) use ($startOfMonth, $endOfMonth) {
-                    $query->whereBetween('Date_Deb', [$startOfMonth, $endOfMonth])
-                          ->orWhereBetween('Date_fin', [$startOfMonth, $endOfMonth])
-                          ->orWhere(function ($q) use ($startOfMonth, $endOfMonth) {
-                              $q->where('Date_Deb', '<=', $startOfMonth)
-                                ->where('Date_fin', '>=', $endOfMonth);
-                          });
-                })
-                ->groupBy('etat', 'Date_Deb', 'Date_fin')
-                ->get();
-            
-            return response()->json(['data' => $data]);
+    public function StPrv(Request $request)
+    {
+        $month = $request->query('month'); // مثال: "2025-04"
+        if (!$month) {
+            $month = now()->format('Y-m'); // الشهر الحالي
         }
-}   
+
+        // نحسب أول وآخر يوم في الشهر
+        $startOfMonth = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $endOfMonth = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
+
+        $data = DB::table('plans')
+            ->selectRaw('etat, Date_Deb, Date_fin, count(*) as count')
+            ->where(function ($query) use ($startOfMonth, $endOfMonth) {
+                $query->whereBetween('Date_Deb', [$startOfMonth, $endOfMonth])
+                    ->orWhereBetween('Date_fin', [$startOfMonth, $endOfMonth])
+                    ->orWhere(function ($q) use ($startOfMonth, $endOfMonth) {
+                        $q->where('Date_Deb', '<=', $startOfMonth)
+                            ->where('Date_fin', '>=', $endOfMonth);
+                    });
+            })
+            ->groupBy('etat', 'Date_Deb', 'Date_fin')
+            ->get();
+
+        return response()->json(['data' => $data]);
+    }
+}

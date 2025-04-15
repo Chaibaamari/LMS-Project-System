@@ -39,7 +39,7 @@ export default function PlanNotifie() {
             dispatch(NotifeeActions.ShowNotificationRefrech(false));
         }
         SendEmployeData()
-    }, [token, dispatch , refrchData]);
+    }, [token, dispatch, refrchData]);
     const getNotificationStyle = () => {
         switch (status) {
             case 'pending':

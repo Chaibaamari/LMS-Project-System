@@ -31,10 +31,19 @@ class ImportContoller extends Controller
 
     public function notifieimport(Request $request)
     {
+        try {
+            Excel::import(new NotifieImport, request()->file('plan'));
 
-        Excel::import(new NotifieImport, request()->file('plan'));
-
-        return response()->json(['message' => ' NT Data received successfully!']);
+            return response()->json([
+                'success' => true,
+                'message' => 'NT Data received successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'importation du fichier : ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function prevexport()

@@ -2,21 +2,28 @@
 import { useMemo, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, SearchX } from "lucide-react"
+import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, SearchX, Loader2 } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import type { PlanNotifee, PlanPrevision } from "@/assets/modelData"
+import type { PlanNotifee } from "@/assets/modelData"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Input } from "../ui/input"
 import { useTableControls } from "@/hooks/useTableControls"
 import { Pagination } from "../Tools/pagination"
 import { DynamicSearch } from "../Tools/Search"
-// import { getAuthToken } from "@/util/Auth"
-// import { useDispatch } from "react-redux"
-// import { PrevisionActions } from "@/store/PrevisionSlice"
-// import ImportExportComponent from "../Tools/Ecxel"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
+import { NotifeeActions } from "@/store/NotifeSlice"
+import { getAuthToken } from "@/util/Auth"
+import { useDispatch } from "react-redux"
+import ImportExportComponent from "../Tools/Ecxel"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { cn } from "@/lib/utils"
+import { DialogDescription } from "@radix-ui/react-dialog"
 
 interface PlanNotifeeTableProps {
     data: PlanNotifee[];
@@ -41,99 +48,232 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         clearColumnFilter,
         resetAllFilters,
     } = useTableControls(data, searchTerm, searchField);
-    // const [isDeleting, setIsDeleting] = useState(false);
-    // const token = getAuthToken();
-    // const dispatch = useDispatch();
-    
-//   const deleteSingleEmployee = async (id: string) => {
-//     try {
-//       setIsDeleting(false)
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "pending",
-//           message: "Chargement des prévision en cours...",
-//         }),
-//       )
-//       setIsDeleting(true)
-//       const response = await fetch(`http://127.0.0.1:8000/api/previsions/delete/${id}`, {
-//         method: "DELETE",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//           Accept: "application/json",
-//         },
-//       })
-//       if (!response.ok) {
-//         throw new Error("Failed to delete prévision")
-//       }
-//       setIsDeleting(false)
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "success",
-//           message: "Delete prévisions chargée avec succès",
-//         }),
-//       )
-//       dispatch(PrevisionActions.ReferchLatestData(true))
-//     } catch (err) {
-//       console.log(err)
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "failed",
-//           message: "Erreur lors du chargement des prévisions",
-//         }),
-//       )
-//     }
-//   }
+    const navigate = useNavigate()
+    const [isDeleting, setIsDeleting] = useState(false);
+    const token = getAuthToken();
+    const dispatch = useDispatch();
+    // const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+    const [showDateRangeDialog, setShowDateRangeDialog] = useState(false);
+    const [selectedAction, setSelectedAction] = useState<string | null>(null);
+    const [dateRange, setDateRange] = useState<{
+        startDate: Date | undefined
+        endDate: Date | undefined
+    }>({
+        startDate: undefined,
+        endDate: undefined,
+    });
 
-//   const deleteMultipleEmployees = async () => {
-//     if (selectedRows.length === 0) return
 
-//     try {
-//       setIsDeleting(true)
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "pending",
-//           message: "Chargement des prévisions en cours...",
-//         }),
-//       )
-//       const response = await fetch("http://127.0.0.1:8000/api/previsions/delete-multiple", {
-//         method: "DELETE",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//         body: JSON.stringify({ IDs: selectedRows }),
-//       })
+    const groupSelectedRowsAction = (): Record<string, number[]> | undefined => {
+        if (selectedRows.length === 0) {
+            return;
+        }
+        const GroupSelected: Record<string, number[]>  = {};
+        selectedRows.forEach((id) => {
+            const Item = data.find((item) => {
+                return item.ID_N === Number(id)
+            })
+            const action = Item?.formation.Intitule_Action;
+            if (action) {
+                if (!GroupSelected[action]) {
+                    GroupSelected[action] = [];
+                }
+                GroupSelected[action].push(Number(id));
+            }
+        });
+        return GroupSelected;
+    };
+    const groupSelctedRowsLieu = (): Record<string, number[]> | undefined => {
+        if (selectedRows.length === 0) {
+            return;
+        }
+        const GroupSelectedLieu: Record<string, number[]>  = {};
+        selectedRows.forEach((id) => {
+            const Item = data.find((item) => {
+                return item.ID_N === Number(id)
+            })
+            const lieuFormation = Item?.formation.organisme.Lieu_Formation;
+            if (lieuFormation) {
+                if (!GroupSelectedLieu[lieuFormation]) {
+                    GroupSelectedLieu[lieuFormation] = [];
+                }
+                GroupSelectedLieu[lieuFormation].push(Number(id));
+            }
+        });
+        return GroupSelectedLieu;
+    }
 
-//       if (!response.ok) {
-//         throw new Error("Failed to delete prévisions")
-//       }
+    const groupSelctedRowsOrganizme = (): Record<string, number[]> | undefined => {
+        if (selectedRows.length === 0) {
+            return;
+        }
+        const GroupSelectedNomOrganizme: Record<string, number[]>  = {};
+        selectedRows.forEach((id) => {
+            const Item = data.find((item) => {
+                return item.ID_N === Number(id)
+            })
+            const nomOrganisme = Item?.formation.organisme.Nom_Organisme;
+            if (nomOrganisme) {
+                if (!GroupSelectedNomOrganizme[nomOrganisme]) {
+                    GroupSelectedNomOrganizme[nomOrganisme] = [];
+                }
+                GroupSelectedNomOrganizme[nomOrganisme].push(Number(id));
+            }
+        });
+        return GroupSelectedNomOrganizme;
+    }
+    const openDateRangeDialog = (action : string) => {
+        setSelectedAction(action);
+        setDateRange({
+            startDate: undefined,
+            endDate: undefined,
+        });
+        setShowDateRangeDialog(true);
+    }
 
-//       setSelectedRows([])
-//       setIsDeleting(false)
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "success",
-//           message: "Delete prévision chargée avec succès",
-//         }),
-//       )
-//       dispatch(PrevisionActions.ReferchLatestData(true))
-//     } catch (err) {
-//       console.log(err)
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "failed",
-//           message: "Erreur lors du chargement des prévisions",
-//         }),
-//       )
-//     }
-//   }
+    const CreateBondCommand = async () => {
+        
+        try {
+            const employeeIds = selectedRows.map((ele) => {
+                return Number(ele);
+            });
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Bond Command Elle été bien crée",
+                }),
+            );
+            
+            const response = await fetch('http://127.0.0.1:8000/api/createBC', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    ids: employeeIds,
+                    // intituleAction: selectedAction,
+                    "Budget": 10000,
+                    date_deb: dateRange.startDate ? format(dateRange.startDate, "yyyy-MM-dd") : null,
+                    date_fin: dateRange.endDate ? format(dateRange.endDate, "yyyy-MM-dd") : null,
+                }),
+            });
+            
+            const data = await response.json();
+            console.log(data)
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to create bond command")
+            }
+            setShowDateRangeDialog(false);
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Bon de Commande créé avec succès",
+                }),
+            );
+        } catch(err) {
+            console.log(err)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: "Erreur lors de la création du Bon de Commande",
+                }),
+            );
+        }
+    }
+
+    const deleteSingleEmployee = async (id: string) => {
+        try {
+            setIsDeleting(false)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "pending",
+                    message: "Chargement des prévision en cours...",
+                }),
+            )
+            setIsDeleting(true)
+            const response = await fetch(`http://127.0.0.1:8000/api/previsions/delete/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+            })
+            if (!response.ok) {
+                throw new Error("Failed to delete prévision")
+            }
+            setIsDeleting(false)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Delete prévisions chargée avec succès",
+                }),
+            )
+            dispatch(NotifeeActions.ReferchLatestData(true))
+        } catch (err) {
+            console.log(err)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: "Erreur lors du chargement des prévisions",
+                }),
+            )
+        }
+    };
+
+    const deleteMultipleEmployees = async () => {
+        if (selectedRows.length === 0) return
+
+        try {
+            setIsDeleting(true)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "pending",
+                    message: "Chargement des prévisions en cours...",
+                }),
+            )
+            const response = await fetch("http://127.0.0.1:8000/api/previsions/delete-multiple", {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ IDs: selectedRows }),
+            })
+
+            if (!response.ok) {
+                throw new Error("Failed to delete prévisions")
+            }
+
+            setSelectedRows([])
+            setIsDeleting(false)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Delete prévision chargée avec succès",
+                }),
+            )
+            dispatch(NotifeeActions.ReferchLatestData(true))
+        } catch (err) {
+            console.log(err)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: "Erreur lors du chargement des prévisions",
+                }),
+            )
+        }
+    };
 
     const resetFilters = () => {
         setCurrentPage(1)
@@ -143,108 +283,107 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         setSelectedRows([])
     };
 
-//   const importPrevData = async (file: File) => {
-//     const formData = new FormData()
-//     formData.append("previsions", file)
+    const importPrevData = async (file: File) => {
+        const formData = new FormData()
+        formData.append("plan", file)
 
-//     try {
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "pending",
-//           message: "Chargement des prévisions en cours...",
-//         }),
-//       )
-//       const response = await fetch(`http://127.0.0.1:8000/api/previsions/import`, {
-//         method: "POST",
-//         body: formData,
-//         headers: {
-//           Accept: "application/json",
-//           Authorization: `Bearer ${token}`,
-//         },
-//       })
-//       const resData = await response.json();
-//       if (!response.ok) {
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: resData.success ? "success" : "failed",
-//           message: resData.message,
-//         });
-//           return navigate("/homePage/PlanPrevision");
-//       }
-      
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: resData.success ? "success" : "failed",
-//           message: resData.message,
-//         }),
-//       )
-//       dispatch(PrevisionActions.ReferchLatestData(true))
-//     } catch (error) {
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "failed",
-//           message: error,
-//         }),
-//       )
-//     }
-//   }
+        try {
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "pending",
+                    message: "Chargement des Notifiéé en cours...",
+                }),
+            )
+            const response = await fetch(`http://127.0.0.1:8000/api/plannotifie/import`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            const resData = await response.json();
+            if (!response.ok) {
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: resData.success ? "success" : "failed",
+                    message: resData.message,
+                });
+                return navigate("/homePage/planNotifie");
+            }
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: resData.success ? "success" : "failed",
+                    message: resData.message,
+                }),
+            )
+            dispatch(NotifeeActions.ReferchLatestData(true))
+        } catch (error) {
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: error,
+                }),
+            )
+        }
+    };
 
-//   const exportPrevData = async () => {
-//     dispatch(
-//       PrevisionActions.ShowNotification({
-//         IsVisible: true,
-//         status: "pending",
-//         message: "Préparation de l'export en cours...",
-//       }),
-//     )
-//     fetch("http://127.0.0.1:8000/api/previsions/export", {
-//       method: "GET",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     })
-//       .then((response) => response.blob())
-//       .then((blob) => {
-//         const url = window.URL.createObjectURL(blob)
-//         const a = document.createElement("a")
-//         a.href = url
-//         a.download = "previsions.xlsx"
-//         document.body.appendChild(a)
-//         a.click()
-//         a.remove()
+    const exportNotifieData = async () => {
+        dispatch(
+            NotifeeActions.ShowNotification({
+                IsVisible: true,
+                status: "pending",
+                message: "Préparation de l'export en cours...",
+            }),
+        )
+        fetch("http://127.0.0.1:8000/api/plannotifie/export", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+            .then((response) => response.blob())
+            .then((blob) => {
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement("a")
+                a.href = url
+                a.download = "Plan-Notifié.xlsx"
+                document.body.appendChild(a)
+                a.click()
+                a.remove()
 
-//         dispatch(
-//           PrevisionActions.ShowNotification({
-//             IsVisible: true,
-//             status: "success",
-//             message: "Export réussi!",
-//           }),
-//         )
-//       })
-//       .catch((error) => {
-//         console.error(error)
-//         dispatch(
-//           PrevisionActions.ShowNotification({
-//             IsVisible: true,
-//             status: "failed",
-//             message: "Erreur lors de l'export",
-//           }),
-//         )
-//       })
-//     // For now, just show a success notification after a delay
-//     setTimeout(() => {
-//       dispatch(
-//         PrevisionActions.ShowNotification({
-//           IsVisible: true,
-//           status: "success",
-//           message: "Export réussi!",
-//         }),
-//       )
-//     }, 3000)
-//   }
+                dispatch(
+                    NotifeeActions.ShowNotification({
+                        IsVisible: true,
+                        status: "success",
+                        message: "Export réussi!",
+                    }),
+                )
+            })
+            .catch((error) => {
+                console.error(error)
+                dispatch(
+                    NotifeeActions.ShowNotification({
+                        IsVisible: true,
+                        status: "failed",
+                        message: "Erreur lors de l'export",
+                    }),
+                )
+            })
+        // For now, just show a success notification after a delay
+        setTimeout(() => {
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Export réussi!",
+                }),
+            )
+        }, 3000)
+    };
 
   //pagination Logic
     const totalPages = Math.ceil(sortedAndFilteredData.length / itemsPerPage);
@@ -288,7 +427,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             [K in keyof T]-?: K extends string | number ? `${K}` | Join<K, Paths<T[K], Prev[D]>> : never
         }[keyof T]
         : ""
-    type PlanPrevisionKeys = Paths<PlanPrevision>;
+    type PlanNotifeeKeys = Paths<PlanNotifee>;
 
     const renderSortIndicator = (column: string) => {
         if (sortConfig?.key === column) {
@@ -300,12 +439,12 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         }
         return null
     };
-    const handleSearch = (term: string, field: keyof PlanPrevision) => {
+    const handleSearch = (term: string, field: keyof PlanNotifee) => {
         setSearchTerm(term)
         setSearchField(field)
     };
 
-    const renderColumnHeader = (column: PlanPrevisionKeys, label: string, filterOptions?: string[]) => {
+    const renderColumnHeader = (column: PlanNotifeeKeys, label: string, filterOptions?: string[]) => {
         return (
             <TableHead className="cursor-pointer select-none" onClick={() => handleSort(column)}>
                 <div className="flex items-center justify-between">
@@ -372,7 +511,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     return (
         <div className="space-y-4 p-4 overflow-auto max-w-full">
             <p className="text-xs text-muted-foreground whitespace-nowrap">
-                Affichage de {currentData.length} sur {sortedAndFilteredData.length} Plan Prévision
+                Affichage de {currentData.length} sur {sortedAndFilteredData.length} PlanNotifée
             </p>
             <div className="flex flex-col sm:flex-row justify-between items-start  sm:items-center gap-2">
                 <div className="text-sm text-muted-foreground w-full">
@@ -389,8 +528,33 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                         onSearch={handleSearch}
                     />
                 </div>
+                {/* <div className="flex items-center gap-2">
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className={cn("justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}
+                            >
+                                {selectedDate ? format(selectedDate, "dd MMMM yyyy", { locale: fr }) : "Sélectionner une date"}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar mode="single" selected={selectedDate}
+                            // onSelect={handleDateChange} initialFocus
+                            />
+                        </PopoverContent>
+                    </Popover>
+                    {selectedDate && (
+                        <Button variant="ghost" size="sm"
+                        // onClick={() => handleDateChange(undefined)}
+                        >
+                            <RotateCcw className="h-4 w-4" />
+                        </Button>
+                    )}
+                </div> */}
 
-                {/* <ImportExportComponent importPrevData={importPrevData} exportPrevData={exportPrevData} /> */}
+                <ImportExportComponent importPrevData={importPrevData} exportPrevData={exportNotifieData} />
                 <div className="flex items-center gap-2">
                     {selectedRows.length > 0 && (
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -408,10 +572,63 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                 <RotateCcw className="h-4 w-4 mr-2" />
                                 Reset Filters
                             </DropdownMenuItem>
+                            {selectedRows.length > 0 && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            const actionGroups = groupSelectedRowsAction() || {}
+                                            const LieuFormation = groupSelctedRowsLieu() || {}
+                                            const NomOrganizmeFormation = groupSelctedRowsOrganizme() || {}
+                                            const actions = Object.keys(actionGroups)
+                                            const Lieu = Object.keys(LieuFormation);
+                                            const NomOrganizme = Object.keys(NomOrganizmeFormation);
+
+                                            if (actions.length === 1) {
+                                                // Si toutes les lignes sélectionnées ont la même action, ouvrir le dialogue directement
+                                                if (Lieu.length === 1) {
+                                                    if (NomOrganizme.length === 1) {
+                                                        openDateRangeDialog(actions[0]);
+                                                    } else {
+                                                        dispatch(
+                                                            NotifeeActions.ShowNotification({
+                                                                IsVisible: true,
+                                                                status: "failed",
+                                                                message: "Veuillez sélectionner des formations ayant le même organisme.",
+                                                            })
+                                                        );
+                                                    }
+                                                } else {
+                                                    dispatch(
+                                                        NotifeeActions.ShowNotification({
+                                                            IsVisible: true,
+                                                            status: "failed",
+                                                            message: "Veuillez sélectionner des formations ayant le même lieu.",
+                                                        })
+                                                    );
+                                                }
+                                            } else if (actions.length > 1) {
+                                                // Notifier que plusieurs actions différentes ont été sélectionnées
+                                                dispatch(
+                                                    NotifeeActions.ShowNotification({
+                                                        IsVisible: true,
+                                                        status: "failed",
+                                                        message: "Veuillez sélectionner des employés associés à la même action de formation.",
+                                                    })
+                                                );
+                                            }
+
+                                        }}
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Créer Bon de Commande pour sélection
+                                    </DropdownMenuItem>
+                                </>
+                            )}
 
                             <DropdownMenuSeparator />
 
-                            <Link to="/PrevPlan/insert" className="w-full">
+                            <Link to="/NotifieePlan/insert" className="w-full">
                                 <DropdownMenuItem>
                                     <Plus className="h-4 w-4 mr-2" />
                                     Insert New
@@ -423,10 +640,10 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                         variant="destructive"
                         size="sm"
                         disabled={selectedRows.length === 0}
-                    // onClick={deleteMultipleEmployees}
+                        onClick={deleteMultipleEmployees}
                     >
-                        {/* {isDeleting ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Trash2 className="h-4 w-4 mr-1" />}
-                        Delete */}
+                        {isDeleting ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Trash2 className="h-4 w-4 mr-1" />}
+                        Delete
                     </Button>
                 </div>
             </div>
@@ -512,7 +729,13 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                 {renderColumnHeader("Frais_Pedagogiques", "Frais Pedagogiques")}
                                 {renderColumnHeader("Frais_Hebergement", "Frais Hebergement")}
                                 {renderColumnHeader("Frais_Transport", "Frais Transport")}
-                                {renderColumnHeader("type", "Type Pension")}
+                                {renderColumnHeader("Type_Pension", "TypePension")}
+                                {renderColumnHeader("Budget", "Budget")}
+                                {renderColumnHeader("Observation_pre_arbitrage", "Observation par arbitrage")}
+                                {renderColumnHeader("Observation_arbitrage", "Observation arbitrage")}
+                                {renderColumnHeader("Autres_charges", "Autres charges")}
+                                {renderColumnHeader("Presalaire", "Presalaire")}
+                                {renderColumnHeader("Dont_Devise", "Dont_Devise")}
                                 {renderColumnHeader("etat", "etat")}
                                 {renderColumnHeader("Observation", "Observation")}
                                 <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
@@ -572,7 +795,13 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         <TableCell className="text-center">{item.Frais_Pedagogiques ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Hebergement ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Transport ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.type ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Type_Pension ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Budget ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Observation_pre_arbitrage ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Observation_arbitrage ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Autres_charges ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Presalaire ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.Dont_Devise ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.etat ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Observation ?? "—"}</TableCell>
                                         <TableCell className="sticky right-0 bg-background z-10">
@@ -585,7 +814,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <Link to={`/prev/update/${item.ID_N}`}>
+                                                        <Link to={`/notifie/update/${item.ID_N}`}>
                                                             <DropdownMenuItem>
                                                                 <Pencil className="h-4 w-4 mr-2" />
                                                                 Edit
@@ -593,7 +822,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                                         </Link>
                                                         <DropdownMenuItem
                                                             className="text-destructive focus:text-destructive"
-                                                        // onClick={() => deleteSingleEmployee(String(item.ID_N))}
+                                                            onClick={() => deleteSingleEmployee(String(item.ID_N))}
                                                         >
                                                             <Trash2 className="h-4 w-4 mr-2" />
                                                             Delete
@@ -632,6 +861,81 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                     goToPreviousPage={goToPreviousPage}
                 />
             )}
+            <Dialog open={showDateRangeDialog} onOpenChange={setShowDateRangeDialog}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>Créer un Bon de Commande</DialogTitle>
+                        <DialogDescription className="text-sm text-muted-foreground whitespace-nowrap">
+                            Please confirm the details before continuing.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="action">Action de Formation</Label>
+                            <Input id="action" value={selectedAction || ""} readOnly />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="date-debut">Date de début</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        id="date-debut"
+                                        variant="outline"
+                                        className={cn(
+                                            "justify-start text-left font-normal",
+                                            !dateRange.startDate && "text-muted-foreground",
+                                        )}
+                                    >
+                                        {dateRange.startDate
+                                            ? format(dateRange.startDate, "dd MMMM yyyy", { locale: fr })
+                                            : "Sélectionner une date"}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={dateRange.startDate}
+                                        onSelect={(date) => setDateRange((prev) => ({ ...prev, startDate: date }))}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="date-fin">Date de fin</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        id="date-fin"
+                                        variant="outline"
+                                        className={cn("justify-start text-left font-normal", !dateRange.endDate && "text-muted-foreground")}
+                                    >
+                                        {dateRange.endDate
+                                            ? format(dateRange.endDate, "dd MMMM yyyy", { locale: fr })
+                                            : "Sélectionner une date"}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={dateRange.endDate}
+                                        onSelect={(date) => setDateRange((prev) => ({ ...prev, endDate: date }))}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowDateRangeDialog(false)}>
+                            Annuler
+                        </Button>
+                        <Button onClick={CreateBondCommand} disabled={!dateRange.startDate || !dateRange.endDate}>
+                            Créer
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

@@ -1,8 +1,8 @@
-import { PlanNotifee } from "@/assets/modelData";
+import { BondCommand } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
-type PLanNotifeeType = {
-    PlanNotifeeData: PlanNotifee[]
+type BondCommandType = {
+    BondCommandData: BondCommand[]
     IsLoading: boolean
     refrechData: boolean,
     Notification: {
@@ -10,13 +10,9 @@ type PLanNotifeeType = {
         status: string,
         message : string,
     }
-    ListeIntitulAction: {
-        value: number;
-        label: string;
-    }[],
 }
-const initialState: PLanNotifeeType = {
-    PlanNotifeeData: [],
+const initialState: BondCommandType = {
+    BondCommandData: [],
     IsLoading: false,
     refrechData:false,
     Notification: {
@@ -24,16 +20,15 @@ const initialState: PLanNotifeeType = {
         status: "",
         message : "",
     },
-    ListeIntitulAction:[],
 }
 
 
-const PlanNotifeeSlice = createSlice({
-    name: "PlanNotifee",
+const BondCommandSlice = createSlice({
+    name: "BondCommand",
     initialState, 
     reducers: {
         FetchDataPlanNotifee(state, action) {
-            state.PlanNotifeeData = action.payload;
+            state.BondCommandData = action.payload;
         },
         ShowNotificationRefrech(state , action) {
             state.IsLoading = action.payload;
@@ -56,11 +51,8 @@ const PlanNotifeeSlice = createSlice({
         ReferchLatestData(state , action) {
             state.refrechData = action.payload.refrechData
         },
-        GetAllFormation(state, action) {
-            state.ListeIntitulAction = action.payload;
-        }
     }
 })
 
-export default PlanNotifeeSlice;
-export const   NotifeeActions = PlanNotifeeSlice.actions;
+export default BondCommandSlice;
+export const   BondCommandActions = BondCommandSlice.actions;
