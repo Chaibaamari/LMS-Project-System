@@ -14,12 +14,14 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Validators\Failure;
+use Illuminate\Support\Facades\Validator;
+
 
 class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormulas
 {
     private $errors = [];
     private $rowsSuccess = 0;
-    private $rowsFailed = 0;
+    public $failedRows ;
     // public function rules(): array
     // { WithValidation
     //     // return [
@@ -38,7 +40,7 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
     //     //     // 'date_de_recrutement_jjmmaaaa' => 'required ',
     //     // ];
     // }
-    public function onFailure(Failure ...$failures)
+   /*  public function onFailure(Failure ...$failures)
     {
         foreach ($failures as $failure) {
             $this->errors[] = [
@@ -48,7 +50,18 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
             ];
             $this->rowsFailed++;
         }
+    } */
+
+    private function normalizeRowValues(array $row): array
+    {
+        return array_map(function ($value) {
+            if (is_string($value)) {
+                return mb_strtoupper(trim($value));
+            }
+            return $value;
+        }, $row);
     }
+
     private function convertFrenchDate(?string $date): ?string
     {
         if (empty($date)) {
@@ -85,8 +98,18 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
         //
         DB::beginTransaction();
         try{
-        foreach ($collection as $row) {
-            $this->rowsSuccess++;
+        foreach ($collection as $index=>$row) {
+            $validator = Validator::make($row->toArray(), $this->rules(), $this->customValidationMessages() ?? []);
+                if ($validator->fails()) {
+                    $this->failedRows[] = [
+                        'row' => $index + 2, // +2 accounts for heading row + 0-based index
+                        'errors' => $validator->errors()->all(),
+                    ];
+                    continue;
+                }
+
+                $row = $this->normalizeRowValues($row->toArray());
+                $this->rowsSuccess++;
 
             Direction::insertOrIgnore([
                 'Id_direction' => $row['unitecomplexedirection_regionalegroupement'],
@@ -140,7 +163,7 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
                 'Id_direction'=>$row['unitecomplexedirection_regionalegroupement'],
             ]);
 
-            $plan=Plan::where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first();
+            $plan=Plan::where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first(); //where etat prevision
             if ($plan) {
                 $plan->update([
                     'etat'=>'validé',
@@ -186,7 +209,7 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
             throw $e;
         }
     }
-    public function getErrors()
+    /* public function getErrors()
     {
         return $this->errors;
     }
@@ -197,6 +220,26 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
             'success' => $this->rowsSuccess,
             'failed' => $this->rowsFailed,
             'total' => $this->rowsSuccess + $this->rowsFailed
+        ];
+    } */
+
+    public function rules(): array
+    {
+        return [
+            'matricule'  => 'required|string',
+            'organisme_de_formation' => 'required|string',
+            'lieu_du_deroulement_de_la_formation'=>'required|string',
+            'intitule_de_laction'=>'required|string',
+        ];
+    }
+
+    public function customValidationMessages()
+    {
+        return [
+            'matricule.required' => 'Matricule manquant.',
+            'organisme_de_formation.required' => 'Organisme De Formation manquant.',
+            'lieu_du_deroulement_de_la_formation.required' => 'The Lieu Du Deroulement De La Formation manquant.',
+            'intitule_de_laction.required' => "Intitule De L'action manquant.",
         ];
     }
 }

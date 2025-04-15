@@ -392,4 +392,12 @@ class PlanController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function testyear(Request $request)
+    {
+        $customHeader = $request->header('Year');
+
+        return response()->json(['year is ' => $customHeader]);
+    }
+    
 }

@@ -21,6 +21,13 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
+    Route::post('createUser', [JWTAuthController::class, 'createUser']);
+    Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
+    Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
+
+    Route::get('/records', [PlanController::class, 'testyear']);
+
+
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
@@ -82,3 +89,21 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     Route::get('PrévisionsTotal', [StatistiqueController::class, 'StPrvtotal']);
     Route::get('Prévisions', [StatistiqueController::class, 'StPrv']);
 
+    Route::post('createBC', [PlanController::class, 'createBC']);
+    Route::post('createDC', [ImportContoller::class, 'createDC']);
+
+
+    Route::post('bonCommand', [PlanController::class,'consultBC']);
+
+    Route::post('TBF', [PlanController::class,'consultTBF']);
+
+    Route::post('Bilan', [PlanController::class,'consultBilan']);
+
+
+//});
+
+// Remove the Sanctum route if not using Sanctum
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+
+// });

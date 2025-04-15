@@ -13,6 +13,7 @@ class Plan extends Model
         'ID_N',
         'etat',
         'Observation',
+        'Exercice',
         'Date',
         'Date_Deb',
         'Date_fin',
@@ -35,7 +36,8 @@ class Plan extends Model
         'ID_N' => 'integer',
         'etat' => 'string',
         'Observation' => 'string',
-        'Date' => 'date',
+        'Exercice' => 'integer', //année li rah ykhmd 3liha
+        'Date'=>'date',
         'Date_Deb' => 'date',
         'Date_fin' => 'date',
         'Matricule' => 'string', //

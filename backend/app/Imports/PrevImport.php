@@ -14,13 +14,14 @@ use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Validators\Failure;
 
 class PrevImport implements ToCollection, WithHeadingRow
 {
     private $errors = [];
     private $rowsSuccess = 0;
-    private $rowsFailed = 0;
+    public $failedRows ;
     // public function rules(): array
     // { WithValidation
     //     // return [
@@ -39,7 +40,7 @@ class PrevImport implements ToCollection, WithHeadingRow
     //     //     // 'date_de_recrutement_jjmmaaaa' => 'required ',
     //     // ];
     // }
-    public function onFailure(Failure ...$failures)
+    /* public function onFailure(Failure ...$failures)
     {
         foreach ($failures as $failure) {
             $this->errors[] = [
@@ -49,7 +50,7 @@ class PrevImport implements ToCollection, WithHeadingRow
             ];
             $this->rowsFailed++;
         }
-    }
+    } */
     private function normalizeRowValues(array $row): array
     {
         return array_map(function ($value) {
@@ -95,7 +96,17 @@ class PrevImport implements ToCollection, WithHeadingRow
         //
         DB::beginTransaction();
         try {
-            foreach ($collection as $row) {
+            foreach ($collection as $index => $row) {
+
+                $validator = Validator::make($row->toArray(), $this->rules(), $this->customValidationMessages() ?? []);
+                if ($validator->fails()) {
+                    $this->failedRows[] = [
+                        'row' => $index + 2, // +2 accounts for heading row + 0-based index
+                        'errors' => $validator->errors()->all(),
+                    ];
+                    continue;
+                }
+
                 $row = $this->normalizeRowValues($row->toArray());
                 $this->rowsSuccess++;
 
@@ -151,6 +162,8 @@ class PrevImport implements ToCollection, WithHeadingRow
                     'Id_direction' => $row['direction'],
                 ]);
 
+                $plan=Plan::where('Matricule',$row['matricule'])->where('ID_Formation',$formation->ID_Formation)->first();
+                if(!$plan){
                 Plan::create([
                     'etat' => 'prévision',
                     /*'Observation'=>$row['observation'],
@@ -164,6 +177,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                 'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
                 'Frais_Transport'=>$row['frais_transport'],*/
                 ]);
+                }
             }
             DB::commit();
             
@@ -172,7 +186,7 @@ class PrevImport implements ToCollection, WithHeadingRow
             throw $e;
         }
     }
-    public function getErrors()
+    /* public function getErrors()
     {
         return $this->errors;
     }
@@ -184,5 +198,25 @@ class PrevImport implements ToCollection, WithHeadingRow
             'failed' => $this->rowsFailed,
             'total' => $this->rowsSuccess + $this->rowsFailed
         ];
+    } */
+    public function rules(): array
+    {
+        return [
+            'matricule'  => 'required|string',
+            'organisme_de_formation' => 'required|string',
+            'lieu_du_deroulement_de_la_formation'=>'required|string',
+            'intitule_de_laction'=>'required|string',
+        ];
     }
+
+    public function customValidationMessages()
+    {
+        return [
+            'matricule.required' => 'Matricule manquant.',
+            'organisme_de_formation.required' => 'Organisme De Formation manquant.',
+            'lieu_du_deroulement_de_la_formation.required' => 'The Lieu Du Deroulement De La Formation manquant.',
+            'intitule_de_laction.required' => "Intitule De L'action manquant.",
+        ];
+    }
+    
 }
