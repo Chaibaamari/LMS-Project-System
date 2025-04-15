@@ -24,7 +24,9 @@ Route::post('login', [JWTAuthController::class, 'login']);
     Route::post('createUser', [JWTAuthController::class, 'createUser']);
     Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
     Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
-
+    
+    Route::get('/records', [PlanController::class, 'testyear']);
+    
 
 
     // Employee routes partie de chaiba

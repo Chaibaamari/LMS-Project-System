@@ -9,33 +9,45 @@ use App\Imports\NotifieImport;
 use App\Imports\PrevImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class ImportContoller extends Controller
 {
     //
     public function previmport(Request $request)
     {
-        try {
-            Excel::import(new PrevImport, $request->file('previsions'));
 
+            $import = new PrevImport();
+            Excel::import($import , $request->file('previsions'));
+
+            if (!empty($import->failedRows)) {
+                return response()->json([
+                    'message' => 'Some rows failed validation.',
+                    'errors' => $import->failedRows,
+                ], 422);
+            }
+        
             return response()->json([
-                'success' => true,
-                'message' => 'Importation des données PV réussie !'
+                'message' => 'All Previsions imported successfully.',
             ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de l\'importation du fichier : ' . $e->getMessage()
-            ], 500);
-        }
     }
 
     public function notifieimport(Request $request)
     {
 
-        Excel::import(new NotifieImport, request()->file('plan'));
+        $import = new NotifieImport();
+        Excel::import($import, request()->file('plan'));
 
-        return response()->json(['message' => ' NT Data received successfully!']);
+        if (!empty($import->failedRows)) {
+            return response()->json([
+                'message' => 'Some rows failed validation.',
+                'errors' => $import->failedRows,
+            ], 422);
+        }
+    
+        return response()->json([
+            'message' => 'Plan Notifié imported successfully.',
+        ]);
     }
 
     public function prevexport()

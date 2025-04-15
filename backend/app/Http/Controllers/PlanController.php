@@ -220,5 +220,12 @@ class PlanController extends Controller
 
         return response()->json(['message' => 'notifié supprimé']);
     }
+
+    public function testyear(Request $request)
+    {
+        $customHeader = $request->header('Year');
+
+        return response()->json(['year is ' => $customHeader]);
+    }
     
 }
