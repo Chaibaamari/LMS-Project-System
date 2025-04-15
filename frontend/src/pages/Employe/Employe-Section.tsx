@@ -74,13 +74,13 @@ function Employee() {
                 (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold">Plan Prévision</h2>
+                            <h2 className="text-2xl font-bold">Liste Employee</h2>
                             <Skeleton className="h-9 w-24" /> 
                         </div>
                         <TableSkeleton rows={20} columns={5} />
                     </div>
                 ) : <>
-                    <h2 className="text-2xl font-bold mb-4">Plan Prévision</h2>
+                    <h2 className="text-2xl font-bold mb-4">Liste Employee</h2>
                     <UsersTable data={EmployeData} />
                 </>
             }
