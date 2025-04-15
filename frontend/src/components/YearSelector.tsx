@@ -5,7 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
-const TypedDatePicker = DatePicker as unknown as React.FC<any>
+
 
 const YearSelector = () => {
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -46,7 +46,7 @@ const YearSelector = () => {
     <div className="flex flex-col gap-1 w-fit">
       <Label htmlFor="year-picker">Working Year</Label>
       <button onClick={fetchRecords}>Test year return</button>
-      <TypedDatePicker
+      <DatePicker
         id="year-picker"
         selected={selectedDate}
         onChange={(date) => date && setSelectedDate(date)}
