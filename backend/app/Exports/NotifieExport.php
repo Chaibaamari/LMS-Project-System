@@ -14,9 +14,17 @@ class NotifieExport implements FromQuery,WithHeadings, WithMapping
 {
     use Exportable;
 
+    protected $year;
+
+    public function __construct($year)
+    {
+        $this->year = $year;
+    }
+    
+
     public function query()
     {
-        return Plan::where('etat', 'validé')->with([
+        return Plan::where('Exercice',$this->year)->where('etat', 'validé')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',

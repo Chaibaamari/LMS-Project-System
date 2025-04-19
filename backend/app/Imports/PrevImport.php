@@ -22,6 +22,15 @@ class PrevImport implements ToCollection, WithHeadingRow
     private $errors = [];
     private $rowsSuccess = 0;
     public $failedRows ;
+
+    public $existingRows;
+
+    protected $year;
+
+    public function __construct($year)
+    {
+        $this->year = $year;
+    }
     // public function rules(): array
     // { WithValidation
     //     // return [
@@ -162,7 +171,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                     'Id_direction' => $row['direction'],
                 ]);
 
-                $plan=Plan::where('Matricule',$row['matricule'])->where('ID_Formation',$formation->ID_Formation)->first();
+                $plan=Plan::where('Exercice',$this->year)->where('Matricule',$row['matricule'])->where('ID_Formation',$formation->ID_Formation)->first();
                 if(!$plan){
                 Plan::create([
                     'etat' => 'prévision',
@@ -172,11 +181,28 @@ class PrevImport implements ToCollection, WithHeadingRow
                 'Date_fin'=>$row[''],*/
                     'Matricule' => $row['matricule'],
                     'ID_Formation' => $formation->ID_Formation,
+                    'Exercice'=>$this->year,
                     /*'Mode_Financement'=>$row['mode_de_financement'],
                 'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
                 'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
                 'Frais_Transport'=>$row['frais_transport'],*/
                 ]);
+                }else{
+                    switch ($plan->etat) {
+                        case 'prévision':
+                            $this->existingRows[] = [
+                                'row' => $index + 2, // +2 accounts for heading row + 0-based index
+                                'existence' =>'une prévision exist pour ce employe avec cette formation cette année',
+                            ];
+                            break;
+                        
+                        case 'validé':
+                            $this->existingRows[] = [
+                                'row' => $index + 2, // +2 accounts for heading row + 0-based index
+                                'existence' =>'une prévision notifié exist pour ce employe avec cette formation cette année',
+                            ];
+                            break;
+                    }
                 }
             }
             DB::commit();

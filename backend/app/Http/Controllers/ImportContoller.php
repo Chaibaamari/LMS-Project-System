@@ -16,14 +16,15 @@ class ImportContoller extends Controller
     //
     public function previmport(Request $request)
     {
-
-            $import = new PrevImport();
+            $Exercice = $request->header('Year');
+            $import = new PrevImport($Exercice);
             Excel::import($import , $request->file('previsions'));
 
-            if (!empty($import->failedRows)) {
+            if (!empty($import->failedRows) ||!empty($import->existingRows))  {
                 return response()->json([
-                    'message' => 'Some rows failed validation.',
-                    'errors' => $import->failedRows,
+                    'message' => 'Some rows failed inserting.',
+                    'failed' => $import->failedRows,
+                    'existing' => $import->existingRows,
                 ], 422);
             }
         
@@ -34,8 +35,8 @@ class ImportContoller extends Controller
 
     public function notifieimport(Request $request)
     {
-
-        $import = new NotifieImport();
+        $Exercice = $request->header('Year');
+        $import = new NotifieImport($Exercice);
         Excel::import($import, request()->file('plan'));
 
         if (!empty($import->failedRows)) {
@@ -52,12 +53,18 @@ class ImportContoller extends Controller
 
     public function prevexport()
     {
-        return Excel::download(new PrevExport, 'previsionsexporté.xlsx');
+        $Exercice = request()->header('Year');
+        $import = new PrevExport($Exercice);
+
+        return Excel::download($import, 'previsionsexporté.xlsx');
     }
 
     public function Notifieexport()
     {
-        return Excel::download(new NotifieExport, 'plannotifieexporté.xlsx');
+        $Exercice = request()->header('Year');
+        $import = new NotifieExport($Exercice);
+
+        return Excel::download($import, 'plannotifieexporté.xlsx');
     }
 
     public function createDC(Request $request)
