@@ -1,12 +1,16 @@
 import { fields, User } from "@/assets/modelData";
 import { DynamicInsertForm } from "@/components/Tools/InsertForm";
+import { EmployeeActions } from "@/store/EmployesSlice";
+import { AppDispatch } from "@/store/indexD";
 import { getAuthToken } from "@/util/Auth";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function EmployeFormUpdate() {
     const navigate = useNavigate();
     const params = useParams();
+    const dispatch = useDispatch<AppDispatch>();
 
     const [editFormData, setEditFormData] = useState<User>({
         Matricule: params.matricule as string,
@@ -41,16 +45,25 @@ export default function EmployeFormUpdate() {
 
         if (!response.ok) {
             const errorData = await response.json();
-            return console.log(errorData);
+            dispatch(EmployeeActions.ShowNotification({
+                IsVisible: true,
+                status: errorData.success ? "success" : "failed",
+                message: errorData.message,
+            }));
+            return navigate('/homePage/Employee')
         }
-
         const data = await response.json();
-        console.log('Update successful:', data.success);
-        navigate('/homePage/Employee')
+        dispatch(EmployeeActions.ShowNotification({
+            IsVisible: true,
+            status: data.success ? "success" : "failed",
+            message: data.message,
+        }));
+        return navigate('/homePage/Employee')
     };
     const token = getAuthToken();
     useEffect(() => {
         const fetchData = async () => {
+            
             try {
                 const response = await fetch(`http://127.0.0.1:8000/api/employes/edit/${params.matricule}`,
                     {
@@ -75,6 +88,7 @@ export default function EmployeFormUpdate() {
                     CodeFonction: data.data.CodeFonction || "",
                     Id_direction: data.data.Id_direction || "",
                 }));
+
             } catch (err) {
                 console.log(err)
             }

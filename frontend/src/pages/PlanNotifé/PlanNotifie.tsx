@@ -1,26 +1,32 @@
-import UsersTable from "@/components/Tables/employes-table";
+import NotifeTable from "@/components/Tables/Table-PlnaNotifé";
 import TableSkeleton from "@/components/Tables/TableSketlon";
-import { EmployeeActions } from "@/store/EmployesSlice";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AppDispatch, RootState } from "@/store/indexD";
+import { NotifeeActions } from "@/store/NotifeSlice";
 import { getAuthToken } from "@/util/Auth";
-import { Skeleton } from "@heroui/react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-// import { Skeleton } from "@/components/ui/skeleton";
-// import TableSkeleton from "@/components/Tables/TableSketlon";
+export default function PlanNotifie() {
 
-function Employee() {
+
     const dispatch = useDispatch<AppDispatch>();
-    const EmployeData = useSelector((state: RootState) => state.employees.employees) 
-    const refrechData = useSelector((state: RootState) => state.employees.refrechData);
-    const IsLoading = useSelector((state: RootState) => state.employees.IsLoading);
-    const {IsVisible , status , message} = useSelector((state : RootState) => state.employees.notification)
-    const token = getAuthToken();
+    const refrchData = useSelector((state :RootState)=> state.PlanNotifee.refrechData)
+    const ListeNotife = useSelector((state: RootState) => state.PlanNotifee.PlanNotifeeData);
+    const IsLoading = useSelector((state: RootState) => state.PlanNotifee.IsLoading);
+    const { IsVisible, status, message } = useSelector((state: RootState) => state.PlanNotifee.Notification);
+    const token = getAuthToken();  
+    useEffect(() => {
+        if (IsVisible) {
+            setTimeout(() => {
+                dispatch(NotifeeActions.ClearNotification());
+            }, 8000);
+        }
+    }, [dispatch, IsVisible]);
     useEffect(() => {
         const SendEmployeData = async () => {
-            dispatch(EmployeeActions.ShowNotificationRefrech(true));
-            const response = await fetch("http://127.0.0.1:8000/api/employes", {
+            dispatch(NotifeeActions.ShowNotificationRefrech(true));
+            const response = await fetch("http://127.0.0.1:8000/api/plannotifie", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -29,19 +35,11 @@ function Employee() {
                 }
             });
             const data = await response.json();
-            dispatch(EmployeeActions.FetchDataEmployee(data.employes))
-            dispatch(EmployeeActions.ShowNotificationRefrech(false));
+            dispatch(NotifeeActions.FetchDataPlanNotifee(data.Plan))
+            dispatch(NotifeeActions.ShowNotificationRefrech(false));
         }
         SendEmployeData()
-    }, [dispatch, token , refrechData]);
-
-    useEffect(() => {
-        if (IsVisible) {
-            setTimeout(() => {
-                dispatch(EmployeeActions.ClearNotification());
-            }, 5000)
-        }
-    }, [dispatch, IsVisible]);
+    }, [token, dispatch, refrchData]);
     const getNotificationStyle = () => {
         switch (status) {
             case 'pending':
@@ -54,7 +52,6 @@ function Employee() {
                 return 'bg-gray-100 text-gray-800 border-gray-300';
         }
     };
-
     // Define status icon
     const getStatusIcon = () => {
         switch (status) {
@@ -74,14 +71,14 @@ function Employee() {
                 (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold">Liste Employee</h2>
+                            <h2 className="text-2xl font-bold">Plan Notifée</h2>
                             <Skeleton className="h-9 w-24" /> 
                         </div>
-                        <TableSkeleton rows={20} columns={5} />
+                        <TableSkeleton rows={15} columns={5} />
                     </div>
                 ) : <>
-                    <h2 className="text-2xl font-bold mb-4">Liste Employee</h2>
-                    <UsersTable data={EmployeData} />
+                    <h2 className="text-2xl font-bold mb-4">Plan Notifée</h2>
+                    <NotifeTable data={ListeNotife} />
                 </>
             }
 
@@ -96,8 +93,7 @@ function Employee() {
                     </div>
                 </div>
             )}
+            
         </>
     );
 }
-
-export default Employee;

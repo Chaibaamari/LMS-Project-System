@@ -15,7 +15,7 @@ class FormationController extends Controller
                 ->select([
                     'formations.ID_Formation', // Include the primary key
                     'formations.Intitule_Action',
-                    'organismes.Id_Organisme',
+                    'organismes.Nom_Organisme',
                     'organismes.Lieu_Formation'
                 ])
                 ->distinct()

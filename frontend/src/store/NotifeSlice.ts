@@ -1,52 +1,52 @@
-import { PlanPrevision } from "@/assets/modelData";
+import { PlanNotifee } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
-
-
-interface PlanPrevisionState {
-    ListePrevision: PlanPrevision[];
-    notification: {
-        IsVisible:boolean,
+type PLanNotifeeType = {
+    PlanNotifeeData: PlanNotifee[]
+    IsLoading: boolean
+    refrechData: boolean,
+    Notification: {
+        IsVisible: boolean,
         status: string,
         message : string,
     }
-    IsLoading:boolean,
-    refrechData: boolean,
     ListeIntitulAction: {
         value: number;
         label: string;
     }[],
 }
-
-const initialState: PlanPrevisionState = {
-    ListePrevision: [],
-    notification: {
+const initialState: PLanNotifeeType = {
+    PlanNotifeeData: [],
+    IsLoading: false,
+    refrechData:false,
+    Notification: {
         IsVisible : false,
-        status: '',
-        message:'',
+        status: "",
+        message : "",
     },
-    IsLoading : false,
-    refrechData: false,
     ListeIntitulAction:[],
+}
 
-};
 
-const PrevisionPlanSlice = createSlice({
-    name: "PlanPrevision",
-    initialState,
+const PlanNotifeeSlice = createSlice({
+    name: "PlanNotifee",
+    initialState, 
     reducers: {
-        FetchDataPrevision(state, action) {
-            state.ListePrevision = action.payload;
+        FetchDataPlanNotifee(state, action) {
+            state.PlanNotifeeData = action.payload;
+        },
+        ShowNotificationRefrech(state , action) {
+            state.IsLoading = action.payload;
         },
         ShowNotification(state, action) {
-            state.notification = {
+            state.Notification = {
                 IsVisible : action.payload.IsVisible,
                 status: action.payload.status,
                 message : action.payload.message,
             }
         },
         ClearNotification(state) {
-            state.notification = {
+            state.Notification = {
                 IsVisible : false,
                 status: '',
                 message : '',
@@ -56,14 +56,11 @@ const PrevisionPlanSlice = createSlice({
         ReferchLatestData(state , action) {
             state.refrechData = action.payload.refrechData
         },
-        ShowNotificationRefrech(state , action) {
-            state.IsLoading = action.payload;
-        },
         GetAllFormation(state, action) {
             state.ListeIntitulAction = action.payload;
         }
     }
-});
+})
 
-export default PrevisionPlanSlice;
-export const PrevisionActions = PrevisionPlanSlice.actions;
+export default PlanNotifeeSlice;
+export const   NotifeeActions = PlanNotifeeSlice.actions;

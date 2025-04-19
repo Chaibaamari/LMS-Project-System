@@ -99,7 +99,7 @@ const data = {
     },
     {
       name: "Bon de Command",
-      url: "Bon-de-command",
+      url: "bondCommand",
       icon: Map,
     },
     {

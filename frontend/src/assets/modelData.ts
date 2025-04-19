@@ -59,7 +59,7 @@ export interface PlanPrevision extends Record<string, unknown> {
     ID_N: number;
     etat: string;
     Observation: string | null;
-    Date: string | null;
+    Date: Date | null;
     // Date_Deb: string | null;
     // Date_fin: string | null;
     // Budget: strign | null;
@@ -70,6 +70,30 @@ export interface PlanPrevision extends Record<string, unknown> {
     Frais_Hebergement: number | null;
     Frais_Transport: number | null;
     type: string | null;
+    employe: Employe;
+    formation: Formation;
+}
+
+export interface PlanNotifee extends Record<string, unknown>{
+    ID_N: number;
+    etat: string;
+    Observation: string | null;
+    Date: Date | null;
+    Date_Deb: Date | null;
+    Date_fin: Date | null;
+    Matricule: string;
+    ID_Formation: number;
+    Mode_Financement: number | null;
+    Frais_Pedagogiques: number | null;
+    Frais_Hebergement: number | null;
+    Frais_Transport: number | null;
+    Type_Pension: string | null;
+    Budget: string | null;
+    Observation_pre_arbitrage: string;
+    Observation_arbitrage: string;
+    Autres_charges: number;
+    Presalaire: number;
+    Dont_Devise : number;
     employe: Employe;
     formation: Formation;
 }
@@ -123,7 +147,7 @@ export type FieldConfigPlan = {
     name: keyof PlanPrevision; // Name of the field (used for form data)
     label: string; // Label for the field
     placeholder?: string; // Optional placeholder text
-    options?: { value: number; label: string; }[];
+    options?: { value: number | string ; label: string; }[];
 };
 // Define sort direction type
 export type SortDirection = "asc" | "desc" | null
@@ -162,5 +186,30 @@ export const fields: FieldConfig[] = [
         ],
     },
 ];
+
+
+export interface BondCommand {
+    ID_N: number;
+    etat: string;
+    Observation: string | null;
+    Date: Date | null;
+    Date_Deb: Date | null;
+    Date_fin: Date | null;
+    Matricule: string;
+    ID_Formation: number;
+    Mode_Financement: number | null;
+    Frais_Pedagogiques: number | null;
+    Frais_Hebergement: number | null;
+    Frais_Transport: number | null;
+    Type_Pension: string | null;
+    Budget: string | null;
+    Observation_pre_arbitrage: string;
+    Observation_arbitrage: string;
+    Autres_charges: number;
+    Presalaire: number;
+    Dont_Devise : number;
+    employe: Employe;
+    formation: Formation;
+};
 
 

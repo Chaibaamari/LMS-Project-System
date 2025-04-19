@@ -51,7 +51,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     const deleteSingleEmployee = async (matricule: string) => {
         try {
             setIsDeleting(false)
-            dispatch(EmployeeActions.ShowNotificationDelete({
+            dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'pending',
                 message: 'Chargement des employés en cours...'
@@ -71,7 +71,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                 throw new Error('Failed to delete employee');
             }
             setIsDeleting(false)
-            dispatch(EmployeeActions.ShowNotificationDelete({
+            dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'success',
                 message: 'Delete employé chargée avec succès'
@@ -79,7 +79,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
             dispatch(EmployeeActions.ReferchLatestData(true));
         } catch (err) {
             console.log(err)
-            dispatch(EmployeeActions.ShowNotificationDelete({
+            dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'failed',
                 message: 'Erreur lors du chargement des employés'
@@ -92,7 +92,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
 
         try {
             setIsDeleting(true);
-            dispatch(EmployeeActions.ShowNotificationDelete({
+            dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'pending',
                 message: 'Chargement des employés en cours...'
@@ -115,7 +115,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
 
             setSelectedRows([]);
             setIsDeleting(false);
-            dispatch(EmployeeActions.ShowNotificationDelete({
+            dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'success',
                 message: 'Delete employé chargée avec succès'
@@ -123,7 +123,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
             dispatch(EmployeeActions.ReferchLatestData(true));
         } catch (err) {
             console.log(err)
-            dispatch(EmployeeActions.ShowNotificationDelete({
+            dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'failed',
                 message: 'Erreur lors du chargement des employés'
@@ -179,6 +179,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
         );
     };
 
+
     
     type Join<K, P> = K extends string | number
     ? P extends string | number
@@ -209,7 +210,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     return (
         <TableHead className="cursor-pointer select-none" onClick={() => handleSort(column)}>
             <div className="flex items-center justify-between">
-                <div className="flex items-center  text-xs text-center font-medium ">
+                <div className="flex items-center text-xs text-center font-medium ">
                     {label}
                     {renderSortIndicator(column)}
                 </div>
@@ -364,12 +365,12 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                                 aria-label={`Select row ${item.Matricule}`}
                                             />
                                         </TableCell>
-                                        <TableCell className="font-medium ">{item.Matricule}</TableCell>
-                                        <TableCell className="text-center w-[100%]">{item.prenomnom}</TableCell>
-                                        <TableCell className="text-center w-[100%]">{item.Date_Naissance}</TableCell>
-                                        <TableCell className="text-center w-[100%]">{item.Date_Recrutement}</TableCell>
-                                        <TableCell className="text-center w-[100%]">{calculateAge(new Date(item.Date_Naissance))} ans</TableCell>
-                                        <TableCell className="text-center w-[100%]">{calculeAnciennete(new Date(item.Date_Recrutement))} ans</TableCell>
+                                        <TableCell className="font-medium text-center ">{item.Matricule}</TableCell>
+                                        <TableCell className="text-center ">{item.prenomnom}</TableCell>
+                                        <TableCell className="text-center ">{item.Date_Naissance}</TableCell>
+                                        <TableCell className="text-center ">{item.Date_Recrutement}</TableCell>
+                                        <TableCell className="text-center ">{calculateAge(new Date(item.Date_Naissance))} ans</TableCell>
+                                        <TableCell className="text-center ">{calculeAnciennete(new Date(item.Date_Recrutement))} ans</TableCell>
                                         <TableCell className="text-center ">{item.Sexe}</TableCell>
                                         <TableCell>
                                             <span

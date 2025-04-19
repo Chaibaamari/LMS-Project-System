@@ -16,7 +16,7 @@ Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login']);
 
 // Protected routes (JWT authenticated)
-//Route::middleware([JwtMiddleware::class])->group(function () {
+Route::middleware([JwtMiddleware::class])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
@@ -24,16 +24,15 @@ Route::post('login', [JWTAuthController::class, 'login']);
     Route::post('createUser', [JWTAuthController::class, 'createUser']);
     Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
     Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
-    
+
     Route::get('/records', [PlanController::class, 'testyear']);
-    
+
 
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
         Route::get('/', [EmployeController::class, 'index']);
         Route::post('/new', [EmployeController::class, 'store']);
-        // ->withoutMiddleware(['auth:api']); // Disables auth requirement
         Route::get('/edit/{matricule}', [EmployeController::class , 'getEmployee']);
         Route::put('/edit/{matricule}', [EmployeController::class, 'update']);
         Route::delete('/delete/{matricule}', [EmployeController::class, 'destroy']);
@@ -73,11 +72,16 @@ Route::post('login', [JWTAuthController::class, 'login']);
         Route::get('/export', [ImportContoller::class, 'notifieexport']);
         Route::get('/', [PlanController::class, 'consultnotifie']);
         Route::post('/add', [PlanController::class, 'notifieadd']);
-        Route::post('/modify', [PlanController::class, 'notifiemodify']);
-        Route::post('/delete', [PlanController::class, 'notifiedelete']);
+        Route::put('/modify', [PlanController::class, 'notifiemodify']);
     });
 
-//});
+    Route::post('createBC', [PlanController::class, 'createBC']);
+    Route::get('bonCommand', [PlanController::class, 'consultBC']);
+    Route::get('formation-employees/{id}', [PlanController::class, 'getEmployeesByFormation']);
+    Route::delete('delete/bondCommand/{matricule}', [PlanController::class, 'DeleteBondCommand']);
+    Route::post('TBF', [PlanController::class, 'consultTBF']);
+    Route::post('Bilan', [PlanController::class, 'consultBilan']);
+});
 
 
 // statistique
@@ -87,7 +91,7 @@ Route::post('login', [JWTAuthController::class, 'login']);
 
     Route::post('createBC', [PlanController::class, 'createBC']);
     Route::post('createDC', [ImportContoller::class, 'createDC']);
-    
+
 
     Route::post('bonCommand', [PlanController::class,'consultBC']);
 
