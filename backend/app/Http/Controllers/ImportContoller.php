@@ -16,39 +16,47 @@ class ImportContoller extends Controller
     //
     public function previmport(Request $request)
     {
+        try{
 
             $import = new PrevImport();
             Excel::import($import , $request->file('previsions'));
 
             if (!empty($import->failedRows)) {
                 return response()->json([
-                    'message' => 'Some rows failed validation.',
+                    'message' => 'Certaines lignes n’ont pas réussi la validation.',
+                    'status' => 'failed',
                     'errors' => $import->failedRows,
                 ], 422);
             }
-        
+
             return response()->json([
-                'message' => 'All Previsions imported successfully.',
+                'message' => 'Importation des prévisions effectuée avec succès.',
+                'status' => 'success',
             ]);
+        }catch (ValidationException $e) {
+            $failures = $e->failures();
+            $failedRows = [];
+
+            foreach ($failures as $failure) {
+                $row = $failure->row();
+                $errors = $failure->errors();
+                $failedRows[] = [
+                    'row' => $row,
+                    'errors' => $errors,
+                ];
+            }
+
+            return response()->json([
+                'message' => 'Certaines lignes n’ont pas passé les contrôles de validation.',
+                'status' => 'failed',
+                'errors' => $failedRows,
+            ], 422);
+        }
     }
 
     public function notifieimport(Request $request)
     {
         try {
-            Excel::import(new NotifieImport, request()->file('plan'));
-
-<<<<<<< HEAD
-            return response()->json([
-                'success' => true,
-                'message' => 'NT Data received successfully!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors de l\'importation du fichier : ' . $e->getMessage()
-            ], 500);
-        }
-=======
         $import = new NotifieImport();
         Excel::import($import, request()->file('plan'));
 
@@ -58,11 +66,30 @@ class ImportContoller extends Controller
                 'errors' => $import->failedRows,
             ], 422);
         }
-    
+
         return response()->json([
-            'message' => 'Plan Notifié imported successfully.',
+                'message' => 'Le plan notifié a été importé avec succès.',
+                'status' => 'success',
         ]);
->>>>>>> 483c630aa40344c825649e2e07c4c6ed508141ae
+        } catch (ValidationException $e) {
+            $failures = $e->failures();
+            $failedRows = [];
+
+            foreach ($failures as $failure) {
+                $row = $failure->row();
+                $errors = $failure->errors();
+                $failedRows[] = [
+                    'row' => $row,
+                    'errors' => $errors,
+                ];
+            }
+
+            return response()->json([
+                'message' => 'Certaines lignes n’ont pas passé les contrôles de validation.',
+                'status' => 'failed',
+                'errors' => $failedRows,
+            ], 422);
+        }
     }
 
     public function prevexport()

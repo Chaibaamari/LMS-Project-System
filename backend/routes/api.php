@@ -46,6 +46,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     });
 
     Route::prefix('Formation')->group(function () {
+        Route::get('/' , [FormationController::class, 'getAllFormation']);
         Route::get('/ListeFormation', [FormationController::class, 'getAllIntituleActions']);
     });
 
@@ -76,10 +77,11 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     });
 
     Route::post('createBC', [PlanController::class, 'createBC']);
+    Route::get('BC/{month}', [PlanController::class, 'consultBCMonth']);
     Route::get('bonCommand', [PlanController::class, 'consultBC']);
     Route::get('formation-employees/{id}', [PlanController::class, 'getEmployeesByFormation']);
     Route::delete('delete/bondCommand/{matricule}', [PlanController::class, 'DeleteBondCommand']);
-    Route::post('TBF', [PlanController::class, 'consultTBF']);
+    Route::get('TBF', [PlanController::class, 'consultTBF']);
     Route::post('Bilan', [PlanController::class, 'consultBilan']);
 });
 

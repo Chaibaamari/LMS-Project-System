@@ -74,7 +74,7 @@ React.useEffect(() => {
       return res.json();
     })
     .then((res) => {
-      let data = res.data; // <-- هنا نأخذ الـ data من داخل الـ response
+      const data = res.data; // <-- هنا نأخذ الـ data من داخل الـ response
       const transformed = data.map((item:RoleDataItem) => ({
         etat: item.etat,                // اسم الفئة
         Employé: item.count,              // عدد الموظفين

@@ -192,7 +192,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "pending",
-                    message: "Chargement des prévision en cours...",
+                    message: "Chargement des Notifiee en cours...",
                 }),
             )
             setIsDeleting(true)
@@ -205,14 +205,14 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 },
             })
             if (!response.ok) {
-                throw new Error("Failed to delete prévision")
+                throw new Error("Failed to delete Notifiee")
             }
             setIsDeleting(false)
             dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "success",
-                    message: "Delete prévisions chargée avec succès",
+                    message: "Delete Notifiee chargée avec succès",
                 }),
             )
             dispatch(NotifeeActions.ReferchLatestData(true))
@@ -222,7 +222,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "failed",
-                    message: "Erreur lors du chargement des prévisions",
+                    message: "Erreur lors du chargement des Notifiee",
                 }),
             )
         }
@@ -250,7 +250,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             })
 
             if (!response.ok) {
-                throw new Error("Failed to delete prévisions")
+                throw new Error("Failed to delete Notifiee")
             }
 
             setSelectedRows([])
@@ -269,7 +269,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "failed",
-                    message: "Erreur lors du chargement des prévisions",
+                    message: "Erreur lors du chargement des Notifiéé",
                 }),
             )
         }
@@ -305,17 +305,19 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             })
             const resData = await response.json();
             if (!response.ok) {
+                dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
-                    status: resData.success ? "success" : "failed",
-                    message: resData.message,
-                });
+                    status: "failed",
+                    message: `Erreur lors de l'importation : ${resData.errors.length} ligne(s) ont échoué à la validation.`
+                }));
+                dispatch(NotifeeActions.ReferchLatestData(true));
                 return navigate("/homePage/planNotifie");
             }
             dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
-                    status: resData.success ? "success" : "failed",
+                    status: "success",
                     message: resData.message,
                 }),
             )
@@ -882,7 +884,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         id="date-debut"
                                         variant="outline"
                                         className={cn(
-                                            "justify-start text-left font-normal",
+                                            " justify-start text-left font-normal",
                                             !dateRange.startDate && "text-muted-foreground",
                                         )}
                                     >
@@ -891,12 +893,12 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                             : "Sélectionner une date"}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent className="w-full p-0" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={dateRange.startDate}
                                         onSelect={(date) => setDateRange((prev) => ({ ...prev, startDate: date }))}
-                                        initialFocus
+                                        autoFocus
                                     />
                                 </PopoverContent>
                             </Popover>

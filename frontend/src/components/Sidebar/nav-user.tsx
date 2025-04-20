@@ -33,6 +33,8 @@ import { Form } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { getAuthToken } from "@/util/Auth"
 import { currentUser } from "@/assets/modelData"
+import { useDispatch } from "react-redux"
+import { BondCommandActions } from "@/store/BondCommand"
 
 
 export function NavUser({
@@ -46,6 +48,7 @@ export function NavUser({
   }) {
   const [currentUser, setCurrentUser] = useState<currentUser | null>(null);
   const token = getAuthToken();
+  const dispatch = useDispatch()
   useEffect(() => {
     const fetchData = async () => {
       const response = await fetch("http://127.0.0.1:8000/api/user", {
@@ -57,6 +60,7 @@ export function NavUser({
         }
       });
       const data = await response.json();
+      dispatch(BondCommandActions.updateUser(data.user))
       setCurrentUser(data.user);
       return data.user;
     };

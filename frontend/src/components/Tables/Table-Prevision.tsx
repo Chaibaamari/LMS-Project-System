@@ -164,18 +164,20 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
       })
       const resData = await response.json();
       if (!response.ok) {
+        dispatch(
         PrevisionActions.ShowNotification({
           IsVisible: true,
-          status: resData.success ? "success" : "failed",
-          message: resData.message,
-        });
-          return navigate("/homePage/PlanPrevision");
+          status: 'failed',
+          message: `Erreur lors de l'importation des prévisions : ${resData.errors.length} ligne(s) ont échoué à la validation.`
+        }));
+        dispatch(PrevisionActions.ReferchLatestData(true))
+        return navigate("/homePage/PlanPrevision");
       }
       
       dispatch(
         PrevisionActions.ShowNotification({
           IsVisible: true,
-          status: resData.success ? "success" : "failed",
+          status: 'success',
           message: resData.message,
         }),
       )

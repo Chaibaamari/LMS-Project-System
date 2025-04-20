@@ -1,4 +1,4 @@
-import { BondCommand } from "@/assets/modelData";
+import { BondCommand, currentUser } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
 type BondCommandType = {
@@ -10,6 +10,7 @@ type BondCommandType = {
         status: string,
         message : string,
     }
+    User :currentUser,
 }
 const initialState: BondCommandType = {
     BondCommandData: [],
@@ -20,6 +21,10 @@ const initialState: BondCommandType = {
         status: "",
         message : "",
     },
+    User: {
+        name: "",
+        email: "",
+    }
 }
 
 
@@ -51,6 +56,9 @@ const BondCommandSlice = createSlice({
         ReferchLatestData(state , action) {
             state.refrechData = action.payload.refrechData
         },
+        updateUser(state , action) {
+            state.User = action.payload
+        }
     }
 })
 

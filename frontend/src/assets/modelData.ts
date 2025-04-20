@@ -97,6 +97,12 @@ export interface PlanNotifee extends Record<string, unknown>{
     employe: Employe;
     formation: Formation;
 }
+export interface TBF  {
+    message: string;
+    Nom: string;
+    date_creation: string;
+    Plans: PlanPrevision[];
+}
 
 
 

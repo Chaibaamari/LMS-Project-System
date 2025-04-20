@@ -75,7 +75,12 @@ export default function PlanPrevision() {
                         <TableSkeleton rows={15} columns={5} />
                     </div>
                 ) : <>
-                    <h2 className="text-2xl font-bold mb-4">Plan Prévision</h2>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Plan Prévision</h2>
+                        <p className="text-gray-600 pl-1">
+                            Cette section est dédiée à la gestion des Plan Prévision de l'entreprise Sonatrach.
+                        </p>
+                    </div>
                     <PrevisionTable data={ListePrevision} />
                 </>
             }
