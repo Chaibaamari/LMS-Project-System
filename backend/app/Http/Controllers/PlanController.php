@@ -8,6 +8,7 @@ use App\Models\Formation;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 
 class PlanController extends Controller
 {
@@ -66,7 +67,7 @@ class PlanController extends Controller
         }
     }
 
-    public function consultBCMonth(Request $request  , $month)
+    public function consultBCMonth(Request $request, $month)
     {
         try {
             // Validation du mois (optionnel mais recommandé)
@@ -149,6 +150,27 @@ class PlanController extends Controller
         ]);
     }
 
+    // public function consultTBF(string $month)
+    // {
+    //     // $Exercice = request()->header('Year');
+    //     //$plans = Plan::where('Exercice',$Exercice)->whereMonth('Date_Deb', $request->input('month'))->orWhereMonth('Date_Fin', $request->input('month'))->where('etat', 'confirmé')->get();
+
+    //         // Grab the “YYYY‑MM” string from your query (e.g. "2024-04")
+    //     $monthInput = $month;
+
+    //     // Build full month start/end dates
+    //     $monthStart = Carbon::parse("{$monthInput}-01")->startOfMonth(); // 2024‑04‑01 00:00:00
+    //     $monthEnd   = Carbon::parse("{$monthInput}-01")->endOfMonth();   // 2024‑04‑30 23:59:59
+    //     $Exercice = request()->header('Year');
+    //     // Fetch any record whose [Date_Deb … Date_Fin] range overlaps [monthStart … monthEnd]
+    //     $plans = Plan::where('Exercice',$Exercice)
+    //                         ->where('etat', 'confirmé')
+    //                         ->where('Date_Deb', '<=', $monthEnd)
+    //                         ->where('Date_Fin',  '>=', $monthStart)
+    //                         ->get();
+
+    //     return response()->json(['message' => 'TBF retourné', 'Plan' => $plans]);
+    // }
     public function consultTBF(Request $request)
     {
         $moisFrancais = [
@@ -209,16 +231,21 @@ class PlanController extends Controller
     }
 
 
-    public function consultBilan(Request $request)
+
+    public function consultBilan()
     {
         $plans = Plan::where('etat', 'confirmé')->get();
+        $Exercice = request()->header('Year');
+        $plans = Plan::where('Exercice', $Exercice)->where('etat', 'confirmé')->get();
 
         return response()->json(['message' => 'Bilan retourné', 'Plan' => $plans]);
     }
 
     public function consultprev()
     {
-        $plans = Plan::where('etat', 'prévision')->with([
+        $Exercice = request()->header('Year');
+
+        $plans = Plan::where('Exercice', $Exercice)->where('etat', 'prévision')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',
@@ -239,8 +266,9 @@ class PlanController extends Controller
 
         try {
             // Find the formation to get its ID
+            $Exercice = $request->header('Year');
             $formation = Formation::where('ID_Formation', $validatedData['ID_Formation'])->firstOrFail();
-            $existingPlan = Plan::where('Matricule', $validatedData['Matricule'])
+            $existingPlan = Plan::where('Exercice', $Exercice)->where('Matricule', $validatedData['Matricule'])
                 ->where('ID_Formation', $formation->ID_Formation)
                 ->where('etat', 'prévision')
                 ->first();
@@ -253,6 +281,7 @@ class PlanController extends Controller
                 ], 409);
             }
             $plan = Plan::create([
+                'Exercice' => $Exercice,
                 'etat' => 'prévision',
                 'Matricule' => $validatedData['Matricule'],
                 'ID_Formation' => $formation->ID_Formation,
@@ -344,7 +373,9 @@ class PlanController extends Controller
 
     public function consultnotifie()
     {
-        $plans = Plan::where('etat', 'validé')->with([
+        $Exercice = request()->header('Year');
+
+        $plans = Plan::where('Exercice', $Exercice)->where('etat', 'validé')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',
@@ -370,11 +401,12 @@ class PlanController extends Controller
             'Presalaire' => 'numeric',
             'Dont_Devise' => 'numeric',
         ]);
+        $Exercice = $request->header('Year');
         try {
 
             // Find the formation to get its ID
             $formation = Formation::where('ID_Formation', $validatedData['ID_Formation'])->firstOrFail();
-            $existingPlan = Plan::where('Matricule', $validatedData['Matricule'])
+            $existingPlan = Plan::where('Exercice', $Exercice)->where('Matricule', $validatedData['Matricule'])
                 ->where('ID_Formation', $formation->ID_Formation)
                 ->where('etat', 'validé')
                 ->first();
@@ -387,6 +419,7 @@ class PlanController extends Controller
                 ], 409);
             }
             $plan = Plan::create([
+                'Exercice' => $Exercice,
                 'etat' => 'validé',
                 'Matricule' => $validatedData['Matricule'],
                 'ID_Formation' => $validatedData['ID_Formation'],
@@ -486,11 +519,12 @@ class PlanController extends Controller
     }
 
 
-    public function DeleteBondCommand(  Request $request, $matricule)
+    public function DeleteBondCommand(Request $request, $matricule)
     {
         try {
             $plan = Plan::where('ID_N', $request->input("ID_N"))->where(
-                'Matricule' , $matricule
+                'Matricule',
+                $matricule
             )->update([
                 'etat' => 'validé'
             ]);
@@ -511,5 +545,4 @@ class PlanController extends Controller
 
         return response()->json(['year is ' => $customHeader]);
     }
-
 }

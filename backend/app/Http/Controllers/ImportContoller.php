@@ -16,12 +16,11 @@ class ImportContoller extends Controller
     //
     public function previmport(Request $request)
     {
-        try{
-
-            $import = new PrevImport();
+            $Exercice = $request->header('Year');
+            $import = new PrevImport($Exercice);
             Excel::import($import , $request->file('previsions'));
 
-            if (!empty($import->failedRows)) {
+            if (!empty($import->failedRows) ||!empty($import->existingRows))  {
                 return response()->json([
                     'message' => 'Certaines lignes n’ont pas réussi la validation.',
                     'status' => 'failed',
@@ -33,31 +32,12 @@ class ImportContoller extends Controller
                 'message' => 'Importation des prévisions effectuée avec succès.',
                 'status' => 'success',
             ]);
-        }catch (ValidationException $e) {
-            $failures = $e->failures();
-            $failedRows = [];
-
-            foreach ($failures as $failure) {
-                $row = $failure->row();
-                $errors = $failure->errors();
-                $failedRows[] = [
-                    'row' => $row,
-                    'errors' => $errors,
-                ];
-            }
-
-            return response()->json([
-                'message' => 'Certaines lignes n’ont pas passé les contrôles de validation.',
-                'status' => 'failed',
-                'errors' => $failedRows,
-            ], 422);
-        }
     }
 
     public function notifieimport(Request $request)
     {
-        try {
-        $import = new NotifieImport();
+        $Exercice = $request->header('Year');
+        $import = new NotifieImport($Exercice);
         Excel::import($import, request()->file('plan'));
 
         if (!empty($import->failedRows)) {
@@ -71,18 +51,6 @@ class ImportContoller extends Controller
                 'message' => 'Le plan notifié a été importé avec succès.',
                 'status' => 'success',
         ]);
-        } catch (ValidationException $e) {
-            $failures = $e->failures();
-            $failedRows = [];
-
-            foreach ($failures as $failure) {
-                $row = $failure->row();
-                $errors = $failure->errors();
-                $failedRows[] = [
-                    'row' => $row,
-                    'errors' => $errors,
-                ];
-            }
 
             return response()->json([
                 'message' => 'Certaines lignes n’ont pas passé les contrôles de validation.',
@@ -90,16 +58,21 @@ class ImportContoller extends Controller
                 'errors' => $failedRows,
             ], 422);
         }
-    }
 
     public function prevexport()
     {
-        return Excel::download(new PrevExport, 'previsionsexporté.xlsx');
+        $Exercice = request()->header('Year');
+        $import = new PrevExport($Exercice);
+
+        return Excel::download($import, 'previsionsexporté.xlsx');
     }
 
     public function Notifieexport()
     {
-        return Excel::download(new NotifieExport, 'plannotifieexporté.xlsx');
+        $Exercice = request()->header('Year');
+        $import = new NotifieExport($Exercice);
+
+        return Excel::download($import, 'plannotifieexporté.xlsx');
     }
 
     public function createDC(Request $request)

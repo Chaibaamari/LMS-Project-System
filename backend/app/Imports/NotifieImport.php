@@ -22,6 +22,13 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
     private $errors = [];
     private $rowsSuccess = 0;
     public $failedRows ;
+
+    protected $year;
+
+    public function __construct($year)
+    {
+        $this->year = $year;
+    }
     // public function rules(): array
     // { WithValidation
     //     // return [
@@ -163,7 +170,7 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
                 'Id_direction'=>$row['unitecomplexedirection_regionalegroupement'],
             ]);
 
-            $plan=Plan::where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first(); //where etat prevision
+            $plan=Plan::where('Exercice',$this->year)->where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first(); //where etat prevision
             if ($plan) {
                 $plan->update([
                     'etat'=>'validé',
@@ -199,6 +206,7 @@ class NotifieImport implements ToCollection, WithHeadingRow,WithCalculatedFormul
                     'Dont_Devise'=>$row['dont_devise'],
                     'Presalaire'=>$row['presalaire'],
                     'Autres_charges'=>$row['autres_charges'],
+                    'Exercice'=>$this->year,
                 ]);
             }
         }

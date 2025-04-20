@@ -97,9 +97,9 @@ Route::middleware([JwtMiddleware::class])->group(function () {
 
     Route::post('bonCommand', [PlanController::class,'consultBC']);
 
-    Route::post('TBF', [PlanController::class,'consultTBF']);
+    Route::get('TBF/{month}', [PlanController::class,'consultTBF']);
 
-    Route::post('Bilan', [PlanController::class,'consultBilan']);
+    Route::get('Bilan', [PlanController::class,'consultBilan']);
 
 
 //});

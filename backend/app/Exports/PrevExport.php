@@ -13,10 +13,17 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 class PrevExport implements FromQuery,WithHeadings, WithMapping
 {
     use Exportable;
+    protected $year;
+
+    public function __construct($year)
+    {
+        $this->year = $year;
+    }
+    
 
     public function query()
     {
-        return Plan::where('etat', 'prévision')->with([
+        return Plan::where('Exercice',$this->year)->where('etat', 'prévision')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',
