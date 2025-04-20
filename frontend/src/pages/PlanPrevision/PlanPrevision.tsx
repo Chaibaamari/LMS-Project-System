@@ -3,7 +3,7 @@ import TableSkeleton from "@/components/Tables/TableSketlon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { PrevisionActions } from "@/store/PrevisionSlice";
-import { getAuthToken } from "@/util/Auth";
+import { getAuthToken, getYearExercice } from "@/util/Auth";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,6 +14,7 @@ export default function PlanPrevision() {
     const IsLoading = useSelector((state: RootState) => state.PlanPrevision.IsLoading);
     const { IsVisible, status, message } = useSelector((state: RootState) => state.PlanPrevision.notification);
     const token = getAuthToken();  
+    const Year = getYearExercice()
     useEffect(() => {
         if (IsVisible) {
             setTimeout(() => {
@@ -29,7 +30,8 @@ export default function PlanPrevision() {
                 headers: {
                     "Content-Type": "application/json",
                     'Accept': 'application/json',
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`,
+                    "Year" : Year ?? ''
                 }
             });
             const data = await response.json();

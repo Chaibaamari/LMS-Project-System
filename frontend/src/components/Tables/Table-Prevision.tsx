@@ -12,7 +12,7 @@ import { Input } from "../ui/input"
 import { useTableControls } from "@/hooks/useTableControls"
 import { Pagination } from "../Tools/pagination"
 import { DynamicSearch } from "../Tools/Search"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import { PrevisionActions } from "@/store/PrevisionSlice"
 import ImportExportComponent from "../Tools/Ecxel"
@@ -43,6 +43,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
   } = useTableControls(data, searchTerm, searchField)
   const [isDeleting, setIsDeleting] = useState(false)
   const token = getAuthToken()
+  const Year = getYearExercice()
+  console.log(Year)
   const dispatch = useDispatch()
   const deleteSingleEmployee = async (id: string) => {
     try {
@@ -160,6 +162,7 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${token}`,
+          "Year" : Year ?? '',
         },
       })
       const resData = await response.json();
@@ -204,7 +207,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
     fetch("http://127.0.0.1:8000/api/previsions/export", {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
+          "Year" : Year ?? '',
       },
     })
       .then((response) => response.blob())

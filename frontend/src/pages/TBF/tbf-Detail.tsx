@@ -30,7 +30,8 @@ export default function TbfDetailPage() {
     const navigate = useNavigate()
     const params = useParams()
     const id = Number(params.id);
-
+    const stored = localStorage.getItem('selectedYear')
+    console.log(stored)
 
     useEffect(() => {
         fetchBondCommands()
@@ -45,6 +46,7 @@ export default function TbfDetailPage() {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/json",
                     "Content-Type": "application/json",
+                    'Year': stored ? stored : new Date().getFullYear().toString(),
                 },
             });
 

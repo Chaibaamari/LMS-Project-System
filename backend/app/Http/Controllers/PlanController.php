@@ -29,6 +29,7 @@ class PlanController extends Controller
     public function consultBC(Request $request)
     {
         try {
+            $Exercice = request()->header('Year');
             $formations = Formation::select(
                 'formations.ID_Formation',
                 'formations.Intitule_Action',
@@ -37,6 +38,7 @@ class PlanController extends Controller
                 'plans.Date_Deb',
                 'plans.Date_fin'
             )
+                ->where('plans.Exercice', $Exercice)
                 ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
                 ->where('plans.etat', 'confirmé')
                 ->groupBy([
@@ -70,12 +72,11 @@ class PlanController extends Controller
     public function consultBCMonth(Request $request, $month)
     {
         try {
-            // Validation du mois (optionnel mais recommandé)
             $request->validate([
                 'month' => 'nullable|integer|between:1,12'
             ]);
 
-            //$month = $request->input('month', now()->month); // Mois courant par défaut
+            $Exercice = request()->header('Year');
 
             // Noms des mois en français
             $moisFrancais = [
@@ -92,7 +93,6 @@ class PlanController extends Controller
                 11 => 'novembre',
                 12 => 'décembre'
             ];
-
             $formations = Formation::select(
                 'formations.ID_Formation',
                 'formations.Intitule_Action',
@@ -101,6 +101,7 @@ class PlanController extends Controller
                 'plans.Date_Deb',
                 'plans.Date_fin'
             )
+            ->where('plans.Exercice', $Exercice)
                 ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
                 ->where('plans.etat', 'confirmé')
                 ->when($month, function ($query) use ($month) {
@@ -187,7 +188,7 @@ class PlanController extends Controller
             11 => 'novembre',
             12 => 'décembre'
         ];
-
+        $Exercice = request()->header('Year');
         // Get distinct month/year combinations from Date_Deb
         $activeDates = Plan::where('etat', 'confirmé')
             ->whereNotNull('Date_Deb')
@@ -204,6 +205,7 @@ class PlanController extends Controller
 
             // Fetch all plans for the same month and year (from Date_Deb or Date_Fin)
             $plans = Plan::where('etat', 'confirmé')
+                ->where('plans.Exercice', $Exercice)
                 ->where(function ($query) use ($month, $year) {
                     $query->where(function ($q) use ($month, $year) {
                         $q->whereMonth('Date_Deb', $month)

@@ -14,7 +14,7 @@ import { Pagination } from "../Tools/pagination"
 import { DynamicSearch } from "../Tools/Search"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { NotifeeActions } from "@/store/NotifeSlice"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import ImportExportComponent from "../Tools/Ecxel"
 import { Calendar } from "@/components/ui/calendar"
@@ -51,6 +51,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     const navigate = useNavigate()
     const [isDeleting, setIsDeleting] = useState(false);
     const token = getAuthToken();
+    const Year = getYearExercice()
     const dispatch = useDispatch();
     // const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
     const [showDateRangeDialog, setShowDateRangeDialog] = useState(false);
@@ -301,6 +302,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 headers: {
                     Accept: "application/json",
                     Authorization: `Bearer ${token}`,
+                    "Year" : Year ?? '',
                 },
             })
             const resData = await response.json();
@@ -345,6 +347,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
+                "Year" : Year ?? '',
             },
         })
             .then((response) => response.blob())

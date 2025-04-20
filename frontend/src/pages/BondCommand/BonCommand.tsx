@@ -7,7 +7,7 @@ import { Search, FileText, Folder } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import { NotifeeActions } from "@/store/NotifeSlice"
 import { useNavigate } from "react-router-dom"
@@ -25,7 +25,8 @@ export default function BondCommandPage() {
   const [bondCommands, setBondCommands] = useState<BondCommand[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const token = getAuthToken()
+    const token = getAuthToken()
+    const Year = getYearExercice()
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -41,6 +42,7 @@ export default function BondCommandPage() {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/json",
+                    "Year" : Year ?? ''
                 },
             });
 

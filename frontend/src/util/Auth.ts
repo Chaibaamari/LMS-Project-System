@@ -22,6 +22,13 @@ export function getAuthToken(): string | null | 'EXPIRED' {
     return token;
 
 }
+export function getYearExercice(): string | null { 
+    const year = localStorage.getItem('selectedYear');
+    if (!year) {
+        return null;
+    }
+    return year;
+}
 export function LoadToken(): string {
   const token = getAuthToken();
   if (!token || token === "EXPIRED") {

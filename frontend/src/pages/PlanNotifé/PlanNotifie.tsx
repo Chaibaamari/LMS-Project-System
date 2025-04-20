@@ -3,7 +3,7 @@ import TableSkeleton from "@/components/Tables/TableSketlon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { NotifeeActions } from "@/store/NotifeSlice";
-import { getAuthToken } from "@/util/Auth";
+import { getAuthToken, getYearExercice } from "@/util/Auth";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,6 +16,7 @@ export default function PlanNotifie() {
     const IsLoading = useSelector((state: RootState) => state.PlanNotifee.IsLoading);
     const { IsVisible, status, message } = useSelector((state: RootState) => state.PlanNotifee.Notification);
     const token = getAuthToken();  
+    const Year = getYearExercice()
     useEffect(() => {
         if (IsVisible) {
             setTimeout(() => {
@@ -31,7 +32,8 @@ export default function PlanNotifie() {
                 headers: {
                     "Content-Type": "application/json",
                     'Accept': 'application/json',
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`,
+                    "Year" : Year ?? ''
                 }
             });
             const data = await response.json();

@@ -25,6 +25,8 @@ export default function Tbf() {
   const [selectedYear, setSelectedYear] = useState<string>("")
   const [filteredData, setFilteredData] = useState(TBFdata)
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const stored = localStorage.getItem('selectedYear');
+    console.log(stored)
 
 
   // Get unique years from TBF data
@@ -44,6 +46,7 @@ export default function Tbf() {
                     "Content-Type": "application/json",
                     Accept: "application/json",
                     Authorization: `Bearer ${token}`,
+                    "Year": stored ?? '',
                 },
             })
             const data = await response.json()
