@@ -20,14 +20,19 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
+    Route::get('allUsers', [JWTAuthController::class, 'getAllUsers']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
-    Route::post('createUser', [JWTAuthController::class, 'createUser']);
     Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
     Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
 
     Route::get('/records', [PlanController::class, 'testyear']);
 
 
+    Route::middleware('role:responsable')->group(function () {
+        Route::post('createUser', [JWTAuthController::class, 'createUser']);
+        Route::get('users', [JWTAuthController::class, 'getUsersByRole']);
+        Route::put('users/{id}/role', [JWTAuthController::class, 'updateUserRole']);
+    });
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
@@ -38,6 +43,7 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         Route::delete('/delete/{matricule}', [EmployeController::class, 'destroy']);
         Route::delete('/delete-multiple', [EmployeController::class, 'destroyMultiple']);
     });
+    // Role-based routes
 
     // Function routes
     Route::prefix('functions')->group(function () {

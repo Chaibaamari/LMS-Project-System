@@ -128,21 +128,21 @@ export default function PlanNotifieeFormInsert() {
                 dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: errorData.success ? 'success' : 'failed',
-                message: errorData.message || "Erreur lors de la création de la prévision"
+                message: errorData.message || "Erreur lors de la création de plan"
                 }));
                 return navigate('/homePage/planNotifie');
             }
             dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: errorData.success ? 'success' : 'failed',
-                message: errorData.message || "Erreur lors de la création de la prévision"
+                message: errorData.message || "Erreur lors de la création de plan"
             }));
             navigate('/homePage/planNotifie');
         } catch (err) {
             dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: 'failed',
-                message: err || "Erreur lors de la création de la prévision"
+                message: err || "Erreur lors de la création de plan"
             }));
             return navigate('/homePage/planNotifie');
         }

@@ -9,7 +9,7 @@ import { FormationActions } from "@/store/Formation"
 import { useDispatch, useSelector } from "react-redux"
 import type { AppDispatch, RootState } from "@/store/indexD"
 import { getAuthToken } from "@/util/Auth"
-import { Input } from "@heroui/react"
+import { Input } from "@/components/ui/input"
 
 // Formation status types
 
@@ -112,7 +112,7 @@ export default function LearningDashboard() {
                                                 <Calendar size={10} className="ml-2" />
                                             </Badge>
                                         </div>
-                                        <img src="next.png" className="w-full h-28 object-cover p-2" alt="Formation thumbnail" />
+                                        <img src="lms2.png" className="w-full h-28 object-cover p-2" alt="Formation thumbnail" />
                                     </div>
                                     <div className="p-3 pb-0 flex flex-col justify-between gap-1 items-start">
                                         <div className="mb-1 flex items-center justify-between w-full">

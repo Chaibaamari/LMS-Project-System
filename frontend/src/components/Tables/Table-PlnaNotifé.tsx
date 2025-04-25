@@ -1,4 +1,3 @@
-"use client"
 import { useMemo, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -8,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import type { PlanNotifee } from "@/assets/modelData"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Input } from "../ui/input"
+import { Input } from "@/components/ui/input"
 import { useTableControls } from "@/hooks/useTableControls"
 import { Pagination } from "../Tools/pagination"
 import { DynamicSearch } from "../Tools/Search"
@@ -901,7 +900,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         mode="single"
                                         selected={dateRange.startDate}
                                         onSelect={(date) => setDateRange((prev) => ({ ...prev, startDate: date }))}
-                                        autoFocus
+                                        className="rounded-md border shadow"
                                     />
                                 </PopoverContent>
                             </Popover>
