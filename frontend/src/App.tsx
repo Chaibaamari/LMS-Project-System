@@ -19,6 +19,8 @@ import PlanPrevisionFormUpdate from "./pages/PlanPrevision/UpdatePlanPrevision";
 import PlanNotifieeFormInsert from "./pages/PlanNotifé/InsertNotifee";
 import PlanNotifieeFormUpdate from "./pages/PlanNotifé/UpdatePlanNotifee";
 import BondCommandDetailPage from "./pages/BondCommand/bondCommandDetail";
+import Tbf from "./pages/TBF/Tbf";
+import TbfDetailPage from "./pages/TBF/tbf-Detail";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -42,6 +44,7 @@ export default function App() {
               path: 'bondCommand', element: <BonCommand />, loader: ProtectedRoute
             },
             { path: 'Settings', element: <Settings />, loader: ProtectedRoute },
+            { path: 'TBF', element: <Tbf />, loader: ProtectedRoute },
           ]
         },
         { path: 'Emp/update/:matricule', element: <EmployeFormUpdate />, loader: ProtectedRoute },
@@ -49,6 +52,7 @@ export default function App() {
         { path: 'notifie/update/:ID_N', element: <PlanNotifieeFormUpdate />, loader: ProtectedRoute },
         { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRoute },
         { path: 'homePage/bondCommand/:id', element: <BondCommandDetailPage /> },
+        { path: 'homePage/TBF/bondCommand/:id', element: <TbfDetailPage /> },
         { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRoute },
         { path: 'PrevPlan/insert', element: <InsertPrevision />, loader: ProtectedRoute },
         { path: 'NotifieePlan/insert', element: <PlanNotifieeFormInsert />, loader: ProtectedRoute },

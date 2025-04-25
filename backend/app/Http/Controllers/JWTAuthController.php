@@ -19,6 +19,7 @@ class JWTAuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'sometimes|in:responsable,gestionnaire,consultant' // Add role validation
         ]);
 
         if ($validator->fails()) {
@@ -29,6 +30,7 @@ class JWTAuthController extends Controller
             'name' => $request->get('name'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
+            'role' => $request->get('role', 'consultant'), // Default to consultant
         ]);
 
         $token = JWTAuth::fromUser($user);
@@ -53,14 +55,16 @@ class JWTAuthController extends Controller
                 return response()->json(['error' => ["msg" => 'Invalid credentials' ] ], 401);
             }
 
-            $customClaims = ['exp' => now()->addHours(1)->timestamp];
-            $token = JWTAuth::claims($customClaims)->attempt($credentials);
-
-            // Get the authenticated user.
             $user = auth()->user();
 
-            // // (optional) Attach the role to the token.
-            // $token = JWTAuth::claims(['role' => $user->role])->fromUser($user);
+            $customClaims = [
+                'exp' => now()->addHours(1)->timestamp,
+                'role' => $user->role,
+                'active' => $user->active
+            ];
+            $token = JWTAuth::claims($customClaims)->attempt($credentials);
+
+            $token = JWTAuth::claims($customClaims)->attempt($credentials);
 
             return response()->json(compact('token'));
         } catch (JWTException $e) {
@@ -89,7 +93,7 @@ class JWTAuthController extends Controller
 
         return response()->json(['message' => 'Successfully logged out']);
     }
-    
+
     public function usercount()
     {
         $user = User::count();
@@ -99,6 +103,7 @@ class JWTAuthController extends Controller
     public function createUser(StoreUserRequest $request)
     {
         $validated = $request->validated();
+        $validated['password'] = Hash::make($validated['password']);
         $user = User::create($validated);
         $token = JWTAuth::fromUser($user);
 
@@ -117,5 +122,40 @@ class JWTAuthController extends Controller
         $user = User::find($id)->update([
             'active' => False]);
         return response()->json(['message' => 'User Dectivated Successfully']);
+    }
+    // JWTAuthController.php
+    public function getUsersByRole($role)
+    {
+        if (!in_array($role, ['responsable', 'gestionnaire', 'consultant'])) {
+            return response()->json(['error' => 'Invalid role'], 400);
+        }
+
+        $users = User::where('role', $role)->where('active', true)->get();
+        return response()->json(compact('users'));
+    }
+    public function updateUserRole(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'role' => 'required|in:responsable,gestionnaire,consultant'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user = User::findOrFail($id);
+        $user->role = $request->role;
+        $user->save();
+
+        return response()->json(['message' => 'Role updated successfully', 'user' => $user]);
+    }
+    public function getAllUsers(){
+        $users = User::select('name', 'email', 'role', 'active')
+            ->whereIn('role', ['consultant', 'gestionnaire'])
+            ->get();
+
+        return response()->json([
+            'users' => $users,
+        ]);
     }
 }

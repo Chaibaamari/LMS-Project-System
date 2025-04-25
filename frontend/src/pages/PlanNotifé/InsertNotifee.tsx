@@ -2,7 +2,7 @@ import { FieldConfigPlan } from "@/assets/modelData";
 import { DynamicInsertForm } from "@/components/Tools/InsertForm";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { NotifeeActions } from "@/store/NotifeSlice";
-import { getAuthToken } from "@/util/Auth";
+import { getAuthToken, getYearExercice } from "@/util/Auth";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ export default function PlanNotifieeFormInsert() {
     const navigate = useNavigate();
     const token = getAuthToken();
     const dispatch = useDispatch<AppDispatch>();
+    const Year = getYearExercice()
     interface FormationOption {
     value: number;
     label: string;
@@ -23,7 +24,7 @@ export default function PlanNotifieeFormInsert() {
                 headers: {
                     "Content-Type": "application/json",
                     'Accept': 'application/json',
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`,
                 }
             });
             const data = await response.json();
@@ -101,6 +102,7 @@ export default function PlanNotifieeFormInsert() {
                         'Content-Type': 'application/json',
                         Accept: 'application/json',
                         Authorization: `Bearer ${token}`,
+                        "Year" : Year ?? ''
                     },
                     body: JSON.stringify({
                         Matricule: editFormData.Matricule,
@@ -126,21 +128,21 @@ export default function PlanNotifieeFormInsert() {
                 dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: errorData.success ? 'success' : 'failed',
-                message: errorData.message || "Erreur lors de la création de la prévision"
+                message: errorData.message || "Erreur lors de la création de plan"
                 }));
                 return navigate('/homePage/planNotifie');
             }
             dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: errorData.success ? 'success' : 'failed',
-                message: errorData.message || "Erreur lors de la création de la prévision"
+                message: errorData.message || "Erreur lors de la création de plan"
             }));
             navigate('/homePage/planNotifie');
         } catch (err) {
             dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: 'failed',
-                message: err || "Erreur lors de la création de la prévision"
+                message: err || "Erreur lors de la création de plan"
             }));
             return navigate('/homePage/planNotifie');
         }

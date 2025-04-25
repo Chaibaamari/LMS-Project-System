@@ -2,7 +2,7 @@ import { FieldConfigPlan } from "@/assets/modelData";
 import { DynamicInsertForm } from "@/components/Tools/InsertForm";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { PrevisionActions } from "@/store/PrevisionSlice";
-import { getAuthToken } from "@/util/Auth";
+import { getAuthToken, getYearExercice } from "@/util/Auth";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ export default function EmployeFormInsert() {
     const navigate = useNavigate();
     const token = getAuthToken();
     const dispatch = useDispatch<AppDispatch>();
+    const Year = getYearExercice()
     interface FormationOption {
     value: number;
     label: string;
@@ -75,15 +76,11 @@ export default function EmployeFormInsert() {
                         'Content-Type': 'application/json',
                         Accept: 'application/json',
                         Authorization: `Bearer ${token}`,
+                        "Year" : Year ?? ''
                     },
                     body: JSON.stringify({
                         Matricule: editFormData.Matricule,
                         ID_Formation: Number(editFormData.ID_Formation),
-                        // ID_Formation: editFormData.ID_Formation,
-                        // Mode_Financement: editFormData.Mode_Financement,
-                        // Frais_Pedagogiques: editFormData.Frais_Pedagogiques,
-                        // Frais_Hebergement: editFormData.Frais_Hebergement,
-                        // Frais_Transport: editFormData.Frais_Transport,
                     }),
                 }
             );

@@ -1,9 +1,10 @@
+import NotificationError from "@/components/Error/NotificationError";
 import PrevisionTable from "@/components/Tables/Table-Prevision";
 import TableSkeleton from "@/components/Tables/TableSketlon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { PrevisionActions } from "@/store/PrevisionSlice";
-import { getAuthToken } from "@/util/Auth";
+import { getAuthToken, getYearExercice } from "@/util/Auth";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,6 +15,7 @@ export default function PlanPrevision() {
     const IsLoading = useSelector((state: RootState) => state.PlanPrevision.IsLoading);
     const { IsVisible, status, message } = useSelector((state: RootState) => state.PlanPrevision.notification);
     const token = getAuthToken();  
+    const Year = getYearExercice()
     useEffect(() => {
         if (IsVisible) {
             setTimeout(() => {
@@ -29,7 +31,8 @@ export default function PlanPrevision() {
                 headers: {
                     "Content-Type": "application/json",
                     'Accept': 'application/json',
-                    "Authorization": `Bearer ${token}`
+                    "Authorization": `Bearer ${token}`,
+                    "Year" : Year ?? ''
                 }
             });
             const data = await response.json();
@@ -38,31 +41,7 @@ export default function PlanPrevision() {
         }
         SendEmployeData()
     }, [token, dispatch , refrchData]);
-    const getNotificationStyle = () => {
-        switch (status) {
-            case 'pending':
-                return 'bg-blue-100 text-blue-800 border-blue-300';
-            case 'success':
-                return 'bg-green-100 text-green-800 border-green-300';
-            case 'failed':
-                return 'bg-red-100 text-red-800 border-red-300';
-            default:
-                return 'bg-gray-100 text-gray-800 border-gray-300';
-        }
-    };
-    // Define status icon
-    const getStatusIcon = () => {
-        switch (status) {
-            case 'pending':
-                return '⏳';
-            case 'success':
-                return '✓';
-            case 'failed':
-                return '⚠';
-            default:
-                return '';
-        }
-    };
+    
     return (
         <>
             {IsLoading ?
@@ -75,22 +54,21 @@ export default function PlanPrevision() {
                         <TableSkeleton rows={15} columns={5} />
                     </div>
                 ) : <>
-                    <h2 className="text-2xl font-bold mb-4">Plan Prévision</h2>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Plan Prévision</h2>
+                        <p className="text-gray-600 pl-1">
+                            Cette section est dédiée à la gestion des Plan Prévision de l'entreprise Sonatrach.
+                        </p>
+                    </div>
                     <PrevisionTable data={ListePrevision} />
                 </>
             }
 
-            {IsVisible && (
-                <div className={`fixed top-4 right-4 z-50 p-3 rounded-md shadow-lg border ${getNotificationStyle()} animate-fade-in`}>
-                    <div className="flex items-center gap-2">
-                        <span className="font-bold">{getStatusIcon()}</span>
-                        <div>
-                            <p className="font-medium capitalize">{status}</p>
-                            <p>{message}</p>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <NotificationError
+                            isVisible={IsVisible}
+                            status={status}
+                            message={message}
+                        />
             
         </>
     );

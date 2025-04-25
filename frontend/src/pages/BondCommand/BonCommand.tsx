@@ -3,11 +3,11 @@ import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, FileText } from "lucide-react"
+import { Search, FileText, Folder } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import { NotifeeActions } from "@/store/NotifeSlice"
 import { useNavigate } from "react-router-dom"
@@ -25,7 +25,8 @@ export default function BondCommandPage() {
   const [bondCommands, setBondCommands] = useState<BondCommand[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const token = getAuthToken()
+    const token = getAuthToken()
+    const Year = getYearExercice()
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -41,6 +42,7 @@ export default function BondCommandPage() {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/json",
+                    "Year" : Year ?? ''
                 },
             });
 
@@ -67,6 +69,7 @@ export default function BondCommandPage() {
         // Navigate to details page
         navigate(`/homePage/bondCommand/${id}`)
     };
+    
 
     const filteredBondCommands = bondCommands.filter(
         (command) =>
@@ -131,7 +134,7 @@ export default function BondCommandPage() {
                                             <TableCell>{format(new Date(command.Date_fin), "dd MMMM yyyy", { locale: fr })}</TableCell>
                                             {/* <TableCell>{format(new Date(command.createdAt), "dd/MM/yyyy HH:mm", { locale: fr })}</TableCell> */}
                                             <TableCell>{command.Nombre_Employe}</TableCell>
-                                            <TableCell>{command.Budget.toLocaleString("fr-FR")} DH</TableCell>
+                                            <TableCell>{command.Budget.toLocaleString("fr-FR")} Kda</TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
                                                     <Button
@@ -141,6 +144,14 @@ export default function BondCommandPage() {
                                                         title="Voir les détails"
                                                     >
                                                         <Search className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        // onClick={() => createTbf(command.Date_Deb)}
+                                                        title="Voir les détails"
+                                                    >
+                                                        <Folder  className="h-4 w-4" />
                                                     </Button>
                                                 </div>
                                             </TableCell>

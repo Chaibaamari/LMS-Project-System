@@ -20,6 +20,7 @@ Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
+    Route::get('allUsers', [JWTAuthController::class, 'getAllUsers']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
 
     Route::middleware([JwtMiddleware::class . ':responsable'])->group(function () {
@@ -31,6 +32,11 @@ Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])
     Route::get('/records', [PlanController::class, 'testyear']);
 
 
+    Route::middleware('role:responsable')->group(function () {
+        Route::post('createUser', [JWTAuthController::class, 'createUser']);
+        Route::get('users', [JWTAuthController::class, 'getUsersByRole']);
+        Route::put('users/{id}/role', [JWTAuthController::class, 'updateUserRole']);
+    });
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
@@ -60,6 +66,7 @@ Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])
     });
 
     Route::prefix('Formation')->group(function () {
+        Route::get('/' , [FormationController::class, 'getAllFormation']);
         Route::get('/ListeFormation', [FormationController::class, 'getAllIntituleActions']);
     });
 
@@ -109,10 +116,11 @@ Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])
     });
 
     Route::post('createBC', [PlanController::class, 'createBC']);
+    Route::get('BC/{month}', [PlanController::class, 'consultBCMonth']);
     Route::get('bonCommand', [PlanController::class, 'consultBC']);
     Route::get('formation-employees/{id}', [PlanController::class, 'getEmployeesByFormation']);
     Route::delete('delete/bondCommand/{matricule}', [PlanController::class, 'DeleteBondCommand']);
-    Route::post('TBF', [PlanController::class, 'consultTBF']);
+    Route::get('TBF', [PlanController::class, 'consultTBF']);
     Route::post('Bilan', [PlanController::class, 'consultBilan']);
 });
 

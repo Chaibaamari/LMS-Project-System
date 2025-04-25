@@ -1,4 +1,3 @@
-"use client"
 import { useMemo, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -8,13 +7,13 @@ import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import type { PlanNotifee } from "@/assets/modelData"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Input } from "../ui/input"
+import { Input } from "@/components/ui/input"
 import { useTableControls } from "@/hooks/useTableControls"
 import { Pagination } from "../Tools/pagination"
 import { DynamicSearch } from "../Tools/Search"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { NotifeeActions } from "@/store/NotifeSlice"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import ImportExportComponent from "../Tools/Ecxel"
 import { Calendar } from "@/components/ui/calendar"
@@ -51,6 +50,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     const navigate = useNavigate()
     const [isDeleting, setIsDeleting] = useState(false);
     const token = getAuthToken();
+    const Year = getYearExercice()
     const dispatch = useDispatch();
     // const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
     const [showDateRangeDialog, setShowDateRangeDialog] = useState(false);
@@ -192,7 +192,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "pending",
-                    message: "Chargement des prévision en cours...",
+                    message: "Chargement des Notifiee en cours...",
                 }),
             )
             setIsDeleting(true)
@@ -205,14 +205,14 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 },
             })
             if (!response.ok) {
-                throw new Error("Failed to delete prévision")
+                throw new Error("Failed to delete Notifiee")
             }
             setIsDeleting(false)
             dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "success",
-                    message: "Delete prévisions chargée avec succès",
+                    message: "Delete Notifiee chargée avec succès",
                 }),
             )
             dispatch(NotifeeActions.ReferchLatestData(true))
@@ -222,7 +222,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "failed",
-                    message: "Erreur lors du chargement des prévisions",
+                    message: "Erreur lors du chargement des Notifiee",
                 }),
             )
         }
@@ -250,7 +250,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             })
 
             if (!response.ok) {
-                throw new Error("Failed to delete prévisions")
+                throw new Error("Failed to delete Notifiee")
             }
 
             setSelectedRows([])
@@ -269,7 +269,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "failed",
-                    message: "Erreur lors du chargement des prévisions",
+                    message: "Erreur lors du chargement des Notifiéé",
                 }),
             )
         }
@@ -301,21 +301,24 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 headers: {
                     Accept: "application/json",
                     Authorization: `Bearer ${token}`,
+                    "Year" : Year ?? '',
                 },
             })
             const resData = await response.json();
             if (!response.ok) {
+                dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
-                    status: resData.success ? "success" : "failed",
-                    message: resData.message,
-                });
+                    status: "failed",
+                    message: `Erreur lors de l'importation : ${resData.errors.length} ligne(s) ont échoué à la validation.`
+                }));
+                dispatch(NotifeeActions.ReferchLatestData(true));
                 return navigate("/homePage/planNotifie");
             }
             dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
-                    status: resData.success ? "success" : "failed",
+                    status: "success",
                     message: resData.message,
                 }),
             )
@@ -343,6 +346,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
+                "Year" : Year ?? '',
             },
         })
             .then((response) => response.blob())
@@ -882,7 +886,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         id="date-debut"
                                         variant="outline"
                                         className={cn(
-                                            "justify-start text-left font-normal",
+                                            " justify-start text-left font-normal",
                                             !dateRange.startDate && "text-muted-foreground",
                                         )}
                                     >
@@ -891,12 +895,12 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                             : "Sélectionner une date"}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
+                                <PopoverContent className="w-full p-0" align="start">
                                     <Calendar
                                         mode="single"
                                         selected={dateRange.startDate}
                                         onSelect={(date) => setDateRange((prev) => ({ ...prev, startDate: date }))}
-                                        initialFocus
+                                        className="rounded-md border shadow"
                                     />
                                 </PopoverContent>
                             </Popover>

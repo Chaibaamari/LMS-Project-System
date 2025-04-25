@@ -29,7 +29,7 @@ class PlanController extends Controller
     public function consultBC(Request $request)
     {
         try {
-
+            $Exercice = request()->header('Year');
             $formations = Formation::select(
                 'formations.ID_Formation',
                 'formations.Intitule_Action',
@@ -38,6 +38,7 @@ class PlanController extends Controller
                 'plans.Date_Deb',
                 'plans.Date_fin'
             )
+                ->where('plans.Exercice', $Exercice)
                 ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
                 ->where('plans.etat', 'confirmé')
                 ->groupBy([
@@ -67,64 +68,186 @@ class PlanController extends Controller
             ], 500);
         }
     }
+
+    public function consultBCMonth(Request $request, $month)
+    {
+        try {
+            $request->validate([
+                'month' => 'nullable|integer|between:1,12'
+            ]);
+
+            $Exercice = request()->header('Year');
+
+            // Noms des mois en français
+            $moisFrancais = [
+                1 => 'janvier',
+                2 => 'février',
+                3 => 'mars',
+                4 => 'avril',
+                5 => 'mai',
+                6 => 'juin',
+                7 => 'juillet',
+                8 => 'août',
+                9 => 'septembre',
+                10 => 'octobre',
+                11 => 'novembre',
+                12 => 'décembre'
+            ];
+            $formations = Formation::select(
+                'formations.ID_Formation',
+                'formations.Intitule_Action',
+                DB::raw('COUNT(plans.ID_N) as Nombre_Employe'),
+                'plans.Budget',
+                'plans.Date_Deb',
+                'plans.Date_fin'
+            )
+            ->where('plans.Exercice', $Exercice)
+                ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
+                ->where('plans.etat', 'confirmé')
+                ->when($month, function ($query) use ($month) {
+                    $query->where(function ($q) use ($month) {
+                        $q->whereMonth('plans.Date_Deb', $month)
+                            ->orWhereMonth('plans.Date_fin', $month);
+                    });
+                })
+                ->groupBy([
+                    'formations.ID_Formation',
+                    'formations.Intitule_Action',
+                    'plans.Budget',
+                    'plans.Date_Deb',
+                    'plans.Date_fin'
+                ])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'Nom' => 'BC du mois de ' . $moisFrancais[$month], // Champ demandé
+                'Date_creation' => now()->format('d/m/Y \à H\hi'), // Champ demandé
+                'data' => $formations,
+                'count' => $formations->count(),
+                'meta' => [
+                    'month' => $month,
+                    'month_name' => $moisFrancais[$month]
+                ]
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des données',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
     public function getEmployeesByFormation($id)
     {
-        // try {
-        //     $employees = Employe::whereHas('plans', function ($query) use ($intituleAction) {
-        //         $query->where('etat', 'confirmé')
-        //             ->whereHas('formation', function ($q) use ($intituleAction) {
-        //                 $q->where('Intitule_Action', $intituleAction);
-        //             });
-        //     })->get();
-
-        //     return response()->json($employees);
-        // } catch (\Exception $e) {
-        //     return response()->json([
-        //         'error' => 'Failed to fetch employees',
-        //         'message' => $e->getMessage()
-        //     ], 500);
-        // }
         $employees = Plan::where('ID_Formation', $id)->where('etat', 'confirmé')->with('employe')->with('formation')->get();
         return response()->json([
             'PlanCommand' => $employees
         ]);
     }
 
-    /* public function consultTBF(string $month)
-    {
-        // $Exercice = request()->header('Year');
-        //$plans = Plan::where('Exercice',$Exercice)->whereMonth('Date_Deb', $request->input('month'))->orWhereMonth('Date_Fin', $request->input('month'))->where('etat', 'confirmé')->get();
-        
-            // Grab the “YYYY‑MM” string from your query (e.g. "2024-04")
-        $monthInput = $month;
+    // public function consultTBF(string $month)
+    // {
+    //     // $Exercice = request()->header('Year');
+    //     //$plans = Plan::where('Exercice',$Exercice)->whereMonth('Date_Deb', $request->input('month'))->orWhereMonth('Date_Fin', $request->input('month'))->where('etat', 'confirmé')->get();
 
-        // Build full month start/end dates
-        $monthStart = Carbon::parse("{$monthInput}-01")->startOfMonth(); // 2024‑04‑01 00:00:00
-        $monthEnd   = Carbon::parse("{$monthInput}-01")->endOfMonth();   // 2024‑04‑30 23:59:59
+    //         // Grab the “YYYY‑MM” string from your query (e.g. "2024-04")
+    //     $monthInput = $month;
+
+    //     // Build full month start/end dates
+    //     $monthStart = Carbon::parse("{$monthInput}-01")->startOfMonth(); // 2024‑04‑01 00:00:00
+    //     $monthEnd   = Carbon::parse("{$monthInput}-01")->endOfMonth();   // 2024‑04‑30 23:59:59
+    //     $Exercice = request()->header('Year');
+    //     // Fetch any record whose [Date_Deb … Date_Fin] range overlaps [monthStart … monthEnd]
+    //     $plans = Plan::where('Exercice',$Exercice)
+    //                         ->where('etat', 'confirmé')
+    //                         ->where('Date_Deb', '<=', $monthEnd)
+    //                         ->where('Date_Fin',  '>=', $monthStart)
+    //                         ->get();
+
+    //     return response()->json(['message' => 'TBF retourné', 'Plan' => $plans]);
+    // }
+    public function consultTBF(Request $request)
+    {
+        $moisFrancais = [
+            1 => 'janvier',
+            2 => 'février',
+            3 => 'mars',
+            4 => 'avril',
+            5 => 'mai',
+            6 => 'juin',
+            7 => 'juillet',
+            8 => 'août',
+            9 => 'septembre',
+            10 => 'octobre',
+            11 => 'novembre',
+            12 => 'décembre'
+        ];
         $Exercice = request()->header('Year');
-        // Fetch any record whose [Date_Deb … Date_Fin] range overlaps [monthStart … monthEnd]
-        $plans = Plan::where('Exercice',$Exercice)
-                            ->where('etat', 'confirmé')
-                            ->where('Date_Deb', '<=', $monthEnd)
-                            ->where('Date_Fin',  '>=', $monthStart)
-                            ->get();    
-                            
-        return response()->json(['message' => 'TBF retourné', 'Plan' => $plans]);
+        // Get distinct month/year combinations from Date_Deb
+        $activeDates = Plan::where('etat', 'confirmé')
+            ->whereNotNull('Date_Deb')
+            ->selectRaw('MONTH(Date_Deb) as month, YEAR(Date_Deb) as year')
+            ->distinct()
+            ->get();
+
+        $results = [];
+
+        foreach ($activeDates as $date) {
+            $month = $date->month;
+            $year = $date->year;
+            $nomMois = $moisFrancais[$month];
+
+            // Fetch all plans for the same month and year (from Date_Deb or Date_Fin)
+            $plans = Plan::where('etat', 'confirmé')
+                ->where('plans.Exercice', $Exercice)
+                ->where(function ($query) use ($month, $year) {
+                    $query->where(function ($q) use ($month, $year) {
+                        $q->whereMonth('Date_Deb', $month)
+                            ->whereYear('Date_Deb', $year);
+                    })->orWhere(function ($q) use ($month, $year) {
+                        $q->whereMonth('Date_Fin', $month)
+                            ->whereYear('Date_Fin', $year);
+                    });
+                })
+                ->get();
+
+            if ($plans->isNotEmpty()) {
+                $results[] = [
+                    'Nom' => "TBF du mois de $nomMois $year",
+                    'date_creation' => $plans->first()->Date_Deb->format('d/m/Y'),
+                    'plans' => $plans
+                ];
+            }
+        }
+
+        return response()->json([
+            'message' => 'TBF regroupés par mois et année',
+            'TBF' => $results
+        ]);
     }
+
+
 
     public function consultBilan()
     {
+        $plans = Plan::where('etat', 'confirmé')->get();
         $Exercice = request()->header('Year');
-        $plans = Plan::where('Exercice',$Exercice)->where('etat', 'confirmé')->get();
+        $plans = Plan::where('Exercice', $Exercice)->where('etat', 'confirmé')->get();
 
         return response()->json(['message' => 'Bilan retourné', 'Plan' => $plans]);
-    } */
+    }
 
     public function consultprev()
     {
         $Exercice = request()->header('Year');
-        
-        $plans = Plan::where('Exercice',$Exercice)->where('etat', 'prévision')->with([
+
+        $plans = Plan::where('Exercice', $Exercice)->where('etat', 'prévision')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',
@@ -145,9 +268,9 @@ class PlanController extends Controller
 
         try {
             // Find the formation to get its ID
-            $Exercice =$request->header('Year');
+            $Exercice = $request->header('Year');
             $formation = Formation::where('ID_Formation', $validatedData['ID_Formation'])->firstOrFail();
-            $existingPlan = Plan::where('Exercice',$Exercice)->where('Matricule', $validatedData['Matricule'])
+            $existingPlan = Plan::where('Exercice', $Exercice)->where('Matricule', $validatedData['Matricule'])
                 ->where('ID_Formation', $formation->ID_Formation)
                 ->where('etat', 'prévision')
                 ->first();
@@ -160,7 +283,7 @@ class PlanController extends Controller
                 ], 409);
             }
             $plan = Plan::create([
-                'Exercice'=>$Exercice,
+                'Exercice' => $Exercice,
                 'etat' => 'prévision',
                 'Matricule' => $validatedData['Matricule'],
                 'ID_Formation' => $formation->ID_Formation,
@@ -254,7 +377,7 @@ class PlanController extends Controller
     {
         $Exercice = request()->header('Year');
 
-        $plans = Plan::where('Exercice',$Exercice)->where('etat', 'validé')->with([
+        $plans = Plan::where('Exercice', $Exercice)->where('etat', 'validé')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',
@@ -285,7 +408,7 @@ class PlanController extends Controller
 
             // Find the formation to get its ID
             $formation = Formation::where('ID_Formation', $validatedData['ID_Formation'])->firstOrFail();
-            $existingPlan = Plan::where('Exercice',$Exercice)->where('Matricule', $validatedData['Matricule'])
+            $existingPlan = Plan::where('Exercice', $Exercice)->where('Matricule', $validatedData['Matricule'])
                 ->where('ID_Formation', $formation->ID_Formation)
                 ->where('etat', 'validé')
                 ->first();
@@ -298,7 +421,7 @@ class PlanController extends Controller
                 ], 409);
             }
             $plan = Plan::create([
-                'Exercice'=>$Exercice,
+                'Exercice' => $Exercice,
                 'etat' => 'validé',
                 'Matricule' => $validatedData['Matricule'],
                 'ID_Formation' => $validatedData['ID_Formation'],
@@ -398,11 +521,12 @@ class PlanController extends Controller
     }
 
 
-    public function DeleteBondCommand(  Request $request, $matricule)
+    public function DeleteBondCommand(Request $request, $matricule)
     {
         try {
             $plan = Plan::where('ID_N', $request->input("ID_N"))->where(
-                'Matricule' , $matricule
+                'Matricule',
+                $matricule
             )->update([
                 'etat' => 'validé'
             ]);
@@ -423,5 +547,4 @@ class PlanController extends Controller
 
         return response()->json(['year is ' => $customHeader]);
     }
-    
 }

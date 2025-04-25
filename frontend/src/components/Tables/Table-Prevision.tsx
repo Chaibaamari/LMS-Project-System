@@ -12,7 +12,7 @@ import { Input } from "../ui/input"
 import { useTableControls } from "@/hooks/useTableControls"
 import { Pagination } from "../Tools/pagination"
 import { DynamicSearch } from "../Tools/Search"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import { PrevisionActions } from "@/store/PrevisionSlice"
 import ImportExportComponent from "../Tools/Ecxel"
@@ -43,6 +43,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
   } = useTableControls(data, searchTerm, searchField)
   const [isDeleting, setIsDeleting] = useState(false)
   const token = getAuthToken()
+  const Year = getYearExercice()
+  console.log(Year)
   const dispatch = useDispatch()
   const deleteSingleEmployee = async (id: string) => {
     try {
@@ -160,22 +162,25 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${token}`,
+          "Year" : Year ?? '',
         },
       })
       const resData = await response.json();
       if (!response.ok) {
+        dispatch(
         PrevisionActions.ShowNotification({
           IsVisible: true,
-          status: resData.success ? "success" : "failed",
-          message: resData.message,
-        });
-          return navigate("/homePage/PlanPrevision");
+          status: 'failed',
+          message: `Erreur lors de l'importation des prévisions : ${resData.errors.length} ligne(s) ont échoué à la validation.`
+        }));
+        dispatch(PrevisionActions.ReferchLatestData(true))
+        return navigate("/homePage/PlanPrevision");
       }
       
       dispatch(
         PrevisionActions.ShowNotification({
           IsVisible: true,
-          status: resData.success ? "success" : "failed",
+          status: 'success',
           message: resData.message,
         }),
       )
@@ -202,7 +207,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
     fetch("http://127.0.0.1:8000/api/previsions/export", {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
+          "Year" : Year ?? '',
       },
     })
       .then((response) => response.blob())

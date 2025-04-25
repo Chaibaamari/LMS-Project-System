@@ -76,7 +76,7 @@ React.useEffect(() => {
       return res.json();
     })
     .then((res) => {
-      let data = res.data;
+      const data = res.data;
       if (data.length === 0) { // إذا كانت البيانات فارغة
         console.log("لا توجد بيانات للعرض")
       } // <-- هنا نأخذ الـ data من داخل الـ response

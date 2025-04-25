@@ -16,21 +16,59 @@ class ImportContoller extends Controller
     //
     public function previmport(Request $request)
     {
-            $Exercice = $request->header('Year');
-            $import = new PrevImport($Exercice);
-            Excel::import($import , $request->file('previsions'));
+        // try{
+        //     $Exercice = $request->header('Year');
+        //     $import = new PrevImport($Exercice);
+        //     Excel::import($import , $request->file('previsions'));
 
-            if (!empty($import->failedRows) ||!empty($import->existingRows))  {
-                return response()->json([
-                    'message' => 'Some rows failed inserting.',
-                    'failed' => $import->failedRows,
-                    'existing' => $import->existingRows,
-                ], 422);
-            }
-        
+        //     if (!empty($import->failedRows) ||!empty($import->existingRows))  {
+        //         return response()->json([
+        //             'message' => 'Certaines lignes n’ont pas réussi la validation.',
+        //             'status' => 'failed',
+        //             'errors' => $import->failedRows,
+        //         ], 422);
+        //     }
+
+        //     return response()->json([
+        //         'message' => 'Importation des prévisions effectuée avec succès.',
+        //         'status' => 'success',
+        //     ]);
+        // }catch (ValidationException $e) {
+        //     $failures = $e->failures();
+        //     $failedRows = [];
+
+        //     foreach ($failures as $failure) {
+        //         $row = $failure->row();
+        //         $errors = $failure->errors();
+        //         $failedRows[] = [
+        //             'row' => $row,
+        //             'errors' => $errors,
+        //         ];
+        //     }
+
+        //     return response()->json([
+        //         'message' => 'Certaines lignes n’ont pas passé les contrôles de validation.',
+        //         'status' => 'failed',
+        //         'errors' => $failedRows,
+        //     ], 422);
+        // }
+        $Exercice = $request->header('Year');
+        $import = new PrevImport($Exercice);
+        Excel::import($import, $request->file('previsions'));
+
+        if (!empty($import->failedRows) || !empty($import->existingRows)) {
             return response()->json([
-                'message' => 'All Previsions imported successfully.',
-            ]);
+                'message' => 'Some rows failed inserting.',
+                'status' => 'failed',
+                'errors' => $import->failedRows,
+                'existing' => $import->existingRows,
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Importation des prévisions effectuée avec succès.',
+            'status' => 'success',
+        ]);
     }
 
     public function notifieimport(Request $request)
@@ -45,10 +83,12 @@ class ImportContoller extends Controller
                 'errors' => $import->failedRows,
             ], 422);
         }
-    
+
         return response()->json([
-            'message' => 'Plan Notifié imported successfully.',
+            'message' => 'Le plan notifié a été importé avec succès.',
+            'status' => 'success',
         ]);
+
     }
 
     public function prevexport()
@@ -71,7 +111,5 @@ class ImportContoller extends Controller
     {
         $ids = $request->input('ids');
         return Excel::download(new DemandeConfirmationExport($ids), 'demandedeconfirmation.xlsx');
-
     }
-
 }

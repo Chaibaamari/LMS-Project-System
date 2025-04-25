@@ -4,6 +4,8 @@ import PrevisionPlanSlice from './PrevisionSlice';
 import ErrorPageSlice from './ErrorSlice';
 import PlanNotifeeSlice from './NotifeSlice';
 import BondCommandSlice from './BondCommand';
+import FormationSlice from './Formation';
+import TBFSlice from './TBF';
 
 
 
@@ -14,7 +16,9 @@ export const store = configureStore({
         PlanPrevision: PrevisionPlanSlice.reducer,
         Errors : ErrorPageSlice.reducer,
         PlanNotifee: PlanNotifeeSlice.reducer,
-        BondCommand : BondCommandSlice.reducer,
+        BondCommand: BondCommandSlice.reducer,
+        Formation: FormationSlice.reducer,
+        TBF : TBFSlice.reducer
     }
 });
 export type RootState = ReturnType<typeof store.getState>;
