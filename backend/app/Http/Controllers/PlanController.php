@@ -29,6 +29,7 @@ class PlanController extends Controller
     public function consultBC(Request $request)
     {
         try {
+
             $formations = Formation::select(
                 'formations.ID_Formation',
                 'formations.Intitule_Action',

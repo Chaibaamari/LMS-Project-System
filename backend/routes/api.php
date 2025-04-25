@@ -16,14 +16,17 @@ Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login']);
 
 // Protected routes (JWT authenticated)
-Route::middleware([JwtMiddleware::class])->group(function () {
+Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])->group(function () {
     // Authentication routes
     Route::get('user', [JWTAuthController::class, 'getUser']);
     Route::get('usercount', [JWTAuthController::class, 'usercount']);
     Route::post('logout', [JWTAuthController::class, 'logout']);
-    Route::post('createUser', [JWTAuthController::class, 'createUser']);
-    Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
-    Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
+
+    Route::middleware([JwtMiddleware::class . ':responsable'])->group(function () {
+        Route::post('createUser', [JWTAuthController::class, 'createUser']);
+        Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
+        Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
+    });
 
     Route::get('/records', [PlanController::class, 'testyear']);
 
@@ -32,17 +35,28 @@ Route::middleware([JwtMiddleware::class])->group(function () {
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
         Route::get('/', [EmployeController::class, 'index']);
-        Route::post('/new', [EmployeController::class, 'store']);
-        Route::get('/edit/{matricule}', [EmployeController::class , 'getEmployee']);
-        Route::put('/edit/{matricule}', [EmployeController::class, 'update']);
-        Route::delete('/delete/{matricule}', [EmployeController::class, 'destroy']);
-        Route::delete('/delete-multiple', [EmployeController::class, 'destroyMultiple']);
-    });
+        
+            Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire'])->group(function () {
+                
+            Route::post('/new', [EmployeController::class, 'store']);
+            Route::get('/edit/{matricule}', [EmployeController::class , 'getEmployee']);
+            Route::put('/edit/{matricule}', [EmployeController::class, 'update']);
+            Route::delete('/delete/{matricule}', [EmployeController::class, 'destroy']);
+            Route::delete('/delete-multiple', [EmployeController::class, 'destroyMultiple']);
+        
+            });
+        });
 
     // Function routes
     Route::prefix('functions')->group(function () {
         Route::get('/', [FonctionController::class, 'getAllFonctions']);
-        Route::post('/', [FonctionController::class, 'CreateFonction']);
+
+            Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire'])->group(function () {
+
+            Route::post('/', [FonctionController::class, 'CreateFonction']);
+
+            });
+            
     });
 
     Route::prefix('Formation')->group(function () {
@@ -52,27 +66,46 @@ Route::middleware([JwtMiddleware::class])->group(function () {
         // Direction routes
     Route::prefix('directions')->group(function () {
     Route::get('/', [DirectionController::class, 'getAllDirections']);
-    Route::get('/{id}', [DirectionController::class, 'getDirectionById']);
-    Route::post('/{id}/responsable', [DirectionController::class, 'updateResponsable']);
+        
+        Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire'])->group(function () {
+
+    
+        Route::get('/{id}', [DirectionController::class, 'getDirectionById']);
+        Route::post('/{id}/responsable', [DirectionController::class, 'updateResponsable']);
+    
+        });
+
     });
 
     Route::prefix('previsions')->group(function () {
-        Route::post('/import', [ImportContoller::class, 'previmport']);
         Route::get('/export', [ImportContoller::class, 'prevexport']);
         Route::get('/', [PlanController::class, 'consultprev']);
-        Route::post('/add', [PlanController::class, 'prevadd']);
-        Route::get('/modify/{ID_N}', [PlanController::class, 'getPlanPV']);
-        Route::put('/modify/{ID_N}', [PlanController::class, 'prevmodify']);
-        Route::delete('/delete/{id}', [PlanController::class, 'destroy']);
-        Route::delete('/delete-multiple', [PlanController::class, 'destroyMultiple']);
+
+            Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire'])->group(function () {
+
+            
+            Route::post('/import', [ImportContoller::class, 'previmport']);
+            Route::post('/add', [PlanController::class, 'prevadd']);
+            Route::get('/modify/{ID_N}', [PlanController::class, 'getPlanPV']);
+            Route::put('/modify/{ID_N}', [PlanController::class, 'prevmodify']);
+            Route::delete('/delete/{id}', [PlanController::class, 'destroy']);
+            Route::delete('/delete-multiple', [PlanController::class, 'destroyMultiple']);
+
+            });
+
     });
 
     Route::prefix('plannotifie')->group(function () {
-        Route::post('/import', [ImportContoller::class, 'notifieimport']);
         Route::get('/export', [ImportContoller::class, 'notifieexport']);
         Route::get('/', [PlanController::class, 'consultnotifie']);
-        Route::post('/add', [PlanController::class, 'notifieadd']);
-        Route::put('/modify', [PlanController::class, 'notifiemodify']);
+
+            Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire'])->group(function () {
+
+            Route::post('/import', [ImportContoller::class, 'notifieimport']);
+            Route::post('/add', [PlanController::class, 'notifieadd']);
+            Route::put('/modify', [PlanController::class, 'notifiemodify']);
+            
+            });
     });
 
     Route::post('createBC', [PlanController::class, 'createBC']);

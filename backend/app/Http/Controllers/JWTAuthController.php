@@ -41,6 +41,13 @@ class JWTAuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
+        $user = User::where('email', $credentials['email'])->first();
+        if($user){
+            if(!$user->active){
+                return response()->json(['error' => ['msg' => 'Account not activated']], 403);
+            }
+        }
+
         try {
             if (! $token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => ["msg" => 'Invalid credentials' ] ], 401);

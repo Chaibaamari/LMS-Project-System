@@ -17,7 +17,16 @@ class JwtMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+
+    private function checkrole($user, $roles)
+    {
+        $rolesArray = explode('|', $roles);
+        if($roles && !in_array($user->role, $rolesArray)){
+            return true;
+        }
+        return false;
+    }
+    public function handle(Request $request, Closure $next,$roles = null): Response
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
@@ -30,6 +39,10 @@ class JwtMiddleware
             return response()->json(['error' => 'Token invalid'], 401);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token not provided'], 401);
+        }
+
+        if ($this->checkrole($user,$roles)) {
+            return response()->json(['error' => 'Unauthorized, insufficient permissions'], 403);
         }
 
         return $next($request);
