@@ -1,18 +1,10 @@
 import { Badge } from "@/components/ui/badge"
-import { Calendar, FileText, Folder, MoreHorizontal } from "lucide-react"
+import { Calendar, FileText, Folder } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card"
 import type { TBF } from "@/assets/modelData"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/store/indexD"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Link } from "react-router-dom"
 
 interface ContractCardProps {
@@ -65,25 +57,6 @@ if (data.length === 0) {
                                 <Folder className={`h-6 w-6 ${getFolderColor(item.date_creation)}`} />
                                 <CardTitle className="text-lg !mt-0 truncate">{item.Nom}</CardTitle>
                             </div>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                        <span className="sr-only">Menu</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuSeparator />
-                                    <Link to={`/homePage/TBF/bondCommand/${item.date_creation.split('/')[1]}`} className="w-full">
-                                    <DropdownMenuItem>Voir les détails</DropdownMenuItem>
-                                    </Link>
-                                    <DropdownMenuItem>Modifier</DropdownMenuItem>
-                                    <DropdownMenuItem>Télécharger</DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-red-600">Supprimer</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
                         </div>
                     </CardHeader>
                     <CardContent className="pb-2">
@@ -104,8 +77,10 @@ if (data.length === 0) {
                                 {item.date_creation.split('/')[1]}
                             </Badge>
                             <Button variant="ghost" size="sm" className="h-8 px-2">
+                            <Link  to={`/homePage/TBF/bondCommand/${item.date_creation.split('/')[1]}`} className="flex">
                                 <FileText className="h-4 w-4 mr-1" />
                                 Ouvrir
+                            </Link>
                             </Button>
                         </div>
                     </CardFooter>

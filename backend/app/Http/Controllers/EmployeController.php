@@ -22,30 +22,41 @@ class EmployeController extends Controller
     public function store(StoreEmployeeRequest $request)
     {
         $validated = $request->validated();
-        Employe::create($validated);
-        return response()->json($validated, 201);
+
+        try {
+            $employe = Employe::create($validated);
+
+            if (!$employe) {
+                return response()->json([
+                    'message' => 'Échec de l\'enregistrement de l\'employé.',
+                    'success' => false
+                ], 400);
+            }
+
+            return response()->json([
+                'message' => 'Employé enregistré avec succès.',
+                'data' => $employe,
+                'success' => true
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erreur lors de l\'enregistrement de l\'employé : ' . $e->getMessage(),
+                'success' => false
+            ], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+    public function getEmployee(string $matricule)
     {
-        //
-    }
-
-    public function getEmployee(string $matricule){
         $employe = Employe::where('Matricule', $matricule)->first();
         return response()->json([
-            'message' => 'Employee updated successfully',
+            'message' => 'Employé récupéré avec succès.',
             'data' => $employe,
             'success' => true
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(StoreEmployeeRequest $request, string $matricule)
     {
         DB::beginTransaction();
@@ -58,7 +69,7 @@ class EmployeController extends Controller
             if (!$updated) {
                 DB::rollBack();
                 return response()->json([
-                    'message' => 'Employee not found or no changes made',
+                    'message' => 'Employé introuvable ou aucune modification effectuée.',
                     'success' => false
                 ], 404);
             }
@@ -68,14 +79,14 @@ class EmployeController extends Controller
             DB::commit();
 
             return response()->json([
-                'message' => 'Employee updated successfully',
+                'message' => 'Employé mis à jour avec succès.',
                 'data' => $employe,
                 'success' => true
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'message' => 'Failed to update employee: ' . $e->getMessage(),
+                'message' => 'Échec de la mise à jour de l\'employé  ',
                 'success' => false
             ], 500);
         }

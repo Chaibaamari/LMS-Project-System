@@ -1,8 +1,11 @@
-import { Formation } from "@/assets/modelData";
+import { Formation, FormationEnCours } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
+
+
 
 type FormationType = {
     FormationData: Formation[]
+    FormationEnCours: FormationEnCours[]
     IsLoading: boolean
     refrechData: boolean,
     Notification: {
@@ -13,6 +16,7 @@ type FormationType = {
 }
 const initialState: FormationType = {
     FormationData: [],
+    FormationEnCours : [],
     IsLoading: false,
     refrechData:false,
     Notification: {
@@ -29,6 +33,9 @@ const FormationSlice = createSlice({
     reducers: {
         FetchDataFormation(state, action) {
             state.FormationData = action.payload;
+        },
+        FetchDataFormationEnCours(state, action) {
+            state.FormationEnCours = action.payload;
         },
         ShowNotificationRefrech(state , action) {
             state.IsLoading = action.payload;

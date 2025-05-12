@@ -1,12 +1,16 @@
 import { fields, User } from "@/assets/modelData";
 import { DynamicInsertForm } from "@/components/Tools/InsertForm";
+import { EmployeeActions } from "@/store/EmployesSlice";
+import { AppDispatch } from "@/store/indexD";
 import { getAuthToken } from "@/util/Auth";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function EmployeFormInsert() {
     const navigate = useNavigate();
     const token = getAuthToken();
+    const dispatch = useDispatch<AppDispatch>();
 
 
     const [editFormData, setEditFormData] = useState<User>({
@@ -27,7 +31,6 @@ export default function EmployeFormInsert() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            console.log(editFormData)
             const response = await fetch(
                 `http://127.0.0.1:8000/api/employes/new`,
                 {
@@ -43,10 +46,20 @@ export default function EmployeFormInsert() {
     
             if (!response.ok) {
                 const errorData = await response.json();
-                return console.log(errorData);
+                dispatch(EmployeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: errorData.success ? "success" : "failed",
+                    message: "error de créer un employé",
+                }));
+                return navigate('/homePage/Employee')
             }
     
-            const data = await response.json();
+        const data = await response.json();
+        dispatch(EmployeeActions.ShowNotification({
+            IsVisible: true,
+            status: data.success ? "success" : "failed",
+            message: data.message,
+        }));
             navigate('/homePage/Employee')
             return data;
         };

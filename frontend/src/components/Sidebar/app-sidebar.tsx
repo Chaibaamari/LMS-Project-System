@@ -2,8 +2,10 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
-  Frame,
+  // Frame,
+  FolderKanban,
   Map,
+  EthernetPort,
   PieChart,
   Settings2,
   HousePlus 
@@ -44,44 +46,36 @@ const data = {
   ],
   navMain: [
     {
-      title: "Accueil",
+      title: "Formation",
       url: "/homePage",
       icon: HousePlus,
       isActive: true,
       items: [
         {
-          title: "Accueil",
+          title: "Liste Formation",
           url: "/homePage",
         }
       ],
     },
     {
-      title: "Donné entreprise",
-      url: "#",
+      title: "Agent",
+      url: "Employee",
       icon: BookOpen,
       items: [
         {
           title: "Liste Employee",
           url: "Employee",
         },
-        {
-          title: "Liste Direction",
-          url: "Direction",
-        }
       ],
     },
     {
-      title: "Formation",
+      title: "Liste Direction",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Intern",
-          url: "#",
-        },
-        {
-          title: "Extern",
-          url: "#",
+          title: "Direction",
+          url: "Direction",
         },
       ],
     },
@@ -90,7 +84,7 @@ const data = {
     {
       name: "Plan Prévision",
       url: "planPrevision",
-      icon: Frame,
+      icon: EthernetPort,
     },
     {
       name: "Plan Notifié",
@@ -105,7 +99,7 @@ const data = {
     {
       name: "TBF",
       url: "TBF",
-      icon: Map,
+      icon: FolderKanban,
     },
     {
       name: "Bilan",

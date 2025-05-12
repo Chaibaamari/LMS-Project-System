@@ -167,14 +167,23 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
       })
       const resData = await response.json();
       if (!response.ok) {
+        // dispatch(
+        // PrevisionActions.ShowNotification({
+        //   IsVisible: true,
+        //   status: 'failed',
+        //   message: `Erreur lors de l'importation des prévisions : ${resData.existing.length} ligne(s) ont échoué à la validation.`
+        // }));
         dispatch(
-        PrevisionActions.ShowNotification({
-          IsVisible: true,
-          status: 'failed',
-          message: `Erreur lors de l'importation des prévisions : ${resData.errors.length} ligne(s) ont échoué à la validation.`
-        }));
-        dispatch(PrevisionActions.ReferchLatestData(true))
-        return navigate("/homePage/PlanPrevision");
+          PrevisionActions.SetImportErrors({
+            errors: resData.existing || [],
+            totalRows: resData.existing?.length || 0,
+            message: resData.message || "Erreur d'importation"
+          })
+
+      );
+        // dispatch(PrevisionActions.ReferchLatestData(true))
+        
+        return navigate("/homePage/importErrors");
       }
       
       dispatch(
@@ -306,7 +315,7 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
     return null
   }
   const handleSearch = (term: string, field: keyof PlanPrevision) => {
-    setSearchTerm(term)
+    setSearchTerm(term.trim())
     setSearchField(field)
   }
 
@@ -518,7 +527,6 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                 {renderColumnHeader("Frais_Hebergement", "Frais Hebergement")}
                                 {renderColumnHeader("Frais_Transport", "Frais Transport")}
                                 {renderColumnHeader("type", "Type Pension")}
-                                {renderColumnHeader("etat", "etat")}
                                 {renderColumnHeader("Observation", "Observation")}
                                 <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
                             </TableRow>
@@ -578,7 +586,6 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                         <TableCell className="text-center">{item.Frais_Hebergement ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Frais_Transport ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.type ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.etat ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Observation ?? "—"}</TableCell>
                                         <TableCell className="sticky right-0 bg-background z-10">
                                             <div className="flex items-center gap-2">
@@ -636,7 +643,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                     goToNextPage={goToNextPage}
                     goToPreviousPage={goToPreviousPage}
                 />
-            )}
+        )}
+        
         </div>
     );
 }

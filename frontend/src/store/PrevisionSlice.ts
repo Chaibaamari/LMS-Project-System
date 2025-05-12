@@ -1,7 +1,10 @@
 import { PlanPrevision } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
-
+interface ImportError {
+  row: number;
+  existence: string;
+};
 
 interface PlanPrevisionState {
     ListePrevision: PlanPrevision[];
@@ -10,6 +13,9 @@ interface PlanPrevisionState {
         status: string,
         message : string,
     }
+    importErrors: ImportError[] | null;
+    importErrorCount: number;
+    importErrorMessage: string | null;
     IsLoading:boolean,
     refrechData: boolean,
     ListeIntitulAction: {
@@ -25,6 +31,9 @@ const initialState: PlanPrevisionState = {
         status: '',
         message:'',
     },
+    importErrors:  null,
+    importErrorCount: 0,
+    importErrorMessage: null,
     IsLoading : false,
     refrechData: false,
     ListeIntitulAction:[],
@@ -40,27 +49,37 @@ const PrevisionPlanSlice = createSlice({
         },
         ShowNotification(state, action) {
             state.notification = {
-                IsVisible : action.payload.IsVisible,
+                IsVisible: action.payload.IsVisible,
                 status: action.payload.status,
-                message : action.payload.message,
+                message: action.payload.message,
             }
         },
         ClearNotification(state) {
             state.notification = {
-                IsVisible : false,
+                IsVisible: false,
                 status: '',
-                message : '',
+                message: '',
             }
             state.refrechData = false
         },
-        ReferchLatestData(state , action) {
+        ReferchLatestData(state, action) {
             state.refrechData = action.payload.refrechData
         },
-        ShowNotificationRefrech(state , action) {
+        ShowNotificationRefrech(state, action) {
             state.IsLoading = action.payload;
         },
         GetAllFormation(state, action) {
             state.ListeIntitulAction = action.payload;
+        },
+        SetImportErrors: (state, action) => {
+            state.importErrors = action.payload.errors;
+            state.importErrorCount = action.payload.totalRows;
+            state.importErrorMessage = action.payload.message;
+        },
+        ClearImportErrors: (state) => {
+            state.importErrors = null;
+            state.importErrorCount = 0;
+            state.importErrorMessage = null;
         }
     }
 });

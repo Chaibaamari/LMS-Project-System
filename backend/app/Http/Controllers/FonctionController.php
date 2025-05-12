@@ -17,12 +17,6 @@ class FonctionController extends Controller
     {
         $validated = $request->validated();
         $fonction = Fonction::create($validated);
-
-        /*$fonction = Fonction::create([
-            'CodeFonction' => $request->input('CodeFonction'),
-            'TypeFonction' => $request->input('TypeFonction'),
-            'IntituleFonction' => $request->input('IntituleFonction')
-        ]);*/
         return response()->json(['message' => 'Fonction created successfully', 'data' => $fonction], 201);
     }
 }

@@ -55,9 +55,17 @@ export interface Formation {
     organisme: Organisme;
 }
 
+export interface FormationEnCours {
+    ID_Formation: number;
+    Intitule_Action: string;
+    Date_Deb: string
+    Date_fin: string
+    pourcentage: number,
+    days_remaining: number
+};
+
 export interface PlanPrevision extends Record<string, unknown> {
     ID_N: number;
-    etat: string;
     Observation: string | null;
     Date: Date | null;
     // Date_Deb: string | null;
@@ -76,7 +84,6 @@ export interface PlanPrevision extends Record<string, unknown> {
 
 export interface PlanNotifee extends Record<string, unknown>{
     ID_N: number;
-    etat: string;
     Observation: string | null;
     Date: Date | null;
     Date_Deb: Date | null;
@@ -196,26 +203,34 @@ export const fields: FieldConfig[] = [
 
 export interface BondCommand {
     ID_N: number;
-    etat: string;
-    Observation: string | null;
-    Date: Date | null;
+    Structure: string;
+    Nom_direction: string;
+    Matricule: string;
+    prenomnom: string;
+    Date_Naissance: string;
+    Sexe: string;
+    CSP: string;
+    Id_direction: string;
+    CodeFonction: string;
+    Domaine_Formation: string;
+    Code_Domaine_Formation: string;
+    Intitule_Action: string;
+    Nature_Formation: string;
+    Source_Besoin: string;
+    Type_Formation: string;
+    Mode_Formation: string;
+    Code_Formation: string;
+    Code_Organisme: string;
+    Nom_Organisme: string;
+    Lieu_Formation: string;
+    Pays: string;
     Date_Deb: Date | null;
     Date_fin: Date | null;
-    Matricule: string;
-    ID_Formation: number;
-    Mode_Financement: number | null;
-    Frais_Pedagogiques: number | null;
-    Frais_Hebergement: number | null;
-    Frais_Transport: number | null;
+    Heure_jour: number;
     Type_Pension: string | null;
+    Observation: string | null;
     Budget: string | null;
-    Observation_pre_arbitrage: string;
-    Observation_arbitrage: string;
-    Autres_charges: number;
-    Presalaire: number;
-    Dont_Devise : number;
-    employe: Employe;
-    formation: Formation;
 };
+
 
 

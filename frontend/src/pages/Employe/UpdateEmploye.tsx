@@ -75,7 +75,24 @@ export default function EmployeFormUpdate() {
                         }
                     },
                 )
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    dispatch(EmployeeActions.ShowNotification({
+                        IsVisible: true,
+                        status: errorData.success ? "success" : "failed",
+                        message: errorData.message,
+                    }));
+                    return navigate('/homePage/Employee')
+                }
+
+
                 const data = await response.json();
+                dispatch(EmployeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "pending",
+                    message: data.message,
+                }));
                 setEditFormData((prevData) => ({
                     ...prevData,
                     Matricule: data.data.Matricule || "",
@@ -88,9 +105,18 @@ export default function EmployeFormUpdate() {
                     CodeFonction: data.data.CodeFonction || "",
                     Id_direction: data.data.Id_direction || "",
                 }));
-
+                dispatch(EmployeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: data.message,
+                }));
             } catch (err) {
-                console.log(err)
+                dispatch(EmployeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: `Une erreur s'est produite lors de la récupération des données ${err}.`,
+                }));
+                return navigate('/homePage/Employee')
             }
         }
         fetchData();

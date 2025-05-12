@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, SearchX, Loader2 } from "lucide-react"
@@ -62,7 +62,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         startDate: undefined,
         endDate: undefined,
     });
-
+    const budget = useRef<HTMLSelectElement>(null);
 
     const groupSelectedRowsAction = (): Record<string, number[]> | undefined => {
         if (selectedRows.length === 0) {
@@ -153,15 +153,13 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 },
                 body: JSON.stringify({
                     ids: employeeIds,
-                    // intituleAction: selectedAction,
-                    "Budget": 10000,
+                    Budget: budget.current?.value,
                     date_deb: dateRange.startDate ? format(dateRange.startDate, "yyyy-MM-dd") : null,
                     date_fin: dateRange.endDate ? format(dateRange.endDate, "yyyy-MM-dd") : null,
                 }),
             });
             
             const data = await response.json();
-            console.log(data)
             if (!response.ok) {
                 throw new Error(data.message || "Failed to create bond command")
             }
@@ -173,6 +171,8 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                     message: "Bon de Commande créé avec succès",
                 }),
             );
+            dispatch(NotifeeActions.ReferchLatestData(true))
+            navigate("/homePage/bondCommand")
         } catch(err) {
             console.log(err)
             dispatch(
@@ -306,11 +306,12 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             })
             const resData = await response.json();
             if (!response.ok) {
+                console.log(resData.existing)
                 dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "failed",
-                    message: `Erreur lors de l'importation : ${resData.errors.length} ligne(s) ont échoué à la validation.`
+                    message: `Erreur lors de l'importation : ${resData.length} ligne(s) ont échoué à la validation.`
                 }));
                 dispatch(NotifeeActions.ReferchLatestData(true));
                 return navigate("/homePage/planNotifie");
@@ -419,7 +420,6 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     const toggleRowSelection = (ID_N: number) => {
         const ID = String(ID_N)
         setSelectedRows((prev) => (prev.includes(ID) ? prev.filter((rowId) => rowId !== ID) : [...prev, ID]))
-        console.log(selectedRows)
     };
 
     type Join<K, P> = K extends string | number ? (P extends string | number ? `${K}.${P}` : never) : never
@@ -444,7 +444,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         return null
     };
     const handleSearch = (term: string, field: keyof PlanNotifee) => {
-        setSearchTerm(term)
+        setSearchTerm(term.trim())
         setSearchField(field)
     };
 
@@ -532,32 +532,6 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                         onSearch={handleSearch}
                     />
                 </div>
-                {/* <div className="flex items-center gap-2">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={cn("justify-start text-left font-normal", !selectedDate && "text-muted-foreground")}
-                            >
-                                {selectedDate ? format(selectedDate, "dd MMMM yyyy", { locale: fr }) : "Sélectionner une date"}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar mode="single" selected={selectedDate}
-                            // onSelect={handleDateChange} initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
-                    {selectedDate && (
-                        <Button variant="ghost" size="sm"
-                        // onClick={() => handleDateChange(undefined)}
-                        >
-                            <RotateCcw className="h-4 w-4" />
-                        </Button>
-                    )}
-                </div> */}
-
                 <ImportExportComponent importPrevData={importPrevData} exportPrevData={exportNotifieData} />
                 <div className="flex items-center gap-2">
                     {selectedRows.length > 0 && (
@@ -740,7 +714,6 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                 {renderColumnHeader("Autres_charges", "Autres charges")}
                                 {renderColumnHeader("Presalaire", "Presalaire")}
                                 {renderColumnHeader("Dont_Devise", "Dont_Devise")}
-                                {renderColumnHeader("etat", "etat")}
                                 {renderColumnHeader("Observation", "Observation")}
                                 <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
                             </TableRow>
@@ -806,7 +779,6 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         <TableCell className="text-center">{item.Autres_charges ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Presalaire ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Dont_Devise ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.etat ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Observation ?? "—"}</TableCell>
                                         <TableCell className="sticky right-0 bg-background z-10">
                                             <div className="flex items-center gap-2">
@@ -877,6 +849,20 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                         <div className="grid gap-2">
                             <Label htmlFor="action">Action de Formation</Label>
                             <Input id="action" value={selectedAction || ""} readOnly />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="action">Budget</Label>
+                            {/* <Input id="action" type="number" ref={budget} /> */}
+                            <select
+                                id="budget"
+                                ref={budget}
+                                className="border rounded-md p-2" // Basic Tailwind styling
+                                //onChange={(e) => handleChange(e.target.value)} // Add your change handler
+                            >
+                                <option value="Plan2025">Plan2025</option>
+                                <option value="RAR2024">RAR2024</option>
+                                <option value="DER">DER</option>
+                            </select>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="date-debut">Date de début</Label>

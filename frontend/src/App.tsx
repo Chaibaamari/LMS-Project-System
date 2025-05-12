@@ -21,6 +21,7 @@ import PlanNotifieeFormUpdate from "./pages/PlanNotifé/UpdatePlanNotifee";
 import BondCommandDetailPage from "./pages/BondCommand/bondCommandDetail";
 import Tbf from "./pages/TBF/Tbf";
 import TbfDetailPage from "./pages/TBF/tbf-Detail";
+import ImportErrors from "./pages/direction-Section";
 
 export default function App() {
   const router = createBrowserRouter([
@@ -45,6 +46,7 @@ export default function App() {
             },
             { path: 'Settings', element: <Settings />, loader: ProtectedRoute },
             { path: 'TBF', element: <Tbf />, loader: ProtectedRoute },
+            {path: "importErrors", element: <ImportErrors />, loader: ProtectedRoute},
           ]
         },
         { path: 'Emp/update/:matricule', element: <EmployeFormUpdate />, loader: ProtectedRoute },

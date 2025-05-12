@@ -18,8 +18,8 @@ const initialState: EmployeesState = {
     employees: [],
     notification: {
         IsVisible : false,
-        status: '',
-        message:'',
+        status: "",
+        message:"",
     },
     refrechData: false,
     IsLoading : false,

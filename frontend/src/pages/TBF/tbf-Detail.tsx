@@ -1,9 +1,8 @@
-"use client"
 import { useState, useEffect } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, FileText, Folder, ArrowLeft } from "lucide-react"
+import { Search, FileText, ArrowLeft } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -22,10 +21,10 @@ interface BondCommand {
 };
 
 export default function TbfDetailPage() {
-  const [bondCommands, setBondCommands] = useState<BondCommand[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const token = getAuthToken()
+    const [bondCommands, setBondCommands] = useState<BondCommand[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const token = getAuthToken();
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const params = useParams()
@@ -70,9 +69,9 @@ export default function TbfDetailPage() {
         }
     };
     console.log(bondCommands)
-    const viewBondCommandDetails = (id: number) => {
+    const viewBondCommandDetails = (id: number ,  startDate: string , finDate : string) => {
         // Navigate to details page
-        navigate(`/homePage/bondCommand/${id}`)
+        navigate(`/homePage/bondCommand/${id}?dateDebut=${startDate}&dateFin=${finDate}`)
     };
     
 
@@ -95,7 +94,7 @@ export default function TbfDetailPage() {
             </div>
             <Card>
                 <CardHeader className="pb-4">
-                    <CardTitle>Bons de Commande</CardTitle>
+                    <CardTitle>Bonds de Commande</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="flex items-center mb-6">
@@ -128,48 +127,41 @@ export default function TbfDetailPage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>ID</TableHead>
                                         <TableHead>Intitulé Action</TableHead>
                                         <TableHead>Date Début</TableHead>
                                         <TableHead>Date Fin</TableHead>
-                                        {/* <TableHead>Date Création</TableHead> */}
                                         <TableHead>Nombre d'Employés</TableHead>
-                                        <TableHead>Coût Total</TableHead>
+                                        <TableHead>Type De Budget</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredBondCommands.map((command) => (
-                                        <TableRow key={command.ID_Formation}>
-                                            <TableCell>{command.ID_Formation}</TableCell>
-                                            <TableCell className="font-medium">{command.Intitule_Action}</TableCell>
-                                            <TableCell>{format(new Date(command.Date_Deb), "dd MMMM yyyy", { locale: fr })}</TableCell>
-                                            <TableCell>{format(new Date(command.Date_fin), "dd MMMM yyyy", { locale: fr })}</TableCell>
-                                            {/* <TableCell>{format(new Date(command.createdAt), "dd/MM/yyyy HH:mm", { locale: fr })}</TableCell> */}
-                                            <TableCell>{command.Nombre_Employe}</TableCell>
-                                            <TableCell>{command.Budget.toLocaleString("fr-FR")} Kda</TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="icon"
-                                                        onClick={() => viewBondCommandDetails(command.ID_Formation)}
-                                                        title="Voir les détails"
-                                                    >
-                                                        <Search className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="icon"
-                                                        // onClick={() => createTbf(command.Date_Deb)}
-                                                        title="Voir les détails"
-                                                    >
-                                                        <Folder  className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {filteredBondCommands.map((command, index) => {
+                                        const formattedStartDate = format(command.Date_Deb, "dd MMMM yyyy", { locale: fr });
+                                        const formattedEndtDate = format(command.Date_fin, "dd MMMM yyyy", { locale: fr });
+                                        return (
+                                            <TableRow key={index}>
+                                                <TableCell className="font-medium">{command.Intitule_Action}</TableCell>
+                                                <TableCell>{format(new Date(command.Date_Deb), "dd MMMM yyyy", { locale: fr })}</TableCell>
+                                                <TableCell>{format(new Date(command.Date_fin), "dd MMMM yyyy", { locale: fr })}</TableCell>
+                                                {/* <TableCell>{format(new Date(command.createdAt), "dd/MM/yyyy HH:mm", { locale: fr })}</TableCell> */}
+                                                <TableCell>{command.Nombre_Employe}</TableCell>
+                                                <TableCell>{command.Budget.toLocaleString("fr-FR")}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={() => viewBondCommandDetails(command.ID_Formation, formattedStartDate, formattedEndtDate)}
+                                                            title="Voir les détails"
+                                                        >
+                                                            <Search className="h-4 w-4" />
+                                                        </Button>
+                                                        
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>)
+                                    })}
                                 </TableBody>
                             </Table>
                         </div>

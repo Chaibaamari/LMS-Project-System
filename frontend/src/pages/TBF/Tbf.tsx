@@ -26,8 +26,6 @@ export default function Tbf() {
   const [filteredData, setFilteredData] = useState(TBFdata)
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const stored = localStorage.getItem('selectedYear');
-    console.log(stored)
-
 
   // Get unique years from TBF data
     const getUniqueYears = () => {

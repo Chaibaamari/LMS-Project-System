@@ -101,7 +101,7 @@ class PlanController extends Controller
                 'plans.Date_Deb',
                 'plans.Date_fin'
             )
-            ->where('plans.Exercice', $Exercice)
+                ->where('plans.Exercice', $Exercice)
                 ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
                 ->where('plans.etat', 'confirmé')
                 ->when($month, function ($query) use ($month) {
@@ -143,35 +143,90 @@ class PlanController extends Controller
             ], 500);
         }
     }
-    public function getEmployeesByFormation($id)
+    public function getEmployeesByFormation(Request $request, $id)
     {
-        $employees = Plan::where('ID_Formation', $id)->where('etat', 'confirmé')->with('employe')->with('formation')->get();
-        return response()->json([
-            'PlanCommand' => $employees
-        ]);
+        setlocale(LC_TIME, 'fr_FR.utf8');
+        $dateStart = urldecode($request->query('dateDebut'));
+        $dateEnd = urldecode($request->query('dateFin'));
+        try {
+            // Remove any extra whitespace
+            $StringDateStart = preg_replace('/\s+/', ' ', trim($dateStart));
+            $StringDateEnd = preg_replace('/\s+/', ' ', trim($dateEnd));
+
+            // Try Carbon which handles locales better
+            $dateDeb = \Carbon\Carbon::createFromLocaleFormat('d F Y', 'fr', $StringDateStart);
+            $dateFin = \Carbon\Carbon::createFromLocaleFormat('d F Y', 'fr', $StringDateEnd);
+
+            if (!$dateDeb) {
+                throw new \Exception("Could not parse date");
+            }
+            if (!$dateFin) {
+                throw new \Exception("Could not parse date");
+            }
+
+            $formattedDate = $dateDeb->format('Y-m-d');
+            $formattedDateFin = $dateFin->format('Y-m-d');
+
+            // $employees = Plan::where('ID_Formation', $id)
+            //     ->where('etat', 'confirmé')
+            //     ->whereDate('Date_Deb', $formattedDate)
+            //     ->whereDate('Date_Fin', $formattedDateFin)
+            //     ->with(['employe', 'formation'])
+            //     ->get();
+            $employees = DB::table('employes as E')
+                ->join('directions as D', 'E.Id_direction', '=', 'D.id_direction')
+                ->join('plans as P', 'P.Matricule', '=', 'E.Matricule')
+                ->join('formations as F', 'P.ID_Formation', '=', 'F.ID_Formation')
+                ->join('organismes as O', 'F.Id_Organisme', '=', 'O.Id_Organisme')
+                ->select([
+                    'P.ID_N',
+                    'D.Structure',
+                    'D.Nom_direction',
+                    'E.Matricule',
+                    'E.CodeFonction',
+                    'E.Id_direction',
+                    'E.prenomnom',
+                    'E.Date_Naissance',
+                    'E.Sexe',
+                    'E.CSP',
+                    'F.Domaine_Formation',
+                    'F.Code_Domaine_Formation',
+                    'F.Intitule_Action',
+                    'F.Nature_Formation',
+                    'F.Intitule_Action',
+                    'F.Source_Besoin',
+                    'F.Type_Formation',
+                    'F.Mode_Formation',
+                    'F.Code_Formation',
+                    'O.Code_Organisme',
+                    'O.Nom_Organisme',
+                    'O.Lieu_Formation',
+                    'O.Pays',
+                    'P.Date_Deb',
+                    'P.Date_fin',
+                    'F.Heure_jour',
+                    'P.Type_Pension',
+                    'P.Observation',
+                    'P.Budget'
+                ])
+                ->where('P.ID_Formation', $id)
+                ->where('P.etat', 'confirmé')
+                ->whereDate('P.Date_Deb', $formattedDate)
+                ->whereDate('P.Date_Fin', $formattedDateFin)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'PlanCommand' => $employees,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Date parsing failed',
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 
-    // public function consultTBF(string $month)
-    // {
-    //     // $Exercice = request()->header('Year');
-    //     //$plans = Plan::where('Exercice',$Exercice)->whereMonth('Date_Deb', $request->input('month'))->orWhereMonth('Date_Fin', $request->input('month'))->where('etat', 'confirmé')->get();
-
-    //         // Grab the “YYYY‑MM” string from your query (e.g. "2024-04")
-    //     $monthInput = $month;
-
-    //     // Build full month start/end dates
-    //     $monthStart = Carbon::parse("{$monthInput}-01")->startOfMonth(); // 2024‑04‑01 00:00:00
-    //     $monthEnd   = Carbon::parse("{$monthInput}-01")->endOfMonth();   // 2024‑04‑30 23:59:59
-    //     $Exercice = request()->header('Year');
-    //     // Fetch any record whose [Date_Deb … Date_Fin] range overlaps [monthStart … monthEnd]
-    //     $plans = Plan::where('Exercice',$Exercice)
-    //                         ->where('etat', 'confirmé')
-    //                         ->where('Date_Deb', '<=', $monthEnd)
-    //                         ->where('Date_Fin',  '>=', $monthStart)
-    //                         ->get();
-
-    //     return response()->json(['message' => 'TBF retourné', 'Plan' => $plans]);
-    // }
     public function consultTBF(Request $request)
     {
         $moisFrancais = [

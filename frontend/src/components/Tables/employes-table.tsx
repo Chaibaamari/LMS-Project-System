@@ -78,11 +78,10 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
             }));
             dispatch(EmployeeActions.ReferchLatestData(true));
         } catch (err) {
-            console.log(err)
             dispatch(EmployeeActions.ShowNotification({
                 IsVisible:true,
                 status: 'failed',
-                message: 'Erreur lors du chargement des employés'
+                message: `Erreur lors du chargement des employés ${err}` 
             }));
         }
     };
@@ -110,7 +109,11 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
             );
 
             if (!response.ok) {
-                throw new Error('Failed to delete employees');
+                dispatch(EmployeeActions.ShowNotification({
+                IsVisible:true,
+                status: 'failed',
+                message: 'Erreur lors du chargement des employés'
+            }));
             }
 
             setSelectedRows([]);
@@ -141,7 +144,7 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     };// still must to modify
     // Handle search
     const handleSearch = (term: string, field: keyof Users) => {
-        setSearchTerm(term);
+        setSearchTerm(term.trim());
         setSearchField(field);
     };
     //pagination Logic
@@ -326,11 +329,30 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                     <Checkbox
                                         aria-label="Select all"
                                         checked={selectedRows.length === data.length}
+                                        // onCheckedChange={() => {
+                                        //     if (selectedRows.length === data.length) {
+                                        //         setSelectedRows([]);
+                                        //     } else {
+                                        //         setSelectedRows(data.map((item) => item.Matricule));
+                                        //     }
+                                        // }}
                                         onCheckedChange={() => {
-                                            if (selectedRows.length === data.length) {
-                                                setSelectedRows([]);
+                                            if (sortedAndFilteredData.every((item) => selectedRows.includes(String(item.Matricule)))) {
+                                                // Unselect all filtered items
+                                                const filteredIds = sortedAndFilteredData.map((item) => String(item.Matricule))
+                                                setSelectedRows((prev) => prev.filter((id) => !filteredIds.includes(id)))
                                             } else {
-                                                setSelectedRows(data.map((item) => item.Matricule));
+                                                // Select all filtered items
+                                                const filteredIds = sortedAndFilteredData.map((item) => String(item.Matricule))
+                                                setSelectedRows((prev) => {
+                                                    const newSelection = [...prev]
+                                                    filteredIds.forEach((id) => {
+                                                        if (!newSelection.includes(id)) {
+                                                            newSelection.push(id)
+                                                        }
+                                                    })
+                                                    return newSelection
+                                                })
                                             }
                                         }}
                                     />
@@ -338,8 +360,8 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                 {renderColumnHeader("Matricule", "Matricule")}
                                 {renderColumnHeader("prenomnom", "Nom & Prénom")}
                                 {renderColumnHeader("Date_Naissance", "Date Naissance")}
-                                {renderColumnHeader("Date_Recrutement", "Date Recrutement")}
                                 {renderColumnHeader("Age", "  Age  ")}
+                                {renderColumnHeader("Date_Recrutement", "Date Recrutement")}
                                 {renderColumnHeader("Ancienneté", "Ancienneté")}
                                 {renderColumnHeader("Sexe", "Sexe", ["M", "F"])}
                                 {renderColumnHeader("CSP", "CSP", ["Cadre", "Maîtrise", "Exécution"])}
@@ -368,8 +390,8 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                         <TableCell className="font-medium text-center ">{item.Matricule}</TableCell>
                                         <TableCell className="text-center ">{item.prenomnom}</TableCell>
                                         <TableCell className="text-center ">{item.Date_Naissance}</TableCell>
-                                        <TableCell className="text-center ">{item.Date_Recrutement}</TableCell>
                                         <TableCell className="text-center ">{calculateAge(new Date(item.Date_Naissance))} ans</TableCell>
+                                        <TableCell className="text-center ">{item.Date_Recrutement}</TableCell>
                                         <TableCell className="text-center ">{calculeAnciennete(new Date(item.Date_Recrutement))} ans</TableCell>
                                         <TableCell className="text-center ">{item.Sexe}</TableCell>
                                         <TableCell>
