@@ -133,22 +133,6 @@ class JWTAuthController extends Controller
         $users = User::where('role', $role)->where('active', true)->get();
         return response()->json(compact('users'));
     }
-    public function updateUserRole(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), [
-            'role' => 'required|in:responsable,gestionnaire,consultant'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
-
-        $user = User::findOrFail($id);
-        $user->role = $request->role;
-        $user->save();
-
-        return response()->json(['message' => 'Role updated successfully', 'user' => $user]);
-    }
     public function getAllUsers(){
         $users = User::select('name', 'email', 'role', 'active')
             ->whereIn('role', ['consultant', 'gestionnaire'])

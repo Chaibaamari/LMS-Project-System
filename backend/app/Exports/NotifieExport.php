@@ -8,9 +8,13 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 
-class NotifieExport implements FromQuery,WithHeadings, WithMapping
+
+class NotifieExport implements FromQuery,WithHeadings, WithMapping , WithStyles, ShouldAutoSize
 {
     use Exportable;
 
@@ -121,5 +125,25 @@ class NotifieExport implements FromQuery,WithHeadings, WithMapping
     private function calculateAnciennete($recruitmentDate)
     {
         return $recruitmentDate ? Carbon::parse($recruitmentDate)->diffInYears(Carbon::now()) : 'N/A';
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'ed7d31'],
+                ],
+                'alignment' => ['horizontal' => 'center'],
+                'borders' => [
+                'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                        'color' => ['rgb' => '000000'], // Black border
+                    ],
+                ],
+            ],
+        ];
     }
 }

@@ -4,9 +4,13 @@ namespace App\Exports;
 
 use App\Models\Plan;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class DemandeConfirmationExport implements FromCollection, WithHeadings
+
+class DemandeConfirmationExport implements FromCollection, WithHeadings , WithStyles, ShouldAutoSize
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -39,6 +43,26 @@ class DemandeConfirmationExport implements FromCollection, WithHeadings
             'NOM & PRENOM',
             "INTITULE DE L'ACTION",
             'Organisme',
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '70ad47'],
+                ],
+                'alignment' => ['horizontal' => 'center'],
+                'borders' => [
+                'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                        'color' => ['rgb' => '000000'], // Black border
+                    ],
+                ],
+            ],
         ];
     }
 }

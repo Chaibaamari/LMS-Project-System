@@ -27,16 +27,16 @@ Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])
         Route::post('createUser', [JWTAuthController::class, 'createUser']);
         Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
         Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
+        Route::get('users', [JWTAuthController::class, 'getUsersByRole']);
     });
 
     Route::get('/records', [PlanController::class, 'testyear']);
 
 
-    Route::middleware('role:responsable')->group(function () {
+    /* Route::middleware('role:responsable')->group(function () {
         Route::post('createUser', [JWTAuthController::class, 'createUser']);
         Route::get('users', [JWTAuthController::class, 'getUsersByRole']);
-        Route::put('users/{id}/role', [JWTAuthController::class, 'updateUserRole']);
-    });
+    });  */
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {

@@ -93,6 +93,10 @@ class PlanController extends Controller
                 11 => 'novembre',
                 12 => 'décembre'
             ];
+
+            $start = Carbon::parse($month . '-01')->startOfMonth(); // 2024-04-01
+            $end = Carbon::parse($month . '-01')->endOfMonth();     // 2024-04-30
+
             $formations = Formation::select(
                 'formations.ID_Formation',
                 'formations.Intitule_Action',
@@ -104,10 +108,10 @@ class PlanController extends Controller
             ->where('plans.Exercice', $Exercice)
                 ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
                 ->where('plans.etat', 'confirmé')
-                ->when($month, function ($query) use ($month) {
-                    $query->where(function ($q) use ($month) {
-                        $q->whereMonth('plans.Date_Deb', $month)
-                            ->orWhereMonth('plans.Date_fin', $month);
+                ->when($month, function ($query) use ($month,$end,$start) {
+                    $query->where(function ($q) use ($month,$end,$start) {
+                        $q->where('plans.Date_Deb', '<=', $end)
+                            ->Where('plans.Date_fin', '>=', $start);
                     });
                 })
                 ->groupBy([
