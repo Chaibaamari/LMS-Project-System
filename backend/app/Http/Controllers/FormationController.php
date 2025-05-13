@@ -58,6 +58,7 @@ class FormationController extends Controller
 
             return response()->json([
                 'success' => true,
+                'count' => $formations->count(),
                 'formation' => $formations,
                 'message' => 'Formations récupérées avec succès'
             ]);

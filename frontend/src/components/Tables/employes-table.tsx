@@ -27,6 +27,8 @@ import { calculateAge, calculeAnciennete, getAuthToken } from "@/util/Auth";
 import { DynamicSearch } from "../Tools/Search";
 import { useDispatch } from "react-redux";
 import { EmployeeActions } from "@/store/EmployesSlice";
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 
 
 interface UsersTableProps {
@@ -389,9 +391,9 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                         </TableCell>
                                         <TableCell className="font-medium text-center ">{item.Matricule}</TableCell>
                                         <TableCell className="text-center ">{item.prenomnom}</TableCell>
-                                        <TableCell className="text-center ">{item.Date_Naissance}</TableCell>
+                                        <TableCell className="text-center ">{format(new Date(item.Date_Naissance?.toString()), "dd MMMM yyyy", { locale: fr })}</TableCell>
                                         <TableCell className="text-center ">{calculateAge(new Date(item.Date_Naissance))} ans</TableCell>
-                                        <TableCell className="text-center ">{item.Date_Recrutement}</TableCell>
+                                        <TableCell className="text-center ">{format(new Date(item.Date_Recrutement?.toString()), "dd MMMM yyyy", { locale: fr })}</TableCell>
                                         <TableCell className="text-center ">{calculeAnciennete(new Date(item.Date_Recrutement))} ans</TableCell>
                                         <TableCell className="text-center ">{item.Sexe}</TableCell>
                                         <TableCell>

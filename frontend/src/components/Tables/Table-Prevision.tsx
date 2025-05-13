@@ -15,6 +15,8 @@ import { DynamicSearch } from "../Tools/Search"
 import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { useDispatch } from "react-redux"
 import { PrevisionActions } from "@/store/PrevisionSlice"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
 import ImportExportComponent from "../Tools/Ecxel"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 
@@ -548,8 +550,8 @@ export default function PrevisionTable({ data = [] }: PlanPrevisionTableProps) {
                                         </TableCell>
                                         <TableCell className="font-medium ">{item.employe.Matricule ?? "—"}</TableCell>
                                         <TableCell className="text-center w-[100%]">{item.employe.prenomnom ?? "—"}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Date_Naissance ?? "—"}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Date_Recrutement ?? "—"}</TableCell>
+                                        <TableCell className="text-center ">{format(new Date(item.employe.Date_Naissance?.toString()), "dd MMMM yyyy", { locale: fr })}</TableCell>
+                                        <TableCell className="text-center ">{format(new Date(item.employe.Date_Recrutement?.toString()), "dd MMMM yyyy", { locale: fr })}</TableCell>
                                         <TableCell className="text-center ">{item.employe.Sexe ?? "—"}</TableCell>
                                         <TableCell>
                                             <span

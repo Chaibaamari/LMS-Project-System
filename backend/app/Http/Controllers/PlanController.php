@@ -166,13 +166,6 @@ class PlanController extends Controller
 
             $formattedDate = $dateDeb->format('Y-m-d');
             $formattedDateFin = $dateFin->format('Y-m-d');
-
-            // $employees = Plan::where('ID_Formation', $id)
-            //     ->where('etat', 'confirmé')
-            //     ->whereDate('Date_Deb', $formattedDate)
-            //     ->whereDate('Date_Fin', $formattedDateFin)
-            //     ->with(['employe', 'formation'])
-            //     ->get();
             $employees = DB::table('employes as E')
                 ->join('directions as D', 'E.Id_direction', '=', 'D.id_direction')
                 ->join('plans as P', 'P.Matricule', '=', 'E.Matricule')
@@ -286,8 +279,6 @@ class PlanController extends Controller
             'TBF' => $results
         ]);
     }
-
-
 
     public function consultBilan()
     {

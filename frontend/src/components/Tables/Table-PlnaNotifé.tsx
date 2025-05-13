@@ -735,8 +735,8 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         </TableCell>
                                         <TableCell className="font-medium ">{item.employe.Matricule ?? "—"}</TableCell>
                                         <TableCell className="text-center w-[100%]">{item.employe.prenomnom ?? "—"}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Date_Naissance ?? "—"}</TableCell>
-                                        <TableCell className="text-center ">{item.employe.Date_Recrutement ?? "—"}</TableCell>
+                                        <TableCell className="text-center ">{format(new Date(item.employe.Date_Naissance?.toString()), "dd MMMM yyyy", { locale: fr })}</TableCell>
+                                        <TableCell className="text-center ">{format(new Date(item.employe.Date_Recrutement?.toString()), "dd MMMM yyyy", { locale: fr })}</TableCell>
                                         <TableCell className="text-center ">{item.employe.Sexe ?? "—"}</TableCell>
                                         <TableCell>
                                             <span

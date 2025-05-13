@@ -375,7 +375,8 @@ export default function BondCommandDetailPage() {
                                                         {command.prenomnom}
                                                     </TableCell>
                                                     <TableCell className="text-center p-3 border-t border-gray-200">
-                                                        {command.Date_Naissance}
+                                                        { format(new Date(command.Date_Naissance?.toString()), "dd MMMM yyyy", { locale: fr })
+                                                        }
                                                     </TableCell>
                                                     <TableCell className="font-medium text-center p-3 border-t border-gray-200">
                                                         {command.Sexe}

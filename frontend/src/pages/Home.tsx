@@ -38,7 +38,8 @@ export default function LearningDashboard() {
             dispatch(FormationActions.ShowNotificationRefrech(false))
         }
         SendEmployeData()
-    }, [dispatch, Year ,token]);
+    }, [dispatch, Year, token]);
+    
 
     useEffect(() => {
         const SendEmployeData = async () => {
