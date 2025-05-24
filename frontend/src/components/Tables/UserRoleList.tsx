@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -24,8 +24,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { getAuthToken } from "@/util/Auth"
+import { Link } from "react-router-dom"
 
 interface User {
+    id: number
   name: string
   email: string
   role: string
@@ -117,25 +119,6 @@ export default function UserList() {
         <Card className="w-full ">
             <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <CardTitle className="text-xl flex items-center gap-2">
-                            <UserCog className="h-5 w-5 text-primary" />
-                            User Management
-                        </CardTitle>
-                        <CardDescription>View and manage system users</CardDescription>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                        <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
-                            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
-                            Refresh
-                        </Button>
-                    </div>
-                </div>
-            </CardHeader>
-
-            <CardContent>
-                <div className="space-y-4">
-                    {/* Filters */}
                     <div className="flex flex-col sm:flex-row gap-3">
 
                         <div className="flex gap-2">
@@ -167,13 +150,24 @@ export default function UserList() {
                             </Select>
                         </div>
                     </div>
+                    <div className="flex flex-col sm:flex-row gap-2">
+                        <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>
+                            <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
+                            Refresh
+                        </Button>
+                    </div>
+                </div>
+            </CardHeader>
+
+            <CardContent>
+                <div className="space-y-4">
 
                     {/* Error message */}
                     {error && (
                         <div className="bg-destructive/10 text-destructive p-4 rounded-md flex items-start gap-2">
                             <XCircle className="h-5 w-5 flex-shrink-0 mt-0.5" />
                             <div>
-                                <p className="font-medium">Failed to load users</p>
+                                <p className="font-medium">Échec du chargement des utilisateurs</p>
                                 <p className="text-sm">{error}</p>
                             </div>
                         </div>
@@ -197,7 +191,7 @@ export default function UserList() {
                                         <TableCell colSpan={5} className="h-24 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                 <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
-                                                <p className="text-muted-foreground">Loading users...</p>
+                                                <p className="text-muted-foreground">Chargement des utilisateurs...</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -206,7 +200,7 @@ export default function UserList() {
                                         <TableCell colSpan={5} className="h-24 text-center">
                                             <div className="flex flex-col items-center justify-center">
                                                 <UserCog className="h-8 w-8 text-muted-foreground mb-2" />
-                                                <p className="text-muted-foreground">No users found</p>
+                                                <p className="text-muted-foreground">Aucun utilisateur trouvé</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -248,13 +242,17 @@ export default function UserList() {
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
                                                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                                        <DropdownMenuItem>Edit User</DropdownMenuItem>
+                                                        <Link to={`/utilisateur/update/${user.id}`}>
+                                                        <DropdownMenuItem>Modification utilisateur</DropdownMenuItem>
+                                                        </Link>
                                                         <DropdownMenuSeparator />
+                                                        <Link to={`/utilisateur/update/activate/${user.id}`}>
                                                         {user.active === 1 ? (
-                                                            <DropdownMenuItem className="text-destructive">Deactivate</DropdownMenuItem>
+                                                            <DropdownMenuItem className="text-destructive">Desactivé permssion d'accès</DropdownMenuItem>
                                                         ) : (
-                                                            <DropdownMenuItem>Activate</DropdownMenuItem>
+                                                            <DropdownMenuItem>Activé permssion d'accès</DropdownMenuItem>
                                                         )}
+                                                        </Link>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
@@ -267,7 +265,7 @@ export default function UserList() {
 
                     {/* Results summary */}
                     <div className="text-sm text-muted-foreground">
-                        Showing {filteredUsers.length} of {users.length} users
+                        Affichage de {filteredUsers.length} sur {users.length} utilisateurs
                     </div>
                 </div>
             </CardContent>

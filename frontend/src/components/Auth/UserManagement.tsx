@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2, UserPlus, CheckCircle } from "lucide-react"
+import { Loader2, UserPlus, CheckCircle, EyeOff, Eye } from "lucide-react"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { getAuthToken } from "@/util/Auth"
 
@@ -54,7 +54,8 @@ async function creerUtilisateur(data: FormValues) {
 export default function GestionUtilisateurs() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const { toast } = useToast()
+    const { toast } = useToast()
+     const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -140,7 +141,29 @@ export default function GestionUtilisateurs() {
                                 <FormItem>
                                     <FormLabel>Mot de passe</FormLabel>
                                     <FormControl>
-                                        <Input type="password" placeholder="••••••••" {...field} />
+                                        <div className="relative"> {/* 👈 Add this wrapper */}
+                                            <Input
+                                                type={showPassword ? "text" : "password"} // 👈 Toggle type
+                                                placeholder="••••••••"
+                                                {...field}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8" // 👈 Center vertically
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? (
+                                                    <EyeOff className="h-4 w-4" />
+                                                ) : (
+                                                    <Eye className="h-4 w-4" />
+                                                )}
+                                                <span className="sr-only">
+                                                    {showPassword ? "Hide password" : "Show password"}
+                                                </span>
+                                            </Button>
+                                        </div>
                                     </FormControl>
                                     <FormDescription>
                                         Doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre

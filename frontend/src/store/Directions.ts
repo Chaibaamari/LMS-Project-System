@@ -1,24 +1,18 @@
-import { Formation, FormationEnCours, FormationTermine } from "@/assets/modelData";
+import { Direction } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
-
-
-type FormationType = {
-    FormationData: Formation[]
-    FormationEnCours: FormationEnCours[]
-    FormationTermine: FormationTermine[]
+type DirectionsType = {
+    DirectionsData: Direction[]
     IsLoading: boolean
     refrechData: boolean,
     Notification: {
         IsVisible: boolean,
         status: string,
-        message : string,
+        message: string,
     }
 }
-const initialState: FormationType = {
-    FormationData: [],
-    FormationEnCours : [],
-    FormationTermine : [],
+const initialState: DirectionsType = {
+    DirectionsData: [],
     IsLoading: false,
     refrechData:false,
     Notification: {
@@ -29,18 +23,12 @@ const initialState: FormationType = {
 }
 
 
-const FormationSlice = createSlice({
-    name: "Formation",
+const DirectionsSlice = createSlice({
+    name: "Directions",
     initialState, 
     reducers: {
-        FetchDataFormation(state, action) {
-            state.FormationData = action.payload;
-        },
-        FetchDataFormationEnCours(state, action) {
-            state.FormationEnCours = action.payload;
-        },
-        FetchDataFormationTermine(state, action) {
-            state.FormationTermine = action.payload;
+        FetchDataDirections(state, action) {
+            state.DirectionsData = action.payload;
         },
         ShowNotificationRefrech(state , action) {
             state.IsLoading = action.payload;
@@ -66,5 +54,5 @@ const FormationSlice = createSlice({
     }
 })
 
-export default FormationSlice;
-export const   FormationActions = FormationSlice.actions;
+export default DirectionsSlice;
+export const   DirectionsActions = DirectionsSlice.actions;

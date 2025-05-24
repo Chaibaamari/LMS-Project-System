@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Exports;
 
 
@@ -8,9 +9,12 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
 
-class PrevExport implements FromQuery,WithHeadings, WithMapping
+class PrevExport implements FromQuery, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
 {
     use Exportable;
     protected $year;
@@ -19,11 +23,11 @@ class PrevExport implements FromQuery,WithHeadings, WithMapping
     {
         $this->year = $year;
     }
-    
+
 
     public function query()
     {
-        return Plan::where('Exercice',$this->year)->where('etat', 'prévision')->with([
+        return Plan::where('Exercice', $this->year)->where('etat', 'prévision')->with([
             'employe.direction',
             'employe.fonction',
             'formation.organisme',
@@ -102,9 +106,95 @@ class PrevExport implements FromQuery,WithHeadings, WithMapping
     {
         return $birthDate ? Carbon::parse($birthDate)->diffInYears(Carbon::now()) : 'N/A';
     }
- 
+
     private function calculateAnciennete($recruitmentDate)
     {
         return $recruitmentDate ? Carbon::parse($recruitmentDate)->diffInYears(Carbon::now()) : 'N/A';
+    }
+
+    // public function styles(Worksheet $sheet)
+    // {
+    //     // 1. Insérer et styliser le titre "BC FORMATION 2025" dans la première ligne
+    //     $sheet->getStyle('A1:Z1')->applyFromArray([
+    //         'font' => [
+    //             'bold' => true,
+    //             'color' => ['rgb' => '000000']
+    //         ],
+    //         'alignment' => [
+    //             'horizontal' => 'center',
+    //             'vertical' => 'center',
+    //             'wrapText' => true,
+    //             'indent' => 2,
+    //         ],
+    //         'borders' => [
+    //             'allBorders' => [
+    //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+    //                 'color' => ['rgb' => '000000'], // Black border
+    //             ],
+    //         ],
+    //         'fill' => [
+    //             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+    //             'startColor' => ['rgb' => '70AD47'], // Vert
+    //         ],
+    //     ]);
+    //     $sheet->getRowDimension(1)->setRowHeight(35); // Hauteur du titre
+    //     $sheet->insertNewRowBefore(1, 2); // Insère 1 ligne vide avant la ligne 3
+
+
+    //     // 2. Style de l’en-tête (en ligne 2 maintenant)
+    //     $sheet->getStyle('A2:Z2')->applyFromArray([
+    //         'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
+    //         'fill' => [
+    //             'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+    //         ],
+    //         'alignment' => [
+    //             'horizontal' => 'center',
+    //             'vertical' => 'center',
+    //             'wrapText' => true,
+    //             'indent' => 2,
+    //         ],
+    //         'borders' => [
+    //             'allBorders' => [
+    //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+    //                 'color' => ['rgb' => '000000'],
+    //             ],
+    //         ],
+    //     ]);
+
+    //     // 3. Style du corps (à partir de ligne 3)
+    //     $lastRow = $sheet->getHighestRow();
+    //     $lastCol = $sheet->getHighestColumn();
+    //     $sheet->getStyle("A3:{$lastCol}{$lastRow}")->applyFromArray([
+    //         'alignment' => [
+    //             'horizontal' => 'center',
+    //             'vertical' => 'center',
+    //             'wrapText' => true,
+    //         ],
+    //         'borders' => [
+    //             'allBorders' => [
+    //                 'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+    //                 'color' => ['rgb' => '000000'],
+    //             ],
+    //         ],
+    //     ]);
+    // }
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => [
+                'font' => ['bold' => true, 'color' => ['rgb' => '000000']],
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '70ad47'],
+                ],
+                'alignment' => ['horizontal' => 'center'],
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_MEDIUM,
+                        'color' => ['rgb' => '000000'], // Black border
+                    ],
+                ],
+            ],
+        ];
     }
 }

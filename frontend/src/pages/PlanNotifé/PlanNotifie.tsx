@@ -1,7 +1,6 @@
 import NotificationError from "@/components/Error/NotificationError";
 import NotifeTable from "@/components/Tables/Table-PlnaNotifé";
 import TableSkeleton from "@/components/Tables/TableSketlon";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { NotifeeActions } from "@/store/NotifeSlice";
 import { getAuthToken, getYearExercice } from "@/util/Auth";
@@ -49,13 +48,30 @@ export default function PlanNotifie() {
                 (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold">Plan Notifée</h2>
-                            <Skeleton className="h-9 w-24" /> 
+                            <div className="flex flex-col md:flex-row items-center mb-8">
+                                <div className="flex items-center mb-4 md:mb-0">
+                                    <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                                </div>
+                                <div className="text-center md:text-start font-raleway">
+                                    <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                        PLAN FORMATION {getYearExercice()}
+                                    </h1>
+                                </div>
+                            </div>
                         </div>
                         <TableSkeleton rows={15} columns={5} />
                     </div>
                 ) : <>
-                    <h2 className="text-2xl font-bold mb-4">Plan Notifée</h2>
+                    <div className="flex flex-col md:flex-row items-center mb-8">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                        </div>
+                        <div className="text-center md:text-start font-raleway">
+                            <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                PLAN FORMATION {getYearExercice()}
+                            </h1>
+                        </div>
+                    </div>
                     <NotifeTable data={ListeNotife} />
                 </>
             }

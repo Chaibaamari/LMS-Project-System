@@ -198,11 +198,11 @@ export default function BondCommandDetailPage() {
             </div>
 
             <div className="bg-white p-6 mb-8">
-                <div className="flex flex-col md:flex-row items-center justify-between mb-8">
+                <div className="flex flex-col md:flex-row items-center mb-8">
                     <div className="flex items-center mb-4 md:mb-0">
                         <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
                     </div>
-                    <div className="text-center md:text-right">
+                    <div className="text-center md:text-start font-raleway">
                         <h1 className="text-3xl md:text-4xl font-bold text-[#F7913D] tracking-tight">
                             BC FORMATION {getYearExercice()}
                         </h1>

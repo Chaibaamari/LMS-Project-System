@@ -4,7 +4,6 @@ import {redirect} from 'react-router-dom'
 
 
 export default function LoginPage() {
-
     return (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
             <div className="flex w-full max-w-sm flex-col gap-6">
@@ -24,8 +23,12 @@ export async function action({request} : {request: Request}) {
     const SearchUrl = new URL(request.url).searchParams; 
     const mode = SearchUrl.get('mode') || 'login';
 
-    if (mode !== 'login' && mode !== 'register') {
-        throw new Response( JSON.stringify({message : ' Error 2 de registration '}), {status : 422} )
+    // if (mode !== 'login' && mode !== 'register') {
+    //     throw new Response( JSON.stringify({message : ' Error 2 de registration '}), {status : 422} )
+    // }
+    if (mode !== 'login') {
+        // throw new Response(JSON.stringify({ message: ' Error 2 de registration ' }), { status: 422 })
+        return redirect('/?mode=login')
     }
 
     const data = await request.formData();
@@ -35,8 +38,8 @@ export async function action({request} : {request: Request}) {
         password: data.get('password') as string,
         password_confirmation: data.get('password_confirmation') as string,
     }
-    console.log(dataAuth)
-    const response = await fetch(`http://127.0.0.1:8000/api/${mode}`, {
+    const response = await fetch(`http://127.0.0.1:8000/api/login`, {
+        // const response = await fetch(`http://127.0.0.1:8000/api/${mode}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -60,5 +63,3 @@ export async function action({request} : {request: Request}) {
     return redirect('/homePage')
     
 }
-
-// import this function of token i you must add in such route must be protected

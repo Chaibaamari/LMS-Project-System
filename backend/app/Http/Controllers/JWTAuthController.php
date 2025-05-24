@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\StoreUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -23,7 +24,7 @@ class JWTAuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['error' => [ "msg" => $validator->errors()->toJson() ] ], 400);
+            return response()->json(['error' => ["msg" => $validator->errors()->toJson()]], 400);
         }
 
         $user = User::create([
@@ -44,21 +45,19 @@ class JWTAuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         $user = User::where('email', $credentials['email'])->first();
-        if($user){
-            if(!$user->active){
-                return response()->json(['error' => ['msg' => 'Account not activated']], 403);
-            }
-        }
 
         try {
+            if ($user->active == 0) {
+                return response()->json(['error' => ['msg' => 'Votre compte n’a pas encore été activé. Veuillez contacter l’administrateur.']], 422);
+            }
             if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => ["msg" => 'Invalid credentials' ] ], 401);
+                return response()->json(['error' => ["msg" => 'Adresse e-mail ou mot de passe incorrect. Veuillez réessayer.']], 401);
             }
 
             $user = auth()->user();
 
             $customClaims = [
-                'exp' => now()->addHours(1)->timestamp,
+                'exp' => now()->addHours(2)->timestamp,
                 'role' => $user->role,
                 'active' => $user->active
             ];
@@ -68,7 +67,7 @@ class JWTAuthController extends Controller
 
             return response()->json(compact('token'));
         } catch (JWTException $e) {
-            return response()->json(['error' => ["msg" => 'Could not create token' ] ], 500);
+            return response()->json(['error' => ["msg" => 'Could not create token']], 500);
         }
     }
 
@@ -77,10 +76,10 @@ class JWTAuthController extends Controller
     {
         try {
             if (! $user = JWTAuth::parseToken()->authenticate()) {
-                return response()->json(['error' => ["msg" => 'User not found' ] ], 404);
+                return response()->json(['error' => ["msg" => 'User not found']], 404);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => ["msg" => 'Invalid token' ] ], 400);
+            return response()->json(['error' => ["msg" => 'Invalid token']], 400);
         }
 
         return response()->json(compact('user'));
@@ -113,14 +112,16 @@ class JWTAuthController extends Controller
     public function activateUser($id)
     {
         $user = User::find($id)->update([
-            'active' => True]);
+            'active' => True
+        ]);
         return response()->json(['message' => 'User Activated Successfully']);
     }
 
     public function deactivateUser($id)
     {
         $user = User::find($id)->update([
-            'active' => False]);
+            'active' => False
+        ]);
         return response()->json(['message' => 'User Dectivated Successfully']);
     }
     // JWTAuthController.php
@@ -133,29 +134,53 @@ class JWTAuthController extends Controller
         $users = User::where('role', $role)->where('active', true)->get();
         return response()->json(compact('users'));
     }
-    public function updateUserRole(Request $request, $id)
+    public function getAllUsers()
     {
-        $validator = Validator::make($request->all(), [
-            'role' => 'required|in:responsable,gestionnaire,consultant'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
-
-        $user = User::findOrFail($id);
-        $user->role = $request->role;
-        $user->save();
-
-        return response()->json(['message' => 'Role updated successfully', 'user' => $user]);
-    }
-    public function getAllUsers(){
-        $users = User::select('name', 'email', 'role', 'active')
-            ->whereIn('role', ['consultant', 'gestionnaire'])
+        $users = User::select('id', 'name', 'email', 'role', 'active')
+            ->whereIn('role', ['consultant', 'gestionnaire', 'responsable'])
             ->get();
 
         return response()->json([
             'users' => $users,
+        ]);
+    }
+
+    public function getUserById(Request $request, string $id)
+    {
+        try {
+
+            $employe = User::select(['id', 'name', 'email', 'role', 'active', 'password'])
+                ->where('id', $id)
+                ->first();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Employé mis à jour avec succès.',
+                'Employe' => $employe,
+                'success' => true
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Échec de la mise à jour de l\'employé  ',
+                'success' => false
+            ], 500);
+        }
+    }
+    public function updatePassword(Request $request, $id)
+    {
+        User::where('id', $id)->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => Hash::make($request->input('password')),
+            'role' => $request->input('role'),
+            'active' => $request->input('active'),
+
+        ]);
+
+        return response()->json([
+            'message' => 'Utilisateur mis à jour avec succès',
         ]);
     }
 }

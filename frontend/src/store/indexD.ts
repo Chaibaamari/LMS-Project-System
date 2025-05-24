@@ -6,6 +6,8 @@ import PlanNotifeeSlice from './NotifeSlice';
 import BondCommandSlice from './BondCommand';
 import FormationSlice from './Formation';
 import TBFSlice from './TBF';
+import DirectionsSlice from './Directions';
+import OrganismeSlice from './Organisme';
 
 
 
@@ -18,7 +20,9 @@ export const store = configureStore({
         PlanNotifee: PlanNotifeeSlice.reducer,
         BondCommand: BondCommandSlice.reducer,
         Formation: FormationSlice.reducer,
-        TBF : TBFSlice.reducer
+        TBF: TBFSlice.reducer,
+        Direction: DirectionsSlice.reducer,
+        Organisme:OrganismeSlice.reducer,
     }
 });
 export type RootState = ReturnType<typeof store.getState>;

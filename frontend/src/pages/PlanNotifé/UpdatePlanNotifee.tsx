@@ -38,15 +38,15 @@ export default function PlanNotifieeFormUpdate() {
         ID_N: "",
         ID_Formation: "",
         Matricule: "",
-        Observation: "",
+        Observation: "-",
         Mode_Financement: 0,
         Frais_Pedagogiques: 0,
         Frais_Hebergement: 0,
         Frais_Transport: 0,
-        Type_Pension: "",
-        Budget: "",
-        Observation_pre_arbitrage: "",
-        Observation_arbitrage: "",
+        Type_Pension: "-",
+        Budget: "-",
+        Observation_pre_arbitrage: "-",
+        Observation_arbitrage: "-",
         Autres_charges: 0,
         Presalaire: 0,
         Dont_Devise: 0,
@@ -69,7 +69,6 @@ export default function PlanNotifieeFormUpdate() {
         { type: "input", name: "Observation_arbitrage", label: "Observation_arbitrage" },
         { type: "number", name: "Autres_charges", label: "Autres_charges" },
         { type: "input", name: "Observation_pre_arbitrage", label: "Observation_pre_arbitrage" },
-        { type: "date", name: "Date", label: "Date" },
         { type: "number", name: "Mode_Financement", label: "Mode_Financement" },
         { type: "number", name: "Frais_Pedagogiques", label: "Frais_Pedagogiques" },
         { type: "number", name: "Frais_Hebergement", label: "Frais_Hebergement" },
@@ -127,7 +126,7 @@ export default function PlanNotifieeFormUpdate() {
             dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
                 status: errorData.success ? "success" : "failed",
-                message: errorData.message,
+                message:"Erreur lors de la mise à jour",
             }));
             navigate('/homePage/planNotifie');
         }

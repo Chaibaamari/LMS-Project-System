@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button"
 import { Loader2, Upload, FileUp, FileDown } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { RootState } from "@/store/indexD"
+import { useSelector } from "react-redux"
 
 interface ExcelProps {
   importPrevData: (file: File) => Promise<void>
@@ -21,6 +23,7 @@ export default function ImportExportComponent({
 }: ExcelProps) {
     const [prevFile, setPrevFile] = useState<File | null>(null);
     const [notifieFile, setNotifieFile] = useState<File | null>(null);
+    const permission = useSelector((state: RootState) => state.BondCommand.User)
     const [loading, setLoading] = useState(false);
     const [activeImport, setActiveImport] = useState<"prev" | "notifie" | null>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -67,7 +70,7 @@ export default function ImportExportComponent({
                             <DropdownMenuTrigger asChild>
                                 <Button variant="outline" className="flex items-center gap-2">
                                     <FileUp className="h-4 w-4" />
-                                    <span>Import/Export</span>
+                                    <span className="font-raleway">Import/Export</span>
                                 </Button>
                             </DropdownMenuTrigger>
                         </TooltipTrigger>
@@ -84,7 +87,8 @@ export default function ImportExportComponent({
                     }
                 }}>
                     {/* PV Data Import */}
-                    <DropdownMenuItem
+                    {(permission.role === "responsable" || permission.role === "Gestionnaire") && (
+                        <DropdownMenuItem
                         className="flex flex-col items-start w-full"
                         onSelect={(e) => e.preventDefault()}>
                         <span className="font-medium mb-1">Import PV Data</span>
@@ -116,6 +120,7 @@ export default function ImportExportComponent({
                             </Button>
                         </div>
                     </DropdownMenuItem>
+                    )}
 
                     {/* PV Data Export */}
                     {exportPrevData && (

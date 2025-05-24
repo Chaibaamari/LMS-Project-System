@@ -156,8 +156,8 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
         <div className="container mx-auto py-10 px-4 sm:px-6">
             <Card className="transition-all duration-200 shadow-md hover:shadow-lg">
                 <CardHeader className="space-y-1 pb-6 border-b">
-                    <CardTitle className="text-2xl font-bold text-center sm:text-left">Employee Information</CardTitle>
-                    <CardDescription className="text-muted-foreground">Enter employee details in the form below</CardDescription>
+                    <CardTitle className="text-2xl font-bold text-center sm:text-left">Informations sur l'employé</CardTitle>
+                    <CardDescription className="text-muted-foreground">Saisissez les informations de l’employé dans le formulaire ci-dessous</CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">
                     <Form method="post" onSubmit={handleSubmit} className="space-y-6">

@@ -1,10 +1,10 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, redirect, RouterProvider } from "react-router-dom";
 import Home  from './pages/Home'
 import LoginPage from "./pages/JWT/Login";
 import { action as loginAction } from "./pages/JWT/Login";
 import { action as LogoutAction} from './pages/JWT/Logout'
 import PageError from "./pages/Error/pageError";
-import { LoadToken, ProtectedRoute } from "./util/Auth";
+import { getAuthToken, LoadToken, ProtectedRoute } from "./util/Auth";
 import Sidebar from "./pages/RootLayout";
 import PlanPrevision from "./pages/PlanPrevision/PlanPrevision";
 import PlanNotifie from "./pages/PlanNotifé/PlanNotifie";
@@ -21,9 +21,32 @@ import PlanNotifieeFormUpdate from "./pages/PlanNotifé/UpdatePlanNotifee";
 import BondCommandDetailPage from "./pages/BondCommand/bondCommandDetail";
 import Tbf from "./pages/TBF/Tbf";
 import TbfDetailPage from "./pages/TBF/tbf-Detail";
-import ImportErrors from "./pages/direction-Section";
+import ImportErrors from "./pages/Error/ImportError";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/indexD";
+import UpdateUser from "./pages/JWT/updateUser";
+import UpdateUserActivate from "./pages/JWT/UpdateUserActivate";
 
 export default function App() {
+  const permission = useSelector((state: RootState) => state.BondCommand.User)
+  function ProtectedRouteAdmin() {
+      const token = getAuthToken();
+      
+      if (!token || (permission?.role !== "responsable") ) {
+          return redirect('/?mode=login');
+      }
+      
+      return null;
+  }
+//   function ProtectedRouteGestionnaire() {
+//     const token = getAuthToken();
+    
+//     if (!token || (permission?.role !== "responsable" && permission?.role !=="gestionnaire") ) {
+//         return redirect('/?mode=login');
+//     }
+    
+//     return null;
+// }
   const router = createBrowserRouter([
     {
       path: "",
@@ -44,17 +67,19 @@ export default function App() {
             {
               path: 'bondCommand', element: <BonCommand />, loader: ProtectedRoute
             },
-            { path: 'Settings', element: <Settings />, loader: ProtectedRoute },
+            { path: 'Settings', element: <Settings />, loader: ProtectedRouteAdmin },
             { path: 'TBF', element: <Tbf />, loader: ProtectedRoute },
             {path: "importErrors", element: <ImportErrors />, loader: ProtectedRoute},
           ]
         },
         { path: 'Emp/update/:matricule', element: <EmployeFormUpdate />, loader: ProtectedRoute },
+        { path: '/utilisateur/update/:id', element: <UpdateUser />, loader: ProtectedRouteAdmin },
+        { path: '/utilisateur/update/activate/:id', element: <UpdateUserActivate />, loader: ProtectedRouteAdmin },
         { path: 'prev/update/:ID_N', element: <PlanPrevisionFormUpdate />, loader: ProtectedRoute },
         { path: 'notifie/update/:ID_N', element: <PlanNotifieeFormUpdate />, loader: ProtectedRoute },
         { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRoute },
-        { path: 'homePage/bondCommand/:id', element: <BondCommandDetailPage /> },
-        { path: 'homePage/TBF/bondCommand/:id', element: <TbfDetailPage /> },
+        { path: 'homePage/bondCommand/:id', element: <BondCommandDetailPage />, loader: ProtectedRoute },
+        { path: 'homePage/TBF/bondCommand/:id', element: <TbfDetailPage />, loader: ProtectedRoute },
         { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRoute },
         { path: 'PrevPlan/insert', element: <InsertPrevision />, loader: ProtectedRoute },
         { path: 'NotifieePlan/insert', element: <PlanNotifieeFormInsert />, loader: ProtectedRoute },
@@ -63,7 +88,7 @@ export default function App() {
     },
   ]);
   return (
-    <div>
+    <div className="font-raleway">
       <RouterProvider router={router} />
     </div>
   );

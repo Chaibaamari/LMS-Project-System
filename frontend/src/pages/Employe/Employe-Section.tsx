@@ -2,8 +2,7 @@ import UsersTable from "@/components/Tables/employes-table";
 import TableSkeleton from "@/components/Tables/TableSketlon";
 import { EmployeeActions } from "@/store/EmployesSlice";
 import { AppDispatch, RootState } from "@/store/indexD";
-import { getAuthToken } from "@/util/Auth";
-import { Skeleton } from "@heroui/react";
+import { getAuthToken, getYearExercice } from "@/util/Auth";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import NotificationError from "../../components/Error/NotificationError";
@@ -31,7 +30,7 @@ function Employee() {
             dispatch(EmployeeActions.ShowNotificationRefrech(false));
         }
         SendEmployeData()
-    }, [dispatch, token , refrechData]);
+    }, [dispatch, token , refrechData]); 
 
     useEffect(() => {
         if (IsVisible) {
@@ -45,18 +44,28 @@ function Employee() {
             {IsLoading ?
                 (
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold">Liste Employés</h2>
-                            <Skeleton className="h-9 w-24" />
+                        <div className="flex flex-col md:flex-row items-center mb-8">
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                            </div>
+                            <div className="text-center md:text-start font-raleway">
+                                <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                    Liste Employée {getYearExercice()}
+                                </h1>
+                            </div>
                         </div>
                         <TableSkeleton rows={20} columns={5} />
                     </div>
                 ) : <>
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Liste Employés</h2>
-                        <p className="text-gray-600 pl-1">
-                            Cette section est dédiée à la gestion des employés de l'entreprise Sonatrach.
-                        </p>
+                    <div className="flex flex-col md:flex-row items-center mb-8">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                        </div>
+                        <div className="text-center md:text-start font-raleway">
+                            <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                            Liste Employée {getYearExercice()}
+                            </h1>
+                        </div>
                     </div>
                     <UsersTable data={EmployeData} />
                 </>

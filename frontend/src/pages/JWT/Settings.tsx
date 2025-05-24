@@ -1,60 +1,56 @@
-import YearSelector from "@/components/YearSelector"
+"use client"
+
 import UserManagement from "@/components/Auth/UserManagement"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs"
-import { CalendarClock, Users, SettingsIcon } from "lucide-react"
-import UserList from "@/components/Tables/UserRoleList";
+import UserList from "@/components/Tables/UserRoleList"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import TabChange from "@/components/Tools/TabsChange"
 
-export default function Settings() {
+export default function AppSettings() {
+
+
     return (
-        <div className="container mx-auto py-8 px-4">
-            <h1 className="text-3xl font-bold mb-2 text-center">Settings</h1>
-            <p className="text-muted-foreground mb-8 text-center">Configure your application preferences</p>
-
-            <Tabs defaultValue="time" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 mb-8">
-                    <TabsTrigger value="time" className="flex items-center gap-2">
-                        <CalendarClock className="h-4 w-4" />
-                        <span className="hidden sm:inline">Time Period</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="users" className="flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        <span className="hidden sm:inline">User Management</span>
-                    </TabsTrigger>
-                    <TabsTrigger value="other" className="flex items-center gap-2">
-                        <SettingsIcon className="h-4 w-4" />
-                        <span className="hidden sm:inline">Other Settings</span>
-                    </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="time" className="mt-0">
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                        {/* YearSelector takes 1/4 of the space on large screens */}
-                        <div className="lg:col-span-1">
-                            <YearSelector onYearChange={(year) => console.log(`Year changed to: ${year}`)} />
-                        </div>
-
-                        {/* UserList takes 3/4 of the space on large screens */}
-                        <div className="lg:col-span-3">
-                            <UserList />
-                        </div>
+        <div className="container mx-auto py-10 px-4 space-y-8">
+            <div className="flex items-center justify-between">
+                <div className="flex flex-col md:flex-row items-center mb-8">
+                    <div className="flex items-center mb-4 md:mb-0">
+                        <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
                     </div>
-                </TabsContent>
-
-                <TabsContent value="users" className="mt-0">
-                    <div className="max-w-2xl mx-auto">
-                        <UserManagement />
+                    <div className="text-center md:text-start font-raleway">
+                        <h1 className="text-3xl md:text-3xl font-bold  tracking-tight">
+                        Paramètres 
+                        </h1>
                     </div>
-                </TabsContent>
+                </div>
+            </div>
 
-                <TabsContent value="other" className="mt-0">
-                    <div className="max-w-2xl mx-auto border rounded-lg p-6 bg-card">
-                        <h2 className="text-xl font-semibold mb-4">Other Settings</h2>
-                        <p className="text-muted-foreground">
-                            Additional settings will appear here. Configure application preferences and other options.
-                        </p>
-                    </div>
-                </TabsContent>
-            </Tabs>
+            <TabChange
+                tabs={[
+                    {
+                        label: "Gestion des utlisateurs",
+                        content:
+                            <Card className="border-none">
+                            <CardHeader>
+                                <CardTitle className="font-raleway ">Gestion des utilisateurs</CardTitle>
+                                <CardDescription className="font-raleway">Gérer les comptes utilisateurs, les rôles et les permissions</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6 font-raleway">
+                                <div className="space-y-4 font-raleway">
+                                    <h3 className="text-lg font-medium font-raleway">Rôles des utilisateurs</h3>
+                                    <UserList />
+                                </div>
+    
+                                <Separator />
+    
+                                <div className="space-y-4">
+                                    <h3 className="text-lg font-medium font-raleway">Administration des utilisateurs</h3>
+                                    <UserManagement />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    },
+                ]}
+            />
         </div>
     );
 }

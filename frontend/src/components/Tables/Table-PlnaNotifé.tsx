@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, SearchX, Loader2 } from "lucide-react"
+import { Pencil, Trash2, MoreHorizontal, ChevronDown, ArrowUp, ArrowDown, RotateCcw, Plus, SearchX, Loader2, EllipsisVertical } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Link, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,7 @@ import { DynamicSearch } from "../Tools/Search"
 import { DropdownMenuSeparator } from "@radix-ui/react-dropdown-menu"
 import { NotifeeActions } from "@/store/NotifeSlice"
 import { getAuthToken, getYearExercice } from "@/util/Auth"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import ImportExportComponent from "../Tools/Ecxel"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
@@ -23,6 +23,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { DialogDescription } from "@radix-ui/react-dialog"
+import { RootState } from "@/store/indexD"
 
 interface PlanNotifeeTableProps {
     data: PlanNotifee[];
@@ -30,6 +31,9 @@ interface PlanNotifeeTableProps {
 
 export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
+    const permission = useSelector((state: RootState) => state.BondCommand.User)
+    // const Budget = useRef<HTMLInputElement>(null)
+
 //   const navigate = useNavigate()
     const [searchField, setSearchField] = useState<keyof PlanNotifee>("Matricule");
   // pagination
@@ -62,7 +66,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         startDate: undefined,
         endDate: undefined,
     });
-    const budget = useRef<HTMLSelectElement>(null);
+    const budget = useRef<HTMLInputElement>(null);
 
     const groupSelectedRowsAction = (): Record<string, number[]> | undefined => {
         if (selectedRows.length === 0) {
@@ -74,6 +78,25 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 return item.ID_N === Number(id)
             })
             const action = Item?.formation.Intitule_Action;
+            if (action) {
+                if (!GroupSelected[action]) {
+                    GroupSelected[action] = [];
+                }
+                GroupSelected[action].push(Number(id));
+            }
+        });
+        return GroupSelected;
+    };
+    const groupSelectedRowsDirection = (): Record<string, number[]> | undefined => {
+        if (selectedRows.length === 0) {
+            return;
+        }
+        const GroupSelected: Record<string, number[]>  = {};
+        selectedRows.forEach((id) => {
+            const Item = data.find((item) => {
+                return item.ID_N === Number(id)
+            })
+            const action = Item?.employe.direction.Id_direction;
             if (action) {
                 if (!GroupSelected[action]) {
                     GroupSelected[action] = [];
@@ -184,6 +207,63 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             );
         }
     }
+
+    // creation demande de confermation
+    const CreateDemandConfermation = async () => {
+        
+        
+        try {
+            const employeeIds = selectedRows.map((ele) => {
+                return Number(ele);
+            });
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Bond Command Elle été bien crée",
+                }),
+            );
+            
+            const response = await fetch('http://127.0.0.1:8000/api/createDC', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    ids: employeeIds,
+                }),
+            });
+            
+            if (!response.ok) {
+                dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: "Échec de la création de la demande de confirmation",
+                }))
+            }
+            setShowDateRangeDialog(false);
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "success",
+                    message: "Bon de Commande créé avec succès",
+                }),
+            );
+            // dispatch(NotifeeActions.ReferchLatestData(true))
+        } catch(err) {
+            console.log(err)
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "failed",
+                    message: "Erreur lors de la création du Bon de Commande",
+                }),
+            );
+        }
+    }
+
 
     const deleteSingleEmployee = async (id: string) => {
         try {
@@ -514,8 +594,8 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     };
     return (
         <div className="space-y-4 p-4 overflow-auto max-w-full">
-            <p className="text-xs text-muted-foreground whitespace-nowrap">
-                Affichage de {currentData.length} sur {sortedAndFilteredData.length} PlanNotifée
+            <p className="text-sm font-raleway  text-muted-foreground whitespace-nowrap">
+                Affichage de <span className="text-xl text-slate-950"> {currentData.length} </span> sur <span className="text-xl text-slate-950">{sortedAndFilteredData.length}</span> Plan Prévision
             </p>
             <div className="flex flex-col sm:flex-row justify-between items-start  sm:items-center gap-2">
                 <div className="text-sm text-muted-foreground w-full">
@@ -541,14 +621,15 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                     )}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                                ...
+                            <Button variant="outline" className="font-raleway">
+                                <EllipsisVertical />
+                                Options
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={resetFilters}>
                                 <RotateCcw className="h-4 w-4 mr-2" />
-                                Reset Filters
+                                Réinitialiser les filtres
                             </DropdownMenuItem>
                             {selectedRows.length > 0 && (
                                 <>
@@ -603,26 +684,56 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                     </DropdownMenuItem>
                                 </>
                             )}
+                            {selectedRows.length > 0 && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => {
+                                            const NomDirection = groupSelectedRowsDirection() || {}
+                                            const IdDirection = Object.keys(NomDirection);
+                                            // Si toutes les lignes sélectionnées ont la même action, ouvrir le dialogue directement
+                                            if (IdDirection.length === 1) {
+                                                CreateDemandConfermation()
+                                            } else {
+                                                dispatch(
+                                                    NotifeeActions.ShowNotification({
+                                                        IsVisible: true,
+                                                        status: "failed",
+                                                        message: "Veuillez sélectionner des employé ayant le même Direction.",
+                                                    })
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Créer une Demande de Confirmation
+                                    </DropdownMenuItem>
+                                </>
+                            )}
 
                             <DropdownMenuSeparator />
 
-                            <Link to="/NotifieePlan/insert" className="w-full">
-                                <DropdownMenuItem>
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Insert New
-                                </DropdownMenuItem>
-                            </Link>
+                            {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                                <Link to="/NotifieePlan/insert" className="w-full">
+                                    <DropdownMenuItem>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Ajouter une Plan
+                                    </DropdownMenuItem>
+                                </Link>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        disabled={selectedRows.length === 0}
-                        onClick={deleteMultipleEmployees}
-                    >
-                        {isDeleting ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Trash2 className="h-4 w-4 mr-1" />}
-                        Delete
-                    </Button>
+                    {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                        <Button
+                            variant="destructive"
+                            disabled={selectedRows.length === 0}
+                            onClick={deleteMultipleEmployees}
+                            className="font-raleway"
+                        >
+                            {isDeleting ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Trash2 className="h-4 w-4 mr-1" />}
+                            Supprimer une Plan
+                        </Button>
+                    )}
                 </div>
             </div>
             <div className="rounded-md border overflow-hidden">
@@ -681,10 +792,32 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                     "LDE",
                                 ])}
                                 {renderColumnHeader("formation.Intitule_Action", "Intitule de Action")}
-                                {renderColumnHeader("formation.Nature_Formation", "Nature de Formation")}
+                                {renderColumnHeader("formation.Nature_Formation", "Nature de Formation", [
+                                    'Formation de mise à niveau ',
+                                    'Formation Qualifiante',
+                                    'Formation Certifiante',
+                                    'Formation Dilpômante',
+                                    'Farcours de formation',
+                                    'Formation Spécifique',
+                                ])}
                                 {renderColumnHeader("formation.Niveau_Formation", "Niveau de Formation")}
-                                {renderColumnHeader("formation.Source_Besoin", "Source Besoin de formation")}
-                                {renderColumnHeader("formation.Type_Formation", "Type Formation")}
+                                {renderColumnHeader("formation.Source_Besoin", "Source Besoin de formation", [
+                                    'Besoin Stratégique',
+                                    'Besoin Evolution Métier',
+                                    'Besoin Fournisseur',
+                                    'Besoin Réglémentaire',
+                                    'Besoin Nouvelle Recrue',
+                                    'Besoin Structure',
+                                    'Besoin TRH',
+                                ])}
+                                {renderColumnHeader("formation.Type_Formation", "Type Formation", [
+                                    'Formation & Recrutement',
+                                    'Perfectionnement',
+                                    'Formation de reconversion',
+                                    'Stages Fournisseurs',
+                                    'Formation Intégration',
+                                    'Formation Corporate',
+                                ])}
                                 {renderColumnHeader("formation.Mode_Formation", "Mode Formation", [
                                     "PRESENTIEL",
                                     "BLENDED",
@@ -715,7 +848,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                 {renderColumnHeader("Presalaire", "Presalaire")}
                                 {renderColumnHeader("Dont_Devise", "Dont_Devise")}
                                 {renderColumnHeader("Observation", "Observation")}
-                                <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
+                                {(permission.role === "responsable" || permission.role === "gestionnaire") && (<TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>)}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -758,10 +891,10 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         <TableCell className="text-center">{item.formation.Domaine_Formation ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.Code_Formation ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.Intitule_Action ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Nature_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Nature_Formation}</TableCell>
                                         <TableCell className="text-center">{item.formation.Niveau_Formation ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Source_Besoin ?? "—"}</TableCell>
-                                        <TableCell className="text-center">{item.formation.Type_Formation ?? "—"}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Source_Besoin}</TableCell>
+                                        <TableCell className="text-center">{item.formation.Type_Formation}</TableCell>
                                         <TableCell className="text-center">{item.formation.Mode_Formation ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation?.Code_Domaine_Formation ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.formation.organisme?.Code_Organisme ?? "—"}</TableCell>
@@ -780,33 +913,35 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                         <TableCell className="text-center">{item.Presalaire ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Dont_Devise ?? "—"}</TableCell>
                                         <TableCell className="text-center">{item.Observation ?? "—"}</TableCell>
-                                        <TableCell className="sticky right-0 bg-background z-10">
-                                            <div className="flex items-center gap-2">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Open menu</span>
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <Link to={`/notifie/update/${item.ID_N}`}>
-                                                            <DropdownMenuItem>
-                                                                <Pencil className="h-4 w-4 mr-2" />
-                                                                Edit
+                                        {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                                            <TableCell className="sticky right-0 bg-background z-10">
+                                                <div className="flex items-center gap-2">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                                <span className="sr-only">Ouvrir le menu</span>
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <Link to={`/notifie/update/${item.ID_N}`}>
+                                                                <DropdownMenuItem>
+                                                                    <Pencil className="h-4 w-4 mr-2" />
+                                                                    Modifier
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <DropdownMenuItem
+                                                                className="text-destructive focus:text-destructive"
+                                                                onClick={() => deleteSingleEmployee(String(item.ID_N))}
+                                                            >
+                                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                                Supprimer
                                                             </DropdownMenuItem>
-                                                        </Link>
-                                                        <DropdownMenuItem
-                                                            className="text-destructive focus:text-destructive"
-                                                            onClick={() => deleteSingleEmployee(String(item.ID_N))}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 mr-2" />
-                                                            Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                        </TableCell>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            </TableCell>
+                                        )}
                                     </TableRow>
                                 ))
                             ) : (
@@ -817,8 +952,8 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                                                 <SearchX className="h-6 w-6 text-muted-foreground" />
                                             </div>
                                             <div className="space-y-1">
-                                                <p className="text-base font-medium">No data available</p>
-                                                <p className="text-sm text-muted-foreground">No matching records found</p>
+                                                <p className="text-base font-medium">Aucune donnée disponible</p>
+                                                <p className="text-sm text-muted-foreground">Aucun enregistrement correspondant trouvé</p>
                                             </div>
                                         </div>
                                     </TableCell>
@@ -852,17 +987,17 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="action">Budget</Label>
-                            {/* <Input id="action" type="number" ref={budget} /> */}
-                            <select
+                            <Input id="action" type="text" ref={budget} />
+                            {/* <select
                                 id="budget"
                                 ref={budget}
                                 className="border rounded-md p-2" // Basic Tailwind styling
-                                //onChange={(e) => handleChange(e.target.value)} // Add your change handler
+                            //onChange={(e) => handleChange(e.target.value)} // Add your change handler
                             >
                                 <option value="Plan2025">Plan2025</option>
                                 <option value="RAR2024">RAR2024</option>
                                 <option value="DER">DER</option>
-                            </select>
+                            </select> */}
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="date-debut">Date de début</Label>

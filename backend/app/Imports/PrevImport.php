@@ -97,6 +97,43 @@ class PrevImport implements ToCollection, WithHeadingRow
             default => null,
         };
     }
+    private function translateNatureFormation(?string $code): ?string
+    {
+        return match (strtoupper($code)) {
+            '1' => 'Formation de mise à niveau ',
+            '2' => 'Formation Qualifiante',
+            '3' => 'Formation Certifiante',
+            '4' => 'Formation Dilpômante',
+            '5' => 'Farcours de formation',
+            '6' => 'Formation Spécifique',
+            default => null,
+        };
+    }
+    private function translateSource(?string $code): ?string
+    {
+        return match (strtoupper($code)) {
+            '1' => 'Besoin Stratégique',
+            '2' => 'Besoin Evolution Métier',
+            '3' => 'Besoin Fournisseur',
+            '4' => 'Besoin Réglémentaire',
+            '5' => 'Besoin Nouvelle Recrue',
+            '6' => 'Besoin Structure',
+            '7' => 'Besoin TRH',
+            default => null,
+        };
+    }
+    private function translateTypeFormation(?string $code): ?string
+    {
+        return match (strtoupper($code)) {
+            '1' => 'Formation & Recrutement',
+            '2' => 'Perfectionnement',
+            '3' => 'Formation de reconversion',
+            '4' => 'Stages Fournisseurs',
+            '5' => 'Formation Intégration',
+            '6' => 'Formation Corporate',
+            default => null,
+        };
+    }
     /**
      * @param Collection $collection
      */
@@ -148,9 +185,9 @@ class PrevImport implements ToCollection, WithHeadingRow
                         'Code_Domaine_Formation' => $row['code_domaine_formation'],
                         'Intitule_Action' => $row['intitule_de_laction'],
                         'Niveau_Formation' => $row['niveau_de_la_formation_cible'],
-                        'Nature_Formation' => $row['nature_de_la_formation'],
-                        'Source_Besoin' => $row['source_du_besoins_en_formation'],
-                        'Type_Formation' => $row['type_formation'],
+                        'Nature_Formation' => $this->translateNatureFormation($row['nature_de_la_formation']),
+                        'Source_Besoin' => $this->translateSource($row['source_du_besoins_en_formation']),
+                        'Type_Formation' => $this->translateTypeFormation($row['type_formation']),
                         'Mode_Formation' => $row['mode_formation'],
                         'Code_Formation' => $row['code_formation'],
                         'Id_Organisme'=>$organisme->Id_Organisme,
@@ -195,7 +232,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                                 'existence' =>'une prévision exist pour ce employe avec cette formation cette année',
                             ];
                             break;
-                        
+
                         case 'validé':
                             $this->existingRows[] = [
                                 'row' => $index + 2, // +2 accounts for heading row + 0-based index
@@ -206,7 +243,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                 }
             }
             DB::commit();
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -244,5 +281,5 @@ class PrevImport implements ToCollection, WithHeadingRow
             'intitule_de_laction.required' => "Intitule De L'action manquant.",
         ];
     }
-    
+
 }

@@ -63,6 +63,11 @@ export interface FormationEnCours {
     pourcentage: number,
     days_remaining: number
 };
+export interface FormationTermine {
+    ID_Formation: number
+      Intitule_Action: string
+      
+  }
 
 export interface PlanPrevision extends Record<string, unknown> {
     ID_N: number;
@@ -145,6 +150,7 @@ export type User = {
 export type currentUser = {
     name: string
     email: string
+    role: string
 };
 
 export type FieldConfig = {

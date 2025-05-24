@@ -1,7 +1,6 @@
 import NotificationError from "@/components/Error/NotificationError";
 import PrevisionTable from "@/components/Tables/Table-Prevision";
 import TableSkeleton from "@/components/Tables/TableSketlon";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AppDispatch, RootState } from "@/store/indexD";
 import { PrevisionActions } from "@/store/PrevisionSlice";
 import { getAuthToken, getYearExercice } from "@/util/Auth";
@@ -48,27 +47,44 @@ export default function PlanPrevision() {
                 (
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-2xl font-bold">Plan Prévision</h2>
-                            <Skeleton className="h-9 w-24" /> 
+                            <div className="flex flex-col md:flex-row items-center mb-8">
+                                <div className="flex items-center mb-4 md:mb-0">
+                                    <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                                </div>
+                                <div className="text-center md:text-start font-raleway">
+                                    <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                        PLAN PRÉVISION {getYearExercice()}
+                                    </h1>
+                                </div>
+                            </div>
                         </div>
                         <TableSkeleton rows={15} columns={5} />
                     </div>
                 ) : <>
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Plan Prévision</h2>
-                        <p className="text-gray-600 pl-1">
+                        <div className="flex flex-col md:flex-row items-center mb-8">
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                            </div>
+                            <div className="text-center md:text-start font-raleway">
+                                <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                    PLAN PRÉVISION {getYearExercice()}
+                                </h1>
+                            </div>
+                        </div>
+                        {/* <p className="text-gray-600 pl-1">
                             Cette section est dédiée à la gestion des Plan Prévision de l'entreprise Sonatrach.
-                        </p>
+                        </p> */}
                     </div>
                     <PrevisionTable data={ListePrevision} />
                 </>
             }
 
             <NotificationError
-                            isVisible={IsVisible}
-                            status={status}
-                            message={message}
-                        />
+                isVisible={IsVisible}
+                status={status}
+                message={message}
+            />
             
         </>
     );

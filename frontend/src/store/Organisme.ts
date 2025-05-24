@@ -1,12 +1,6 @@
-import { Formation, FormationEnCours, FormationTermine } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
-
-
 type FormationType = {
-    FormationData: Formation[]
-    FormationEnCours: FormationEnCours[]
-    FormationTermine: FormationTermine[]
     IsLoading: boolean
     refrechData: boolean,
     Notification: {
@@ -14,11 +8,12 @@ type FormationType = {
         status: string,
         message : string,
     }
+    ListeOrganisme: {
+        value: number;
+        label: string;
+    }[],
 }
 const initialState: FormationType = {
-    FormationData: [],
-    FormationEnCours : [],
-    FormationTermine : [],
     IsLoading: false,
     refrechData:false,
     Notification: {
@@ -26,22 +21,14 @@ const initialState: FormationType = {
         status: "",
         message : "",
     },
+    ListeOrganisme:[],
 }
 
 
-const FormationSlice = createSlice({
+const OrganismeSlice = createSlice({
     name: "Formation",
     initialState, 
     reducers: {
-        FetchDataFormation(state, action) {
-            state.FormationData = action.payload;
-        },
-        FetchDataFormationEnCours(state, action) {
-            state.FormationEnCours = action.payload;
-        },
-        FetchDataFormationTermine(state, action) {
-            state.FormationTermine = action.payload;
-        },
         ShowNotificationRefrech(state , action) {
             state.IsLoading = action.payload;
         },
@@ -63,8 +50,11 @@ const FormationSlice = createSlice({
         ReferchLatestData(state , action) {
             state.refrechData = action.payload.refrechData
         },
+        GetAllOrganisme(state, action) {
+            state.ListeOrganisme = action.payload;
+        }
     }
 })
 
-export default FormationSlice;
-export const   FormationActions = FormationSlice.actions;
+export default OrganismeSlice;
+export const   OrganismeActions = OrganismeSlice.actions;

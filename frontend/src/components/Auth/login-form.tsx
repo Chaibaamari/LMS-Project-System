@@ -5,23 +5,14 @@ import type React from "react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Form, Link, useActionData, useSearchParams, useNavigation } from "react-router-dom"
+import { Form, useActionData, useSearchParams, useNavigation } from "react-router-dom"
 import type { ActionData } from "@/assets/modelData"
-import { Eye, EyeOff, Lock, Mail, User, AlertCircle} from "lucide-react"
+import { Eye, EyeOff, Lock, Mail,  AlertCircle} from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
 
 export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
     const [searchParams] = useSearchParams();
@@ -30,15 +21,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-    const [resetEmail, setResetEmail] = useState("");
-    const [resetEmailSent, setResetEmailSent] = useState(false);
-
-    const handleResetPassword = (e: React.FormEvent) => {
-        e.preventDefault()
-        setResetEmailSent(true)
-    };
+    // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     return (
         <div className={cn("flex flex-col gap-6 w-[400px]  mx-auto", className)} {...props}>
@@ -51,14 +34,15 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                             className="w-full h-full object-contain"
                         />
                     </div>
-                    <CardTitle className="text-2xl font-bold">Bienvenue de retour !</CardTitle>
+                    <CardTitle className="text-2xl font-bold">Bienvenue sur notre plateforme de gestion de la formation</CardTitle>
                     <CardDescription className="text-base">Connectez-vous avec votre compte Sonatrach.</CardDescription>
 
                     {data?.error?.msg && !Array.isArray(data.error.msg) && (
-                        <Alert variant="destructive" className="mt-4">
-                            <AlertCircle className="h-4 w-4" />
-                            <AlertDescription>{data.error.msg}</AlertDescription>
-                        </Alert>
+                        <div className="mt-4 flex items-center justify-between p-3 bg-red-100 border border-red-400 rounded-md">
+                            <AlertCircle className="h-5 w-5 text-red-600" />
+                            <AlertDescription className="text-red-600 font-bold">{data.error.msg}</AlertDescription>
+                            <div></div>
+                        </div>
                     )}
 
                     {Array.isArray(data?.error?.msg) && data.error.msg.length > 0 && (
@@ -91,7 +75,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                             </div>
 
                             <div className="grid gap-4">
-                                {!isLogin && (
+                                {/* {!isLogin && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="name" className="text-sm font-medium">
                                             Nom & Prénom
@@ -101,7 +85,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                             <Input id="name" name="name" placeholder="John Doe" className="pl-10" required />
                                         </div>
                                     </div>
-                                )}
+                                )} */}
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="email" className="text-sm font-medium">
@@ -113,7 +97,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                             id="email"
                                             type="email"
                                             name="email"
-                                            placeholder="m@example.com"
+                                            placeholder="m@Sonatrach.dz"
                                             className="pl-10"
                                             required
                                         />
@@ -125,63 +109,6 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                         <Label htmlFor="password" className="text-sm font-medium">
                                             Mot de passe
                                         </Label>
-                                        {isLogin && (
-                                            <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
-                                                <DialogTrigger asChild>
-                                                    <Button variant="link" className="px-0 text-sm h-auto">
-                                                        Mot de passe oublié ?
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent>
-                                                    <DialogHeader>
-                                                        <DialogTitle>Réinitialiser votre mot de passe</DialogTitle>
-                                                        <DialogDescription>
-                                                            Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de
-                                                            passe.
-                                                        </DialogDescription>
-                                                    </DialogHeader>
-                                                    {resetEmailSent ? (
-                                                        <div className="space-y-4 py-4">
-                                                            <Alert>
-                                                                <AlertDescription>
-                                                                    Si un compte existe avec cette adresse e-mail, vous recevrez un e-mail avec les
-                                                                    instructions pour réinitialiser votre mot de passe.
-                                                                </AlertDescription>
-                                                            </Alert>
-                                                            <Button
-                                                                onClick={() => {
-                                                                    setForgotPasswordOpen(false)
-                                                                    setResetEmailSent(false)
-                                                                    setResetEmail("")
-                                                                }}
-                                                                className="w-full"
-                                                            >
-                                                                Fermer
-                                                            </Button>
-                                                        </div>
-                                                    ) : (
-                                                        <form onSubmit={handleResetPassword} className="space-y-4 py-4">
-                                                            <div className="grid gap-2">
-                                                                <Label htmlFor="reset-email">Email</Label>
-                                                                <Input
-                                                                    id="reset-email"
-                                                                    type="email"
-                                                                    value={resetEmail}
-                                                                    onChange={(e) => setResetEmail(e.target.value)}
-                                                                    placeholder="m@example.com"
-                                                                    required
-                                                                />
-                                                            </div>
-                                                            <DialogFooter>
-                                                                <Button type="submit" className="w-full">
-                                                                    Envoyer les instructions
-                                                                </Button>
-                                                            </DialogFooter>
-                                                        </form>
-                                                    )}
-                                                </DialogContent>
-                                            </Dialog>
-                                        )}
                                     </div>
                                     <div className="relative">
                                         <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -189,6 +116,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                             id="password"
                                             type={showPassword ? "text" : "password"}
                                             name="password"
+                                            placeholder="**********"
                                             className="pl-10 pr-10"
                                             required
                                         />
@@ -205,7 +133,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                     </div>
                                 </div>
 
-                                {!isLogin && (
+                                {/* {!isLogin && (
                                     <div className="grid gap-2">
                                         <Label htmlFor="password_confirmation" className="text-sm font-medium">
                                             Confirmation mot de passe
@@ -231,7 +159,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                                             </Button>
                                         </div>
                                     </div>
-                                )}
+                                )} */}
 
                                 <Button type="submit" className="w-full py-6 text-base font-medium mt-2" disabled={isSubmitting}>
                                     {isSubmitting ? "Chargement..." : isLogin ? "Se connecter" : "S'inscrire"}
@@ -241,7 +169,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                     </Form>
                 </CardContent>
 
-                <CardFooter className="px-6 py-4 flex flex-col gap-4">
+                {/* <CardFooter className="px-6 py-4 flex flex-col gap-4">
                     <div className="text-center text-sm">
                         {isLogin ? "Vous n'avez pas de compte ?" : "Vous avez déjà un compte ?"}{" "}
                         <Link
@@ -251,13 +179,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                             {isLogin ? "S'inscrire" : "Se connecter"}
                         </Link>
                     </div>
-                </CardFooter>
+                </CardFooter> */}
             </Card>
-
-            {/* <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 [&_a]:hover:text-primary">
-                En cliquant sur Continuer, vous acceptez nos <a href="#">Conditions d'utilisation</a> et notre{" "}
-                <a href="#">Politique de confidentialité</a>
-            </div> */}
         </div>
     );
 }

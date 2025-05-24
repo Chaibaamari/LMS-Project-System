@@ -2,7 +2,6 @@ import * as React from "react"
 import {
   BookOpen,
   Bot,
-  // Frame,
   FolderKanban,
   Map,
   EthernetPort,
@@ -22,10 +21,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-// import { getAuthEmail } from "@/util/Auth"
-// const emailUser = getAuthEmail()
 
-// This is sample data.
+
 const data = {
   user: {
     name: "amari chaiba",
@@ -58,8 +55,8 @@ const data = {
       ],
     },
     {
-      title: "Agent",
-      url: "Employee",
+      title: "Employés",
+      url: "Liste des employés",
       icon: BookOpen,
       items: [
         {
@@ -69,12 +66,12 @@ const data = {
       ],
     },
     {
-      title: "Liste Direction",
+      title: "Direction",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Direction",
+          title: " Liste Direction",
           url: "Direction",
         },
       ],
@@ -101,13 +98,9 @@ const data = {
       url: "TBF",
       icon: FolderKanban,
     },
+    
     {
-      name: "Bilan",
-      url: "#",
-      icon: Map,
-    },
-    {
-      name: "Settings",
+      name: "Paramètres",
       url: "Settings",
       icon: Settings2,
     },

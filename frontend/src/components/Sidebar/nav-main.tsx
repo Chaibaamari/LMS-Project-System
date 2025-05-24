@@ -34,7 +34,7 @@ export function NavMain({
   }[]
 }) {
   return (
-    <SidebarGroup>
+    <SidebarGroup className="font-raleway">
       <SidebarGroupLabel>Gestion des formation</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (

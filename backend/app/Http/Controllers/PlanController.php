@@ -93,6 +93,13 @@ class PlanController extends Controller
                 11 => 'novembre',
                 12 => 'décembre'
             ];
+
+            // $start = Carbon::parse($month . '-01')->startOfMonth(); // 2024-04-01
+            // $end = Carbon::parse($month . '-01')->endOfMonth();     // 2024-04-30
+            $Exercice = request()->header('Year') ?? date('Y');
+            $start = Carbon::create($Exercice, $month, 1)->startOfMonth();
+            $end = Carbon::create($Exercice, $month, 1)->endOfMonth();
+
             $formations = Formation::select(
                 'formations.ID_Formation',
                 'formations.Intitule_Action',
@@ -104,10 +111,10 @@ class PlanController extends Controller
                 ->where('plans.Exercice', $Exercice)
                 ->join('plans', 'plans.ID_Formation', '=', 'formations.ID_Formation')
                 ->where('plans.etat', 'confirmé')
-                ->when($month, function ($query) use ($month) {
-                    $query->where(function ($q) use ($month) {
-                        $q->whereMonth('plans.Date_Deb', $month)
-                            ->orWhereMonth('plans.Date_fin', $month);
+                ->when($month, function ($query) use ($month, $end, $start) {
+                    $query->where(function ($q) use ($month, $end, $start) {
+                        $q->whereDate('plans.Date_Deb', '<=', $end)
+                            ->WhereDate('plans.Date_fin', '>=', $start);
                     });
                 })
                 ->groupBy([
@@ -219,7 +226,6 @@ class PlanController extends Controller
             ], 400);
         }
     }
-
     public function consultTBF(Request $request)
     {
         $moisFrancais = [
@@ -236,44 +242,67 @@ class PlanController extends Controller
             11 => 'novembre',
             12 => 'décembre'
         ];
+
         $Exercice = request()->header('Year');
-        // Get distinct month/year combinations from Date_Deb
-        $activeDates = Plan::where('etat', 'confirmé')
+
+        // Get all confirmed plans for the given year
+        $plans = Plan::where('etat', 'confirmé')
+            ->where('Exercice', $Exercice)
             ->whereNotNull('Date_Deb')
-            ->selectRaw('MONTH(Date_Deb) as month, YEAR(Date_Deb) as year')
-            ->distinct()
+            ->whereNotNull('Date_Fin')
             ->get();
 
         $results = [];
 
-        foreach ($activeDates as $date) {
-            $month = $date->month;
-            $year = $date->year;
-            $nomMois = $moisFrancais[$month];
+        foreach ($plans as $plan) {
+            $start = Carbon::parse($plan->Date_Deb);
+            $end = Carbon::parse($plan->Date_fin);
 
-            // Fetch all plans for the same month and year (from Date_Deb or Date_Fin)
-            $plans = Plan::where('etat', 'confirmé')
-                ->where('plans.Exercice', $Exercice)
-                ->where(function ($query) use ($month, $year) {
-                    $query->where(function ($q) use ($month, $year) {
-                        $q->whereMonth('Date_Deb', $month)
-                            ->whereYear('Date_Deb', $year);
-                    })->orWhere(function ($q) use ($month, $year) {
-                        $q->whereMonth('Date_Fin', $month)
-                            ->whereYear('Date_Fin', $year);
-                    });
-                })
-                ->get();
+            // Generate all months between start and end dates
+            $current = $start->copy()->startOfMonth();
+            $endMonth = $end->copy()->endOfMonth();
 
-            if ($plans->isNotEmpty()) {
-                $results[] = [
-                    'Nom' => "TBF du mois de $nomMois $year",
-                    'date_creation' => $plans->first()->Date_Deb->format('d/m/Y'),
-                    'plans' => $plans
-                ];
+            while ($current <= $endMonth) {
+                $month = $current->month;
+                $year = $current->year;
+                $nomMois = $moisFrancais[$month];
+
+                // Check if this month-year already exists in results
+                $foundKey = null;
+                foreach ($results as $key => $result) {
+                    if ($result['month'] == $month && $result['year'] == $year) {
+                        $foundKey = $key;
+                        break;
+                    }
+                }
+                // If month exists, add the plan to it
+                if ($foundKey !== null) {
+                    if (!in_array($plan->toArray(), $results[$foundKey]['plans']->toArray())) {
+                        $results[$foundKey]['plans']->push($plan);
+                    }
+                }
+                else {
+                    // Otherwise, create a new entry
+                    $results[] = [
+                        'Nom' => "TBF du mois de $nomMois $year",
+                        'date_creation' => $plan->Date_Deb->format('d/m/Y'),
+                        'month' => $month,
+                        'year' => $year,
+                        'plans' => collect([$plan]) // Initialize with the current plan
+                    ];
+                }
+
+                $current->addMonth(); // Move to the next month
             }
         }
-
+        // Sort by year and month
+        usort(
+            $results,
+            fn($a, $b) =>
+            $a['year'] === $b['year']
+                ? $a['month'] <=> $b['month']
+                : $a['year'] <=> $b['year']
+        );
         return response()->json([
             'message' => 'TBF regroupés par mois et année',
             'TBF' => $results

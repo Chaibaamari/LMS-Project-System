@@ -122,7 +122,6 @@ export default function PlanNotifieeFormInsert() {
                     }),
                 }
             );
-            console.log(editFormData)
             const errorData = await response.json();
             if (!response.ok) {
                 dispatch(NotifeeActions.ShowNotification({

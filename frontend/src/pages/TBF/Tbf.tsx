@@ -3,7 +3,7 @@
 import { useDispatch, useSelector } from "react-redux"
 import type { RootState } from "@/store/indexD"
 import ContractCard from "@/components/Tables/TBF"
-import { getAuthToken } from "@/util/Auth"
+import { getAuthToken, getYearExercice } from "@/util/Auth"
 import { TBFActions } from "@/store/TBF"
 import { useEffect, useState } from "react"
 import NotificationError from "@/components/Error/NotificationError"
@@ -94,30 +94,45 @@ export default function Tbf() {
         <div className="container mx-auto py-6">
             {IsLoading ? (
                 <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold">Liste des TBF</h2>
-                        <Skeleton className="h-9 w-24" />
+                    <div className="flex flex-col md:flex-row items-center mb-8">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                        </div>
+                        <div className="text-center md:text-start font-raleway">
+                            <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                LISTE DES TBF {getYearExercice()}
+                            </h1>
+                        </div>
                     </div>
                     <div className="flex flex-col space-y-4 mt-6">
-                        <Skeleton className="h-20 w-full" />
-                        <Skeleton className="h-20 w-full" />
-                        <Skeleton className="h-20 w-full" />
-                        <Skeleton className="h-20 w-full" />
+                        <Skeleton className="h-40 w-full" />
+                        <Skeleton className="h-40 w-full" />
+                        <Skeleton className="h-40 w-full" />
+                        <Skeleton className="h-40 w-full" />
                     </div>
                 </div>
             ) : (
                 <>
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-800 mb-2">Liste des TBF</h2>
-                            {selectedYear && (
+                        <div className="flex justify-between items-center">
+                            <div className="flex flex-col md:flex-row items-center mb-8">
+                                <div className="flex items-center mb-4 md:mb-0">
+                                    <img src="/Sonatrach.svg" alt="Sonatrach Logo" className="h-16 mr-4" />
+                                </div>
+                                <div className="text-center md:text-start font-raleway">
+                                    <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
+                                        LISTE DES TBF {getYearExercice()}
+                                    </h1>
+                                </div>
+                            </div>
+                            <div>{selectedYear && (
                                 <div className="flex items-center">
                                     <span className="text-sm text-gray-500 mr-2">Filtré par année: {selectedYear}</span>
                                     <Button variant="ghost" size="icon" className="h-5 w-5" onClick={resetFilter}>
                                         <X className="h-3 w-3" />
                                     </Button>
                                 </div>
-                            )}
+                            )}</div>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
                             <Button variant="outline" size="icon" title="Rafraîchir" onClick={handleRefresh}>
@@ -127,7 +142,7 @@ export default function Tbf() {
                                 <PopoverTrigger asChild>
                                     <Button
                                         variant="outline"
-                                            size="icon"
+                                        size="icon"
                                         title="Filtrer par année"
                                         className={selectedYear ? "border-blue-500 text-blue-500" : ""}
                                     >

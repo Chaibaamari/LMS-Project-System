@@ -26,13 +26,14 @@ Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire|consultant'
         Route::post('createUser', [JWTAuthController::class, 'createUser']);
         Route::get('activateUser/{id}', [JWTAuthController::class, 'activateUser']);
         Route::get('deactivateUser/{id}', [JWTAuthController::class, 'deactivateUser']);
+        Route::get('users', [JWTAuthController::class, 'getUsersByRole']);
     });
     Route::get('/records', [PlanController::class, 'testyear']);
     Route::middleware('role:responsable')->group(function () {
         Route::post('createUser', [JWTAuthController::class, 'createUser']);
         Route::get('users', [JWTAuthController::class, 'getUsersByRole']);
-        Route::put('users/{id}/role', [JWTAuthController::class, 'updateUserRole']);
     });
+
 
     // Employee routes partie de chaiba
     Route::prefix('employes')->group(function () {
@@ -57,14 +58,15 @@ Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire|consultant'
     Route::prefix('Formation')->group(function () {
         Route::get('/', [FormationController::class, 'getAllFormation']);
         Route::get('/ListeFormation', [FormationController::class, 'getAllIntituleActions']);
+        Route::get('/organisme', [FormationController::class, 'getAllOrgaisme']); // permission
+        Route::post('/new', [FormationController::class, 'createFormation']); // permission
     });
 
     // Direction routes
     Route::prefix('directions')->group(function () {
         Route::get('/', [DirectionController::class, 'getAllDirections']);
         Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire'])->group(function () {
-            Route::get('/{id}', [DirectionController::class, 'getDirectionById']);
-            Route::post('/{id}/responsable', [DirectionController::class, 'updateResponsable']); // ma5dmnach bihe
+            Route::post('/responsable/{id}', [DirectionController::class, 'updateResponsable'])->where('id', '.*'); // Allows slashes, spaces, etc. // ma5dmnach bihe
         });
     });
 
@@ -99,16 +101,14 @@ Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire|consultant'
     Route::get('TBF', [PlanController::class, 'consultTBF']);
     Route::post('Bilan', [PlanController::class, 'consultBilan']);
     Route::post('createBC', [PlanController::class, 'createBC']);
-    Route::post('createDC', [ImportContoller::class, 'createDC']);
+    Route::get('createDC', [ImportContoller::class, 'createDC']);
     Route::post('bonCommand', [PlanController::class, 'consultBC']);
     Route::get('TBF/{month}', [PlanController::class, 'consultTBF']);
+    Route::get('formation-etat', [FormationController::class, 'getPlansEnCours']);
+    Route::get('Bilan', [PlanController::class, 'consultBilan']); // asque appliqué ca
 });
-Route::get('formation-etat', [FormationController::class, 'getPlansEnCours']);
 
 
-// statistique
-Route::get('Role', [StatistiqueController::class, 'StRole']);
-Route::get('PrévisionsTotal', [StatistiqueController::class, 'StPrvtotal']);
-Route::get('Prévisions', [StatistiqueController::class, 'StPrv']);
-Route::get('Bilan', [PlanController::class, 'consultBilan']); // asque appliqué ca
 
+Route::get('/user/edit/{id}', [JWTAuthController::class, 'getUserById']);
+Route::post('/user/pass/{id}', [JWTAuthController::class, 'updatePassword']);

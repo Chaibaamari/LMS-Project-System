@@ -26,13 +26,6 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select field" />
                     </SelectTrigger>
-                    {/* <SelectContent>
-                        {fields.map((field) => (
-                            <SelectItem key={field.name} value={field.name} className=" text-red-800">
-                                {field.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent> */}
                     <SelectContent className="bg-white border-gray-200 shadow-lg">
                         {fields.map((field) => (
                             <SelectItem
@@ -49,7 +42,7 @@ export function DynamicSearch<T extends string>({ fields, onSearch }: DynamicSea
             <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                    placeholder="Search Employee..."
+                    placeholder="rechercher ..."
                     value={searchTerm}
                     className="pl-8 w-full border-none outline-none shadow-none"
                     onChange={(e) => setSearchTerm(e.target.value)}

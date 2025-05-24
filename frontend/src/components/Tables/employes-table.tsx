@@ -25,10 +25,11 @@ import { useTableControls } from "@/hooks/useTableControls";
 import { Pagination } from "../Tools/pagination";
 import { calculateAge, calculeAnciennete, getAuthToken } from "@/util/Auth";
 import { DynamicSearch } from "../Tools/Search";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { EmployeeActions } from "@/store/EmployesSlice";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
+import { RootState } from "@/store/indexD";
 
 
 interface UsersTableProps {
@@ -37,6 +38,8 @@ interface UsersTableProps {
 
 
 export default function UsersTable({ data = [] }: UsersTableProps) {
+    const permission = useSelector((state: RootState) => state.BondCommand.User)
+
     const [searchTerm, setSearchTerm] = useState("");
     const [searchField, setSearchField] = useState<keyof Users>("Matricule");
     // pagination 
@@ -277,9 +280,10 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
     };
     return (
         <div className="space-y-4 p-4 overflow-auto max-w-full">
-            <p className="text-xs text-muted-foreground whitespace-nowrap">Affichage de {currentData.length} sur {sortedAndFilteredData.length} employés</p>
-            <div className="flex flex-col sm:flex-row justify-between items-start  sm:items-center gap-2">
-                <div className="text-sm text-muted-foreground">
+<p className="text-sm font-raleway  text-muted-foreground whitespace-nowrap">
+        Affichage de <span className="text-xl text-slate-950"> {currentData.length} </span> sur <span className="text-xl text-slate-950">{sortedAndFilteredData.length}</span> Plan Prévision
+      </p>            <div className="flex flex-col sm:flex-row justify-between items-start  sm:items-center gap-2">
+                <div className="text-sm text-muted-foreground font-raleway">
                     <DynamicSearch
                         fields={[
                             { name: "Matricule", label: "Matricule" },
@@ -297,29 +301,33 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                             <span className="text-xs text-muted-foreground whitespace-nowrap">{selectedRows.length} selected</span>
                         </div>
                     )}
-                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                    <Button className="font-raleway" variant="outline" onClick={resetFilters}>
                         <RotateCcw className="h-4 w-4 mr-1" />
-                        Reset
+                        Réinitialiser les filtres
                     </Button>
-                    <Link to={`/Emp/insert`}>
-                        <Button size="sm" >
-                            <Plus className="h-4 w-4 mr-1" />
-                            Inserer
+                    {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                        <Link to={`/Emp/insert`}>
+                            <Button className="font-raleway">
+                                <Plus className="h-4 w-4 mr-1" />
+                                Ajouter employé(s)
+                            </Button>
+                        </Link>
+                    )}
+                    {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                        <Button
+                            variant="destructive"
+                            className="font-raleway"
+                            disabled={selectedRows.length === 0 || isDeleting}
+                            onClick={deleteMultipleEmployees}
+                        >
+                            {isDeleting ? (
+                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                            ) : (
+                                <Trash2 className="h-4 w-4 mr-1" />
+                            )}
+                            Supprimer employé(s)
                         </Button>
-                    </Link>
-                    <Button
-                        variant="destructive"
-                        size="sm"
-                        disabled={selectedRows.length === 0 || isDeleting}
-                        onClick={deleteMultipleEmployees}
-                    >
-                        {isDeleting ? (
-                            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                        ) : (
-                            <Trash2 className="h-4 w-4 mr-1" />
-                        )}
-                        Delete
-                    </Button>
+                    )}
                 </div>
             </div>
             <div className="rounded-md border overflow-hidden">
@@ -331,13 +339,6 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                     <Checkbox
                                         aria-label="Select all"
                                         checked={selectedRows.length === data.length}
-                                        // onCheckedChange={() => {
-                                        //     if (selectedRows.length === data.length) {
-                                        //         setSelectedRows([]);
-                                        //     } else {
-                                        //         setSelectedRows(data.map((item) => item.Matricule));
-                                        //     }
-                                        // }}
                                         onCheckedChange={() => {
                                             if (sortedAndFilteredData.every((item) => selectedRows.includes(String(item.Matricule)))) {
                                                 // Unselect all filtered items
@@ -372,7 +373,9 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                 {renderColumnHeader("Echelle", "Echelle")}
                                 {renderColumnHeader("CodeFonction", "CodeFonction")}
                                 {renderColumnHeader("Id_direction", "CodeDirection")}
-                                <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
+                                {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                                    <TableHead className="sticky right-0 bg-background z-10 w-[100px]">Actions</TableHead>
+                                )}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -413,33 +416,35 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                         <TableCell className="text-center">{item.Echelle}</TableCell>
                                         <TableCell className="text-center">{item.CodeFonction}</TableCell>
                                         <TableCell className="text-center">{item.Id_direction}</TableCell>
-                                        <TableCell className="sticky right-0 bg-background z-10">
-                                            <div className="flex items-center gap-2">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                                                            <MoreHorizontal className="h-4 w-4" />
-                                                            <span className="sr-only">Open menu</span>
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <Link to={`/Emp/update/${item.Matricule}`}>
-                                                            <DropdownMenuItem>
-                                                                <Pencil className="h-4 w-4 mr-2" />
-                                                                Edit
+                                        {(permission.role === "responsable" || permission.role === "gestionnaire") && (
+                                            <TableCell className="sticky right-0 bg-background z-10">
+                                                <div className="flex items-center gap-2">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                                <span className="sr-only">Ouvrir le menu</span>
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <Link to={`/Emp/update/${item.Matricule}`}>
+                                                                <DropdownMenuItem>
+                                                                    <Pencil className="h-4 w-4 mr-2" />
+                                                                    Modifier
+                                                                </DropdownMenuItem>
+                                                            </Link>
+                                                            <DropdownMenuItem
+                                                                className="text-destructive focus:text-destructive"
+                                                                onClick={() => deleteSingleEmployee(item.Matricule)}
+                                                            >
+                                                                <Trash2 className="h-4 w-4 mr-2" />
+                                                                Supprimer
                                                             </DropdownMenuItem>
-                                                        </Link>
-                                                        <DropdownMenuItem
-                                                            className="text-destructive focus:text-destructive"
-                                                            onClick={() => deleteSingleEmployee(item.Matricule)}
-                                                        >
-                                                            <Trash2 className="h-4 w-4 mr-2" />
-                                                            Delete
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            </div>
-                                        </TableCell>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            </TableCell>
+                                        )}
                                     </TableRow>
                                 ))
                             ) : (
@@ -450,8 +455,8 @@ export default function UsersTable({ data = [] }: UsersTableProps) {
                                             <SearchX className="h-6 w-6 text-muted-foreground" />
                                         </div>
                                         <div className="space-y-1">
-                                            <p className="text-base font-medium">No data available</p>
-                                            <p className="text-sm text-muted-foreground">No matching records found</p>
+                                            <p className="text-base font-medium">Aucune donnée disponible</p>
+                                            <p className="text-sm text-muted-foreground">Aucun enregistrement correspondant trouvé</p>
                                         </div>
                                     </div>
                                 </TableCell>

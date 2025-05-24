@@ -1,7 +1,7 @@
 import { Users } from "@/assets/modelData";
 import { redirect } from "react-router-dom";
 
-export function getTokenExpiration():number {
+export function getTokenExpiration(): number {
     const Storeexpiration = localStorage.getItem('expiration');
     const expirationDate = new Date(Storeexpiration || '');
     const now = new Date();
@@ -45,7 +45,6 @@ export function ProtectedRoute() {
     }
     return null;
 }
-
 
 export const initialFormData: Users = {
     Matricule: "",
