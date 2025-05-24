@@ -10,6 +10,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\StatistiqueController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 // Public routes
 Route::post('register', [JWTAuthController::class, 'register']);
@@ -148,3 +149,15 @@ Route::middleware([JwtMiddleware::class.':responsable|gestionnaire|consultant'])
 //     return $request->user();
 
 // });
+
+Route::get('/test-email', function() {
+    try {
+        Mail::raw('This is a test email', function($message) {
+            $message->to('jkh24891@toaik.com')
+                    ->subject('Email Test');
+        });
+        return 'Email sent successfully!';
+    } catch (\Exception $e) {
+        return 'Error: ' . $e->getMessage();
+    }
+});
