@@ -7,8 +7,12 @@ use App\Exports\NotifieExport;
 use App\Exports\PrevExport;
 use App\Imports\NotifieImport;
 use App\Imports\PrevImport;
+use App\Mail\SendDC;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Mail\SendExcelFile;
+use App\Models\Plan;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Validators\ValidationException;
 
 class ImportContoller extends Controller
@@ -71,9 +75,36 @@ class ImportContoller extends Controller
         return Excel::download($import, 'plannotifieexporté.xlsx');
     }
 
-    public function createDC(Request $request)
+    /* public function createDC(Request $request)
     {
         $ids = $request->input('ids');
         return Excel::download(new DemandeConfirmationExport($ids), 'demandedeconfirmation.xlsx');
+    } */
+
+    public function createDC(Request $request)
+    {
+        $ids = $request->input('ids');
+
+
+        $excelData = Excel::raw(new DemandeConfirmationExport($ids), 'Xlsx');
+
+
+
+        $firstUserId = $request->input('ids.0');
+
+
+
+        $record = Plan::where('ID_N',$firstUserId)->with(['employe.direction'])->first();
+        $direction = $record->employe->direction;
+        
+        if(!$direction->Email){
+            return response()->json(['success' => false,'message'=>"Email de responsable inexistant, veulliez remplir les informations de reponsable s'il vous plait"]);
+        }
+
+
+        Mail::to($direction->Email)->send(new SendDC($excelData,$direction));
+        
+                
+        return response()->json(['success' => true,'message'=>'un Email avec les demandes de confirmation a été envoyé au responsable']);
     }
 }

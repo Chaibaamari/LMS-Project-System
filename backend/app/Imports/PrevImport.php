@@ -269,16 +269,24 @@ class PrevImport implements ToCollection, WithHeadingRow
             'organisme_de_formation' => 'required|string',
             'lieu_du_deroulement_de_la_formation'=>'required|string',
             'intitule_de_laction'=>'required|string',
+            'direction'=>'required|string',
+            'date_de_naissance_jjmmaaaa'=>'required',
+            'date_de_recrutement_jjmmaaaa'=>'required',
+            'code_fonction'=>'required'
         ];
     }
 
     public function customValidationMessages()
     {
         return [
-            'matricule.required' => 'Matricule manquant.',
-            'organisme_de_formation.required' => 'Organisme De Formation manquant.',
-            'lieu_du_deroulement_de_la_formation.required' => 'The Lieu Du Deroulement De La Formation manquant.',
-            'intitule_de_laction.required' => "Intitule De L'action manquant.",
+            'matricule.required' => "Veuillez remplir le champ Matricule , s'il vous plaît.",
+            'organisme_de_formation.required' => "Veuillez remplir le champ Organisme De Formation , s'il vous plaît.",
+            'lieu_du_deroulement_de_la_formation.required' => "Veuillez remplir le champ The Lieu Du Deroulement De La Formation , s'il vous plaît.",
+            'intitule_de_laction.required' => "Veuillez remplir le champ Intitule De L'action , s'il vous plaît.",
+            'direction.required'=>"Veuillez remplir le champ Direction , s'il vous plaît.",
+            'date_de_naissance_jjmmaaaa.required'=>"Veuillez remplir le champ Date De Naissance , s'il vous plaît.",
+            'date_de_recrutement_jjmmaaaa.required'=>"Veuillez remplir le champ Date Recrutement , s'il vous plaît.",
+            'code_fonction'=>"Veuillez remplir le champ Code Fonction , s'il vous plaît.",
         ];
     }
 

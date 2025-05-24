@@ -215,15 +215,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         try {
             const employeeIds = selectedRows.map((ele) => {
                 return Number(ele);
-            });
-            dispatch(
-                NotifeeActions.ShowNotification({
-                    IsVisible: true,
-                    status: "success",
-                    message: "Bond Command Elle été bien crée",
-                }),
-            );
-            
+            }); 
             const response = await fetch('http://127.0.0.1:8000/api/createDC', {
                 method: "POST",
                 headers: {
@@ -248,7 +240,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "success",
-                    message: "Bon de Commande créé avec succès",
+                    message: "Email Envoyé avec succès",
                 }),
             );
             // dispatch(NotifeeActions.ReferchLatestData(true))

@@ -10,6 +10,7 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\StatistiqueController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 // Public routes
 Route::post('register', [JWTAuthController::class, 'register']);
@@ -101,14 +102,15 @@ Route::middleware([JwtMiddleware::class . ':responsable|gestionnaire|consultant'
     Route::get('TBF', [PlanController::class, 'consultTBF']);
     Route::post('Bilan', [PlanController::class, 'consultBilan']);
     Route::post('createBC', [PlanController::class, 'createBC']);
-    Route::get('createDC', [ImportContoller::class, 'createDC']);
+    Route::post('createDC', [ImportContoller::class, 'createDC']);
     Route::post('bonCommand', [PlanController::class, 'consultBC']);
     Route::get('TBF/{month}', [PlanController::class, 'consultTBF']);
     Route::get('formation-etat', [FormationController::class, 'getPlansEnCours']);
     Route::get('Bilan', [PlanController::class, 'consultBilan']); // asque appliqué ca
+    Route::get('/user/edit/{id}', [JWTAuthController::class, 'getUserById']);
+    Route::post('/user/pass/{id}', [JWTAuthController::class, 'updatePassword']);
 });
 
 
 
-Route::get('/user/edit/{id}', [JWTAuthController::class, 'getUserById']);
-Route::post('/user/pass/{id}', [JWTAuthController::class, 'updatePassword']);
+

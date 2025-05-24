@@ -30,6 +30,7 @@ class DemandeConfirmationExport implements FromCollection, WithHeadings , WithSt
             ->get()
             ->map(function ($p) {
                 return [
+                    'Matricule'=>$p->employe->Matricule,
                     'NOM & PRENOM'    => $p->employe->prenomnom,
                     "INTITULE DE L'ACTION"   => $p->formation->Intitule_Action ?? '',
                     'Organisme'  => $p->formation->organisme->Nom_Organisme ?? '',
@@ -40,6 +41,7 @@ class DemandeConfirmationExport implements FromCollection, WithHeadings , WithSt
     public function headings(): array
     {
         return [
+            'Matricule',
             'NOM & PRENOM',
             "INTITULE DE L'ACTION",
             'Organisme',
