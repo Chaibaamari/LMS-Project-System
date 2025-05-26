@@ -19,6 +19,7 @@ interface PlanPrevisionState {
     IsLoading:boolean,
     refrechData: boolean,
     ListeIntitulAction: {
+        key: number;
         value: number;
         label: string;
     }[],

@@ -94,7 +94,7 @@ const data = {
       icon: Map,
     },
     {
-      name: "TBF",
+      name: "BILAN",
       url: "TBF",
       icon: FolderKanban,
     },

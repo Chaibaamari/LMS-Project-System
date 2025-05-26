@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { AlertCircle, CalendarIcon } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 import type { PlanPrevision } from "@/assets/modelData"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
@@ -24,8 +24,7 @@ interface DynamicInsertFormProps<T extends Record<string, unknown>> {
         name: keyof PlanPrevision
         label: string
         placeholder?: string
-        options?: {  value: string | number; label: string }[]
-        errorMessage?: string
+        options?: { value: string | number; label: string }[]
     }>;
     UrlRelaod: string;
     // showError: boolean;
@@ -133,24 +132,6 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
 }: DynamicInsertFormProps<T>) {
     const navigation = useNavigation();
     const isSubmitting = navigation.state === "submitting";
-    const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
-
-    const markFieldAsTouched = (fieldName: string) => {
-        setTouchedFields((prev) => {
-            const newSet = new Set(prev)
-            newSet.add(fieldName)
-            return newSet
-        })
-    };
-
-    const isFieldTouched = (fieldName: string) => touchedFields.has(fieldName);
-
-    const getErrorMessage = (field: (typeof fields)[0]) => {
-        if (field.errorMessage) {
-            return field.errorMessage
-        }
-        return `Please enter a valid ${field.label.toLowerCase()}`
-    };
 
     return (
         <div className="container mx-auto py-10 px-4 sm:px-6">
@@ -179,19 +160,11 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
                                                     required
                                                     value={editFormData[field.name] as string}
                                                     onChange={(e) => handleInputChange(field.name.toString(), e.target.value as T[keyof T])}
-                                                    className={`transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${!editFormData[field.name] && isFieldTouched(field.name.toString())
-                                                            ? "border-red-500 focus:ring-red-200"
-                                                            : ""
-                                                        }`}
+                                                    className={`transition-all duration-200 focus:ring-2 focus:ring-primary/20 `}
                                                     placeholder={field.placeholder}
-                                                    onBlur={() => markFieldAsTouched(field.name.toString())}
+                                            
                                                 />
-                                                {!editFormData[field.name] && isFieldTouched(field.name.toString()) && (
-                                                    <div className="flex items-center gap-2 text-sm text-red-600 mt-1">
-                                                        <AlertCircle className="h-4 w-4" />
-                                                        <span>{getErrorMessage(field)}</span>
-                                                    </div>
-                                                )}
+                                                
                                             </>
                                         )}
                                         {field.type === "select" && (
@@ -202,28 +175,19 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
                                                 >
                                                     <SelectTrigger
                                                         id={field.name.toString()}
-                                                        className={`transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${!editFormData[field.name] && isFieldTouched(field.name.toString())
-                                                                ? "border-red-500 focus:ring-red-200"
-                                                                : ""
-                                                            }`}
-                                                        onBlur={() => markFieldAsTouched(field.name.toString())}
+                                                        className={`transition-all duration-200 focus:ring-2 focus:ring-primary/20 `}
                                                     >
                                                         <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {field.options?.map((option ) => (
+                                                        {field.options?.map((option) => (
                                                             <SelectItem key={option.value} value={option.value.toString()} >
                                                                 {option.label}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                {!editFormData[field.name] && isFieldTouched(field.name.toString()) && (
-                                                    <div className="flex items-center gap-2 text-sm text-red-600 mt-1">
-                                                        <AlertCircle className="h-4 w-4" />
-                                                        <span>{getErrorMessage(field)}</span>
-                                                    </div>
-                                                )}
+                                                
                                             </>
                                         )}
                                         {field.type === "date" && (
@@ -236,9 +200,7 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
                                                             className={cn(
                                                                 "w-full justify-start text-left font-normal",
                                                                 !editFormData[field.name] && "text-muted-foreground",
-                                                                !editFormData[field.name] && isFieldTouched(field.name.toString()) && "border-red-500",
                                                             )}
-                                                            onClick={() => markFieldAsTouched(field.name.toString())}
                                                         >
                                                             <CalendarIcon className="mr-2 h-4 w-4" />
                                                             {editFormData[field.name] ? (
@@ -267,12 +229,7 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
                                                     name={field.name.toString()}
                                                     value={(editFormData[field.name] as string) || ""}
                                                 />
-                                                {!editFormData[field.name] && isFieldTouched(field.name.toString()) && (
-                                                    <div className="flex items-center gap-2 text-sm text-red-600 mt-1">
-                                                        <AlertCircle className="h-4 w-4" />
-                                                        <span>{getErrorMessage(field)}</span>
-                                                    </div>
-                                                )}
+                                    
                                             </>
                                         )}
                                         {field.type === "number" && (
@@ -283,18 +240,9 @@ export function DynamicInsertForm<T extends Record<string, unknown>>({
                                                     type="number"
                                                     value={editFormData[field.name] as string}
                                                     onChange={(e) => handleInputChange(field.name.toString(), e.target.value as T[keyof T])}
-                                                    className={`transition-all duration-200 focus:ring-2 focus:ring-primary/20 ${!editFormData[field.name] && isFieldTouched(field.name.toString())
-                                                            ? "border-red-500 focus:ring-red-200"
-                                                            : ""
-                                                        }`}
-                                                    onBlur={() => markFieldAsTouched(field.name.toString())}
+                                                    className={`transition-all duration-200 focus:ring-2 focus:ring-primary/20 `}
                                                 />
-                                                {!editFormData[field.name] && isFieldTouched(field.name.toString()) && (
-                                                    <div className="flex items-center gap-2 text-sm text-red-600 mt-1">
-                                                        <AlertCircle className="h-4 w-4" />
-                                                        <span>{getErrorMessage(field)}</span>
-                                                    </div>
-                                                )}
+                                                
                                             </>
                                         )}
                                     </div>

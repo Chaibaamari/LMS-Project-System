@@ -15,19 +15,18 @@ class FormationController extends Controller
         try {
             $formations = Formation::query()
                 ->join('organismes', 'formations.Id_Organisme', '=', 'organismes.Id_Organisme')
-                ->join('plans', 'formations.Id_Formation', '=', 'plans.ID_Formation')
                 ->select([
                     'formations.ID_Formation', // Include the primary key
                     'formations.Intitule_Action',
                     'organismes.Nom_Organisme',
                     'organismes.Lieu_Formation',
-                    'plans.Exercice'
                 ])
                 ->distinct()
                 ->orderBy('formations.Intitule_Action')
                 ->get()
                 ->map(function ($item) {
                     return [
+                        'key' => $item->ID_Formation, // Use ID_Formation as the key
                         'value' => $item->ID_Formation,
                         'label' => "{$item->Intitule_Action} - {$item->Nom_Organisme} ({$item->Lieu_Formation})",
                     ];

@@ -100,7 +100,7 @@ export default function Tbf() {
                         </div>
                         <div className="text-center md:text-start font-raleway">
                             <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
-                                LISTE DES TBF {getYearExercice()}
+                                BILAN {getYearExercice()}
                             </h1>
                         </div>
                     </div>
@@ -121,7 +121,7 @@ export default function Tbf() {
                                 </div>
                                 <div className="text-center md:text-start font-raleway">
                                     <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
-                                        LISTE DES TBF {getYearExercice()}
+                                        BILAN {getYearExercice()}
                                     </h1>
                                 </div>
                             </div>

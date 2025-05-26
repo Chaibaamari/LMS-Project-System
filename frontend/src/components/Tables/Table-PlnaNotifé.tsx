@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { DialogDescription } from "@radix-ui/react-dialog"
 import { RootState } from "@/store/indexD"
+import { PrevisionActions } from "@/store/PrevisionSlice"
 
 interface PlanNotifeeTableProps {
     data: PlanNotifee[];
@@ -32,7 +33,6 @@ interface PlanNotifeeTableProps {
 export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const permission = useSelector((state: RootState) => state.BondCommand.User)
-    // const Budget = useRef<HTMLInputElement>(null)
 
 //   const navigate = useNavigate()
     const [searchField, setSearchField] = useState<keyof PlanNotifee>("Matricule");
@@ -213,6 +213,13 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
         
         
         try {
+            dispatch(
+                NotifeeActions.ShowNotification({
+                    IsVisible: true,
+                    status: "pending",
+                    message: "Email envoyer en cours...",
+                }),
+            )
             const employeeIds = selectedRows.map((ele) => {
                 return Number(ele);
             }); 
@@ -243,7 +250,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                     message: "Email Envoyé avec succès",
                 }),
             );
-            // dispatch(NotifeeActions.ReferchLatestData(true))
+            dispatch(NotifeeActions.ReferchLatestData(true))
         } catch(err) {
             console.log(err)
             dispatch(
@@ -309,7 +316,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "pending",
-                    message: "Chargement des prévisions en cours...",
+                    message: "Chargement des plans notifiés en cours...",
                 }),
             )
             const response = await fetch("http://127.0.0.1:8000/api/previsions/delete-multiple", {
@@ -322,7 +329,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             })
 
             if (!response.ok) {
-                throw new Error("Failed to delete Notifiee")
+                throw new Error("Erreur lors de la suppression de plan notifié.")
             }
 
             setSelectedRows([])
@@ -331,7 +338,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
                     status: "success",
-                    message: "Delete prévision chargée avec succès",
+                    message: "Delete le plan notifé chargée avec succès",
                 }),
             )
             dispatch(NotifeeActions.ReferchLatestData(true))
@@ -378,16 +385,17 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
             })
             const resData = await response.json();
             if (!response.ok) {
-                console.log(resData.existing)
                 dispatch(
-                NotifeeActions.ShowNotification({
-                    IsVisible: true,
-                    status: "failed",
-                    message: `Erreur lors de l'importation : ${resData.length} ligne(s) ont échoué à la validation.`
-                }));
-                dispatch(NotifeeActions.ReferchLatestData(true));
-                return navigate("/homePage/planNotifie");
-            }
+                    PrevisionActions.SetImportErrors({
+                        errors: resData.existing || [],
+                        totalRows: resData.existing?.length || 0,
+                        message: resData.message || "Erreur d'importation"
+                    })
+                );
+                // dispatch(PrevisionActions.ReferchLatestData(true))
+                    
+                return navigate("/homePage/importErrors");
+            };
             dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
@@ -587,7 +595,7 @@ export default function NotifeTable({ data = [] }: PlanNotifeeTableProps) {
     return (
         <div className="space-y-4 p-4 overflow-auto max-w-full">
             <p className="text-sm font-raleway  text-muted-foreground whitespace-nowrap">
-                Affichage de <span className="text-xl text-slate-950"> {currentData.length} </span> sur <span className="text-xl text-slate-950">{sortedAndFilteredData.length}</span> Plan Prévision
+                Affichage de <span className="text-xl text-slate-950"> {currentData.length} </span> sur <span className="text-xl text-slate-950">{sortedAndFilteredData.length}</span> Plan Notifié
             </p>
             <div className="flex flex-col sm:flex-row justify-between items-start  sm:items-center gap-2">
                 <div className="text-sm text-muted-foreground w-full">

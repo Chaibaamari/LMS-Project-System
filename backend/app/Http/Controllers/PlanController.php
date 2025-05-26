@@ -280,8 +280,7 @@ class PlanController extends Controller
                     if (!in_array($plan->toArray(), $results[$foundKey]['plans']->toArray())) {
                         $results[$foundKey]['plans']->push($plan);
                     }
-                }
-                else {
+                } else {
                     // Otherwise, create a new entry
                     $results[] = [
                         'Nom' => "TBF du mois de $nomMois $year",
@@ -410,7 +409,7 @@ class PlanController extends Controller
             'ID_Formation' => $request->input('ID_Formation'),
         ]);
 
-        return response()->json(['message' => 'plan a été bien modifié']);
+        return response()->json(['message' => 'Le plan prévision a été modifié avec succès.']);
     }
 
     public function destroy($id)
@@ -427,7 +426,7 @@ class PlanController extends Controller
                 throw new \Exception('Delete operation failed');
             }
 
-            return response()->json(['message' => 'plan deleted successfully']);
+            return response()->json(['message' => 'La suppression du plan a été effectuée avec succès.']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -442,9 +441,9 @@ class PlanController extends Controller
 
             Plan::whereIn('ID_N', $validated['IDs'])->delete();
 
-            return response()->json(['message' => 'Plans deleted successfully']);
+            return response()->json(['message' => 'Les plans ont été supprimés avec succès.']);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to delete Plans'], 500);
+            return response()->json(['error' => 'Échec de la suppression des plans'], 500);
         }
     }
 
@@ -458,25 +457,24 @@ class PlanController extends Controller
             'formation.organisme',
         ])->get();
 
-        return response()->json(['message' => 'plan notifié loaded succesfully', 'Plan' => $plans]);
+        return response()->json(['message' => 'Le plan notifié a été chargé avec succès', 'Plan' => $plans]);
     }
     public function notifieadd(Request $request)
     {
         $validatedData = $request->validate([
             'Matricule' => 'required|string|exists:employes,Matricule',
             'ID_Formation' => 'required|exists:formations,ID_Formation',
-            'Mode_Financement' => 'numeric',
-            'Frais_Pedagogiques' => 'numeric|min:0',
-            'Frais_Hebergement' => 'numeric|min:0',
-            'Frais_Transport' => 'numeric|min:0',
-            'Observation' => 'string|max:500',
-            'Type_Pension' => 'string',
-            'Budget' => 'string',
-            'Observation_pre_arbitrage' => 'string',
-            'Observation_arbitrage' => 'string',
-            'Autres_charges' => 'numeric',
-            'Presalaire' => 'numeric',
-            'Dont_Devise' => 'numeric',
+            'Mode_Financement' => 'nullable|integer',
+            'Frais_Pedagogiques' => 'nullable|numeric|min:0',
+            'Frais_Hebergement' => 'nullable|numeric|min:0',
+            'Frais_Transport' => 'nullable|numeric|min:0',
+            'Observation' => 'nullable|string|max:500',
+            'Type_Pension' => 'nullable|string',
+            'Observation_pre_arbitrage' => 'nullable|string',
+            'Observation_arbitrage' => 'nullable|string',
+            'Autres_charges' => 'nullable|numeric',
+            'Presalaire' => 'nullable|numeric',
+            'Dont_Devise' => 'nullable|numeric',
         ]);
         $Exercice = $request->header('Year');
         try {
@@ -496,22 +494,9 @@ class PlanController extends Controller
                 ], 409);
             }
             $plan = Plan::create([
-                'Exercice' => $Exercice,
-                'etat' => 'validé',
-                'Matricule' => $validatedData['Matricule'],
-                'ID_Formation' => $validatedData['ID_Formation'],
-                'Mode_Financement' => $validatedData['Mode_Financement'],
-                'Frais_Pedagogiques' => $validatedData['Frais_Pedagogiques'],
-                'Frais_Hebergement' => $validatedData['Frais_Hebergement'],
-                'Frais_Transport' => $validatedData['Frais_Transport'],
-                'Observation' => $validatedData['Observation'],
-                'Type_Pension' => $validatedData['Type_Pension'],
-                'Budget' => $validatedData['Budget'],
-                'Observation_pre_arbitrage' => $validatedData['Observation_pre_arbitrage'],
-                'Observation_arbitrage' => $validatedData['Observation_arbitrage'],
-                'Autres_charges' => $validatedData['Autres_charges'],
-                'Presalaire' => $validatedData['Presalaire'],
-                'Dont_Devise' => $validatedData['Dont_Devise'],
+                ...$validatedData,
+                'Exercice' => $Exercice, // Add the missing field
+                'etat' => 'validé' // Default state if needed
             ]);
 
             return response()->json([
@@ -520,13 +505,6 @@ class PlanController extends Controller
                 'message' => 'Plan de formation créé avec succès',
                 'data' => $plan
             ], 201);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 404,
-                'success' => false,
-                'message' => 'Plan de formation non trouvé',
-                'error' => $e->getMessage()
-            ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 500,
@@ -539,57 +517,34 @@ class PlanController extends Controller
     public function notifiemodify(Request $request)
     {
         $validatedData = $request->validate([
+            'ID_N' => 'required|exists:plans,ID_N',
             'Matricule' => 'required|string|exists:employes,Matricule',
             'ID_Formation' => 'required|exists:formations,ID_Formation',
-            'Mode_Financement' => 'integer',
-            'Frais_Pedagogiques' => 'numeric|min:0',
-            'Frais_Hebergement' => 'numeric|min:0',
-            'Frais_Transport' => 'numeric|min:0',
-            'Observation' => 'string|max:500',
-            'Type_Pension' => 'string',
-            'Budget' => 'string',
-            'Observation_pre_arbitrage' => 'string',
-            'Observation_arbitrage' => 'string',
-            'Autres_charges' => 'numeric',
-            'Presalaire' => 'numeric',
-            'Dont_Devise' => 'numeric',
+            'Mode_Financement' => 'nullable|integer',
+            'Frais_Pedagogiques' => 'nullable|numeric|min:0',
+            'Frais_Hebergement' => 'nullable|numeric|min:0',
+            'Frais_Transport' => 'nullable|numeric|min:0',
+            'Observation' => 'nullable|string|max:500',
+            'Type_Pension' => 'nullable|string',
+            'Observation_pre_arbitrage' => 'nullable|string',
+            'Observation_arbitrage' => 'nullable|string',
+            'Autres_charges' => 'nullable|numeric',
+            'Presalaire' => 'nullable|numeric',
+            'Dont_Devise' => 'nullable|numeric',
         ]);
         try {
-            $id = $request->input('ID_N');
-            Plan::where('ID_N', $id)->update([
-                'Matricule' => $validatedData['Matricule'],
-                'ID_Formation' => $validatedData['ID_Formation'],
-                'Mode_Financement' => $validatedData['Mode_Financement'],
-                'Frais_Pedagogiques' => $validatedData['Frais_Pedagogiques'],
-                'Frais_Hebergement' => $validatedData['Frais_Hebergement'],
-                'Frais_Transport' => $validatedData['Frais_Transport'],
-                'Observation' => $validatedData['Observation'],
-                'Type_Pension' => $validatedData['Type_Pension'],
-                'Budget' => $validatedData['Budget'],
-                'Observation_pre_arbitrage' => $validatedData['Observation_pre_arbitrage'],
-                'Observation_arbitrage' => $validatedData['Observation_arbitrage'],
-                'Autres_charges' => $validatedData['Autres_charges'],
-                'Presalaire' => $validatedData['Presalaire'],
-                'Dont_Devise' => $validatedData['Dont_Devise'],
-            ]);
+            Plan::where('ID_N', $validatedData['ID_N'])->update($validatedData);
 
             return response()->json([
-                'status' => 201,
+                'status' => 200,
                 'success' => true,
-                'message' => 'Plan de formation modifé avec succès'
-            ], 201);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return response()->json([
-                'status' => 404,
-                'success' => false,
-                'message' => 'Plan de formation non trouvé',
-                'error' => $e->getMessage()
-            ], 404);
+                'message' => 'Plan notifé été modifié avec succès'
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 500,
                 'success' => false,
-                'message' => 'Erreur lors de la mise à jour du plan de formation',
+                'message' => 'Erreur lors de la mise à jour',
                 'error' => $e->getMessage()
             ], 500);
         }

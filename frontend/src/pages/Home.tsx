@@ -360,7 +360,7 @@ export default function Formation() {
                 message={message}
             />
             <Dialog open={showDateRangeDialog} onOpenChange={setShowDateRangeDialog}>
-                <DialogContent className="sm:max-w-[665px]">
+                <DialogContent className="sm:max-w-[765px]">
                     <DialogHeader>
                         <DialogTitle>Créer une nouvelle formation</DialogTitle>
                         <DialogDescription className="text-sm text-muted-foreground whitespace-nowrap">
@@ -370,7 +370,7 @@ export default function Formation() {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="mt-2">
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Intitule de Formation</Label>
+                                <Label htmlFor="action" className="mb-2">Intitule de Formation</Label>
                                 <Input id="action"
                                     name="Intitule_Action"
                                     onChange={handleInputChange}
@@ -378,7 +378,7 @@ export default function Formation() {
                                 />
                             </div>
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Domaine de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Domaine de formation</Label>
                                 <Input id="action"
                                     type="text"
                                     name="Domaine_Formation"
@@ -389,7 +389,7 @@ export default function Formation() {
                         </div>
                         <div className="mt-2">
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Code domaine de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Code domaine de formation</Label>
                                 <Input id="action"
                                     name="Code_Domaine_Formation"
                                     onChange={handleInputChange}
@@ -397,7 +397,7 @@ export default function Formation() {
                                 />
                             </div>
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Niveau de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Niveau de formation</Label>
                                 <Input id="action"
                                     type="text"
                                     name="Niveau_Formation"
@@ -408,7 +408,7 @@ export default function Formation() {
                         </div>
                         <div className="mt-2">
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Nature de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Nature de formation</Label>
                                 <Input id="action"
                                     name="Nature_Formation"
                                     onChange={handleInputChange}
@@ -416,7 +416,7 @@ export default function Formation() {
                                 />
                             </div>
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Source besoin</Label>
+                                <Label htmlFor="action" className="mb-2">Source besoin</Label>
                                 <Input id="action"
                                     type="text"
                                     name="Source_Besoin"
@@ -427,7 +427,7 @@ export default function Formation() {
                         </div>
                         <div className="mt-2">
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Type de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Type de formation</Label>
                                 <Input id="action"
                                     name="Type_Formation"
                                     onChange={handleInputChange}
@@ -435,7 +435,7 @@ export default function Formation() {
                                 />
                             </div>
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Mode de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Mode de formation</Label>
                                 <Input id="action" type="text"
                                     name="Mode_Formation"
                                     onChange={handleInputChange}
@@ -445,14 +445,14 @@ export default function Formation() {
                         </div>
                         <div className="mt-2">
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Code de formation</Label>
+                                <Label htmlFor="action" className="mb-2">Code de formation</Label>
                                 <Input id="action" name="Code_Formation"
                                     onChange={handleInputChange}
                                     value={editFormData.Code_Formation}
                                 />
                             </div>
                             <div className="mb-2">
-                                <Label htmlFor="action" className="mb-1">Heur&Jour</Label>
+                                <Label htmlFor="action" className="mb-2">Heur&Jour</Label>
                                 <Input id="action" type="text" name="Heure_jour"
                                     onChange={handleInputChange}
                                     value={editFormData.Heure_jour}
@@ -461,7 +461,7 @@ export default function Formation() {
                         </div>
                         <div className="mt-2">
                             <div className="mb-2">
-                                <Label htmlFor="Id_Organisme" className="mb-1">Organisme</Label>
+                                <Label htmlFor="Id_Organisme" className="mb-2">Organisme</Label>
                                 <Select
                                     name="Id_Organisme"
                                     value={editFormData.Id_Organisme?.toString() || ""}

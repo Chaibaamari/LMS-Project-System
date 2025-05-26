@@ -39,12 +39,6 @@ export default function EmployeFormInsert() {
     
     const fieldsPlan: FieldConfigPlan[] = [
         { type: "input", name: "Matricule", label: "Matricule" },
-        // { type: "input", name: "Observation", label: "Observation" },
-        // { type: "date", name: "Date", label: "Date" },
-        // { type: "number", name: "Mode_Financement", label: "Mode_Financement" },
-        // { type: "number", name: "Frais_Pedagogiques", label: "Frais_Pedagogiques" },
-        // { type: "number", name: "Frais_Hebergement", label: "Frais_Hebergement" },
-        // { type: "number", name: "Frais_Transport", label: "Frais_Transport" },
         {
             type: "select",
             name: "ID_Formation",

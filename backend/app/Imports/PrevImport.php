@@ -21,7 +21,7 @@ class PrevImport implements ToCollection, WithHeadingRow
 {
     private $errors = [];
     private $rowsSuccess = 0;
-    public $failedRows ;
+    public $failedRows;
 
     public $existingRows;
 
@@ -148,7 +148,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                 if ($validator->fails()) {
                     $this->failedRows[] = [
                         'row' => $index + 2, // +2 accounts for heading row + 0-based index
-                        'errors' => $validator->errors()->all(),
+                        'existence' => $validator->errors()->all(),
                     ];
                     continue;
                 }
@@ -168,17 +168,17 @@ class PrevImport implements ToCollection, WithHeadingRow
                     'IntituleFonction' => $row['intitule_de_fonction'],
                 ]);
 
-                $organisme=Organisme::where('Nom_Organisme',$row['organisme_de_formation'])->where('Lieu_Formation', $row['lieu_du_deroulement_de_la_formation'])->first();
-                if(!$organisme){
-                $organisme=Organisme::create([
-                    'Code_Organisme' => $row['code_organisme_de_formation'],
-                    'Nom_Organisme' => $row['organisme_de_formation'],
-                    'Lieu_Formation' => $row['lieu_du_deroulement_de_la_formation'],
-                    'Pays' => $row['lieu_pays'],
-                ]);
+                $organisme = Organisme::where('Nom_Organisme', $row['organisme_de_formation'])->where('Lieu_Formation', $row['lieu_du_deroulement_de_la_formation'])->first();
+                if (!$organisme) {
+                    $organisme = Organisme::create([
+                        'Code_Organisme' => $row['code_organisme_de_formation'],
+                        'Nom_Organisme' => $row['organisme_de_formation'],
+                        'Lieu_Formation' => $row['lieu_du_deroulement_de_la_formation'],
+                        'Pays' => $row['lieu_pays'],
+                    ]);
                 }
 
-                $formation=Formation::where('Intitule_Action', $row['intitule_de_laction'])->where('Id_Organisme', $organisme->Id_Organisme)->first();
+                $formation = Formation::where('Intitule_Action', $row['intitule_de_laction'])->where('Id_Organisme', $organisme->Id_Organisme)->first();
                 if (!$formation) {
                     $formation = Formation::create([
                         'Domaine_Formation' => $row['domaine_formation_fcm_fst_fsp'],
@@ -190,7 +190,7 @@ class PrevImport implements ToCollection, WithHeadingRow
                         'Type_Formation' => $this->translateTypeFormation($row['type_formation']),
                         'Mode_Formation' => $row['mode_formation'],
                         'Code_Formation' => $row['code_formation'],
-                        'Id_Organisme'=>$organisme->Id_Organisme,
+                        'Id_Organisme' => $organisme->Id_Organisme,
                         'Heure_jour' => $row['hj'],
                     ]);
                 }
@@ -202,48 +202,47 @@ class PrevImport implements ToCollection, WithHeadingRow
                     'Date_Naissance' => $this->convertFrenchDate($row['date_de_naissance_jjmmaaaa']),
                     'Date_Recrutement' => $this->convertFrenchDate($row['date_de_recrutement_jjmmaaaa']),
                     'Sexe' => $row['sexe'],
-                    'CSP' => $this -> translateCSP($row['csp_cadre_maitrise_execution']),
+                    'CSP' => $this->translateCSP($row['csp_cadre_maitrise_execution']),
                     'Echelle' => $row['echelle'],
                     'CodeFonction' => $row['code_fonction'],
                     'Id_direction' => $row['direction'],
                 ]);
 
-                $plan=Plan::where('Exercice',$this->year)->where('Matricule',$row['matricule'])->where('ID_Formation',$formation->ID_Formation)->first();
-                if(!$plan){
-                Plan::create([
-                    'etat' => 'prévision',
-                    /*'Observation'=>$row['observation'],
+                $plan = Plan::where('Exercice', $this->year)->where('Matricule', $row['matricule'])->where('ID_Formation', $formation->ID_Formation)->first();
+                if (!$plan) {
+                    Plan::create([
+                        'etat' => 'prévision',
+                        /*'Observation'=>$row['observation'],
                 'Date'=>$row[''],
                 'Date_Deb'=>$row[''],
                 'Date_fin'=>$row[''],*/
-                    'Matricule' => $row['matricule'],
-                    'ID_Formation' => $formation->ID_Formation,
-                    'Exercice'=>$this->year,
-                    /*'Mode_Financement'=>$row['mode_de_financement'],
+                        'Matricule' => $row['matricule'],
+                        'ID_Formation' => $formation->ID_Formation,
+                        'Exercice' => $this->year,
+                        /*'Mode_Financement'=>$row['mode_de_financement'],
                 'Frais_Pedagogiques'=>$row['frais_pedagogiques'],
                 'Frais_Hebergement'=>$row['frais_hebergem_restauration'],
                 'Frais_Transport'=>$row['frais_transport'],*/
-                ]);
-                }else{
+                    ]);
+                } else {
                     switch ($plan->etat) {
                         case 'prévision':
                             $this->existingRows[] = [
                                 'row' => $index + 2, // +2 accounts for heading row + 0-based index
-                                'existence' =>'une prévision exist pour ce employe avec cette formation cette année',
+                                'existence' => 'Cette prévision existe déjà.',
                             ];
                             break;
 
                         case 'validé':
                             $this->existingRows[] = [
                                 'row' => $index + 2, // +2 accounts for heading row + 0-based index
-                                'existence' =>'une prévision notifié exist pour ce employe avec cette formation cette année',
+                                'existence' => 'Cette prévision existe déjà.',
                             ];
                             break;
                     }
                 }
             }
             DB::commit();
-
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
@@ -267,12 +266,12 @@ class PrevImport implements ToCollection, WithHeadingRow
         return [
             'matricule'  => 'required|string',
             'organisme_de_formation' => 'required|string',
-            'lieu_du_deroulement_de_la_formation'=>'required|string',
-            'intitule_de_laction'=>'required|string',
-            'direction'=>'required|string',
-            'date_de_naissance_jjmmaaaa'=>'required',
-            'date_de_recrutement_jjmmaaaa'=>'required',
-            'code_fonction'=>'required'
+            'lieu_du_deroulement_de_la_formation' => 'required|string',
+            'intitule_de_laction' => 'required|string',
+            'direction' => 'required|string',
+            'date_de_naissance_jjmmaaaa' => 'required',
+            'date_de_recrutement_jjmmaaaa' => 'required',
+            'code_fonction' => 'required'
         ];
     }
 
@@ -283,11 +282,10 @@ class PrevImport implements ToCollection, WithHeadingRow
             'organisme_de_formation.required' => "Veuillez remplir le champ Organisme De Formation , s'il vous plaît.",
             'lieu_du_deroulement_de_la_formation.required' => "Veuillez remplir le champ The Lieu Du Deroulement De La Formation , s'il vous plaît.",
             'intitule_de_laction.required' => "Veuillez remplir le champ Intitule De L'action , s'il vous plaît.",
-            'direction.required'=>"Veuillez remplir le champ Direction , s'il vous plaît.",
-            'date_de_naissance_jjmmaaaa.required'=>"Veuillez remplir le champ Date De Naissance , s'il vous plaît.",
-            'date_de_recrutement_jjmmaaaa.required'=>"Veuillez remplir le champ Date Recrutement , s'il vous plaît.",
-            'code_fonction'=>"Veuillez remplir le champ Code Fonction , s'il vous plaît.",
+            'direction.required' => "Veuillez remplir le champ Direction , s'il vous plaît.",
+            'date_de_naissance_jjmmaaaa.required' => "Veuillez remplir le champ Date De Naissance , s'il vous plaît.",
+            'date_de_recrutement_jjmmaaaa.required' => "Veuillez remplir le champ Date Recrutement , s'il vous plaît.",
+            'code_fonction' => "Veuillez remplir le champ Code Fonction , s'il vous plaît.",
         ];
     }
-
 }

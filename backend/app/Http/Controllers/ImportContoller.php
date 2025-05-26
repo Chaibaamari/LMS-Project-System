@@ -25,6 +25,7 @@ class ImportContoller extends Controller
         Excel::import($import, $request->file('previsions'));
 
         if (!empty($import->failedRows) || !empty($import->existingRows)) {
+            $import->existingRows = array_merge($import->existingRows, $import->failedRows);
             return response()->json([
                 'message' => 'Some rows failed inserting.',
                 'status' => 'failed',
@@ -48,7 +49,8 @@ class ImportContoller extends Controller
         if (!empty($import->failedRows)) {
             return response()->json([
                 'message' => 'Some rows failed validation.',
-                'errors' => $import->failedRows,
+                'existing' => $import->failedRows,
+                'status' => 'failed',
             ], 422);
         }
 
@@ -56,7 +58,6 @@ class ImportContoller extends Controller
             'message' => 'Le plan notifié a été importé avec succès.',
             'status' => 'success',
         ]);
-
     }
 
     public function prevexport()
@@ -94,17 +95,17 @@ class ImportContoller extends Controller
 
 
 
-        $record = Plan::where('ID_N',$firstUserId)->with(['employe.direction'])->first();
+        $record = Plan::where('ID_N', $firstUserId)->with(['employe.direction'])->first();
         $direction = $record->employe->direction;
-        
-        if(!$direction->Email){
-            return response()->json(['success' => false,'message'=>"Email de responsable inexistant, veulliez remplir les informations de reponsable s'il vous plait"]);
+
+        if (!$direction->Email) {
+            return response()->json(['success' => false, 'message' => "Email de responsable inexistant, veulliez remplir les informations de reponsable s'il vous plait"]);
         }
 
 
-        Mail::to($direction->Email)->send(new SendDC($excelData,$direction));
-        
-                
-        return response()->json(['success' => true,'message'=>'un Email avec les demandes de confirmation a été envoyé au responsable']);
+        Mail::to($direction->Email)->send(new SendDC($excelData, $direction));
+
+
+        return response()->json(['success' => true, 'message' => 'un Email avec les demandes de confirmation a été envoyé au responsable']);
     }
 }
