@@ -68,13 +68,13 @@ export default function BondCommandPage() {
             })
 
             if (!response.ok) {
-                throw new Error("Failed to fetch bond commands")
+                throw new Error("Failed to fetch bond commande")
             }
 
             const data = await response.json()
             setBondCommands(data.data || [])
         } catch (error) {
-            console.error("Error fetching bond commands:", error)
+            console.error("Error fetching bond commande:", error)
             dispatch(
                 NotifeeActions.ShowNotification({
                     IsVisible: true,
@@ -148,7 +148,7 @@ export default function BondCommandPage() {
                         </div>
                         <div className="text-center md:text-start font-raleway">
                             <h1 className="text-3xl md:text-3xl font-bold text-[#F7913D] tracking-tight">
-                                Bond Command {getYearExercice()}
+                                Bon de Commande {getYearExercice()}
                             </h1>
                         </div>
             </div>
@@ -202,7 +202,7 @@ export default function BondCommandPage() {
                                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                                             <Card className="col-span-1 lg:col-span-2">
                                                 <CardHeader>
-                                                    <CardTitle>Bons de Commande par Mois</CardTitle>
+                                                    <CardTitle>Bon de Commande par Mois</CardTitle>
                                                     <CardDescription>
                                                         Distribution mensuelle des bons de commande pour {Year || new Date().getFullYear()}
                                                     </CardDescription>

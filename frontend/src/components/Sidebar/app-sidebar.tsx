@@ -89,7 +89,7 @@ const data = {
       icon: PieChart,
     },
     {
-      name: "Bon de Command",
+      name: "Bon de Commande",
       url: "bondCommand",
       icon: Map,
     },

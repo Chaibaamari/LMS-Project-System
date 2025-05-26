@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react"
 import { useParams, useSearchParams } from "react-router-dom"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, Trash2, Search, ChevronLeft, ChevronRight, FileText } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
@@ -215,9 +215,8 @@ export default function BondCommandDetailPage() {
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                                 <div>
                                     <CardTitle className="text-xl md:text-2xl text-[#F7913D]">
-                                        Bon de Commande #{BondCommandData[0].ID_N}
+                                        Bon de Commande
                                     </CardTitle>
-                                    <CardDescription className="text-gray-600 mt-1">Créé le {"25-11-2024"}</CardDescription>
                                 </div>
                             </div>
                         </CardHeader>
