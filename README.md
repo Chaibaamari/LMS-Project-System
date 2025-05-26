@@ -42,4 +42,8 @@ cd frontend
 npm install
 npm run dev
 ```
-
+#### to login :
+```bash
+email : admin@sonatrach.dz
+password : admin
+ ``` 
