@@ -25,6 +25,7 @@ cd gestion-des-formations
 #### Backend (Laravel)
 ```bash
 cd backend
+enlever ";"  de  ";extension=zip "
 composer install
 cp .env.example .env
 php artisan jwt:secret
@@ -40,7 +41,7 @@ php artisan serve
 ```bash
 cd frontend
 npm install
-npm run dev
+npm install --legacy-peer-deps
 ```
 #### to login :
 ```bash
