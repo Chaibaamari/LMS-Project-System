@@ -1,8 +1,6 @@
-import { BondCommand, currentUser } from "@/assets/modelData";
 import { createSlice } from "@reduxjs/toolkit";
 
 type BondCommandType = {
-    BondCommandData: BondCommand[]
     IsLoading: boolean
     refrechData: boolean,
     Notification: {
@@ -10,10 +8,8 @@ type BondCommandType = {
         status: string,
         message : string,
     }
-    User :currentUser,
 }
 const initialState: BondCommandType = {
-    BondCommandData: [],
     IsLoading: false,
     refrechData:false,
     Notification: {
@@ -21,21 +17,14 @@ const initialState: BondCommandType = {
         status: "",
         message : "",
     },
-    User: {
-        name: "",
-        email: "",
-        role: "",
-    }
+
 }
 
 
-const BondCommandSlice = createSlice({
-    name: "BondCommand",
+const SettigSlice = createSlice({
+    name: "Setting",
     initialState, 
     reducers: {
-        FetchDataPlanNotifee(state, action) {
-            state.BondCommandData = action.payload;
-        },
         ShowNotificationRefrech(state , action) {
             state.IsLoading = action.payload;
         },
@@ -57,11 +46,8 @@ const BondCommandSlice = createSlice({
         ReferchLatestData(state , action) {
             state.refrechData = action.payload.refrechData
         },
-        updateUser(state , action) {
-            state.User = action.payload
-        }
     }
 })
 
-export default BondCommandSlice;
-export const   BondCommandActions = BondCommandSlice.actions;
+export default SettigSlice;
+export const  SettingActions = SettigSlice.actions;

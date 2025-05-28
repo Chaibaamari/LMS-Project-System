@@ -5,12 +5,26 @@ import UserList from "@/components/Tables/UserRoleList"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import TabChange from "@/components/Tools/TabsChange"
+import NotificationError from "@/components/Error/NotificationError"
+import { useDispatch, useSelector } from "react-redux"
+import { AppDispatch, RootState } from "@/store/indexD"
+import { useEffect } from "react"
+import { SettingActions } from "@/store/setting"
 
 export default function AppSettings() {
 
+    const { IsVisible, status, message } = useSelector((state: RootState) => state.Setting.Notification);
+    const dispatch = useDispatch<AppDispatch>();
+    useEffect(() => {
+        if (IsVisible) {
+            setTimeout(() => {
+                dispatch(SettingActions.ClearNotification());
+            }, 5000)
+        }
+    }, [dispatch, IsVisible]);
 
     return (
-        <div className="container mx-auto py-10 px-4 space-y-8">
+        <div className="container mx-auto px-4">
             <div className="flex items-center justify-between">
                 <div className="flex flex-col md:flex-row items-center mb-8">
                     <div className="flex items-center mb-4 md:mb-0">
@@ -50,6 +64,11 @@ export default function AppSettings() {
                         </Card>
                     },
                 ]}
+            />
+            <NotificationError
+                isVisible={IsVisible}
+                status={status}
+                message={message}
             />
         </div>
     );

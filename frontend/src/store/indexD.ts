@@ -8,6 +8,7 @@ import FormationSlice from './Formation';
 import TBFSlice from './TBF';
 import DirectionsSlice from './Directions';
 import OrganismeSlice from './Organisme';
+import SettigSlice from './setting';
 
 
 
@@ -22,7 +23,8 @@ export const store = configureStore({
         Formation: FormationSlice.reducer,
         TBF: TBFSlice.reducer,
         Direction: DirectionsSlice.reducer,
-        Organisme:OrganismeSlice.reducer,
+        Organisme: OrganismeSlice.reducer,
+        Setting:SettigSlice.reducer,
     }
 });
 export type RootState = ReturnType<typeof store.getState>;

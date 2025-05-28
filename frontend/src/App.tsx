@@ -38,15 +38,15 @@ export default function App() {
       
       return null;
   }
-//   function ProtectedRouteGestionnaire() {
-//     const token = getAuthToken();
+  function ProtectedRouteGestionnaire() {
+    const token = getAuthToken();
     
-//     if (!token || (permission?.role !== "responsable" && permission?.role !=="gestionnaire") ) {
-//         return redirect('/?mode=login');
-//     }
+    if (!token || (permission?.role !== "responsable" && permission?.role !=="gestionnaire") ) {
+        return redirect('/?mode=login');
+    }
     
-//     return null;
-// }
+    return null;
+}
   const router = createBrowserRouter([
     {
       path: "",
@@ -69,20 +69,22 @@ export default function App() {
             },
             { path: 'Settings', element: <Settings />, loader: ProtectedRouteAdmin },
             { path: 'TBF', element: <Tbf />, loader: ProtectedRoute },
-            {path: "importErrors", element: <ImportErrors />, loader: ProtectedRoute},
+            { path: "importErrors", element: <ImportErrors />, loader: ProtectedRoute },
           ]
         },
-        { path: 'Emp/update/:matricule', element: <EmployeFormUpdate />, loader: ProtectedRoute },
-        { path: '/utilisateur/update/:id', element: <UpdateUser />, loader: ProtectedRouteAdmin },
+        { path: 'Emp/update/:matricule', element: <EmployeFormUpdate />, loader: ProtectedRouteGestionnaire },
+        { path: '/utilisateur/update/:id', element: <UpdateUser />, loader: ProtectedRouteGestionnaire },
         { path: '/utilisateur/update/activate/:id', element: <UpdateUserActivate />, loader: ProtectedRouteAdmin },
-        { path: 'prev/update/:ID_N', element: <PlanPrevisionFormUpdate />, loader: ProtectedRoute },
-        { path: 'notifie/update/:ID_N', element: <PlanNotifieeFormUpdate />, loader: ProtectedRoute },
-        { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRoute },
+        { path: 'prev/update/:ID_N', element: <PlanPrevisionFormUpdate />, loader: ProtectedRouteGestionnaire },
+        { path: 'notifie/update/:ID_N', element: <PlanNotifieeFormUpdate />, loader: ProtectedRouteGestionnaire },
+        { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRouteGestionnaire },
         { path: 'homePage/bondCommand/:id', element: <BondCommandDetailPage />, loader: ProtectedRoute },
         { path: 'homePage/TBF/bondCommand/:id', element: <TbfDetailPage />, loader: ProtectedRoute },
-        { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRoute },
-        { path: 'PrevPlan/insert', element: <InsertPrevision />, loader: ProtectedRoute },
-        { path: 'NotifieePlan/insert', element: <PlanNotifieeFormInsert />, loader: ProtectedRoute },
+        { path: 'Emp/insert', element: <EmployeFormInsert />, loader: ProtectedRouteGestionnaire },
+        { path: 'PrevPlan/insert', element: <InsertPrevision />, loader: ProtectedRouteGestionnaire },
+        {
+          path: 'NotifieePlan/insert', element: <PlanNotifieeFormInsert />, loader: ProtectedRouteGestionnaire
+        },
         { path: "logout", action: LogoutAction }
       ]
     },

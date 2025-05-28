@@ -63,7 +63,6 @@ export default function UserList() {
             }
 
             const data = await response.json()
-            console.log(data.users)
             setUsers(data.users)
             setFilteredUsers(data.users)
 
