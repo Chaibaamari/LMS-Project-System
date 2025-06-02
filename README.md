@@ -40,7 +40,6 @@ php artisan serve
 #### Frontend (React)
 ```bash
 cd frontend
-npm install
 npm install --legacy-peer-deps
 ```
 #### to login :
