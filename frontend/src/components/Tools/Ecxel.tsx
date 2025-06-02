@@ -87,7 +87,7 @@ export default function ImportExportComponent({
                     }
                 }}>
                     {/* PV Data Import */}
-                    {(permission.role === "responsable" || permission.role === "Gestionnaire") && (
+                    {(permission.role === "responsable" || permission.role === "gestionnaire") && (
                         <DropdownMenuItem
                         className="flex flex-col items-start w-full"
                         onSelect={(e) => e.preventDefault()}>

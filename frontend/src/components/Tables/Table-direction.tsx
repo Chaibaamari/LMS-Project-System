@@ -94,7 +94,7 @@ export function DirectionCards({ data = [] }: DirectionsTableProps) {
                     className="overflow-hidden border-l-4 border-l-blue-500"
                 >
                     <CardHeader className="bg-slate-50 dark:bg-slate-800 pb-2">
-                        <CardTitle className="text-xl">{direction.Nom_direction}</CardTitle>
+                        <CardTitle className="text-xl">{direction.Id_direction}</CardTitle>
                     </CardHeader>
                     <CardContent className="pt-4">
                         <div className="space-y-3">

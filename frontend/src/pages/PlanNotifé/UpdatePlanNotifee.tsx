@@ -69,10 +69,10 @@ export default function PlanNotifieeFormUpdate() {
         { type: "input", name: "Observation_arbitrage", label: "Observation_arbitrage" },
         { type: "number", name: "Autres_charges", label: "Autres_charges" },
         { type: "input", name: "Observation_pre_arbitrage", label: "Observation_pre_arbitrage" },
-        { type: "number", name: "Mode_Financement", label: "Mode_Financement" },
-        { type: "number", name: "Frais_Pedagogiques", label: "Frais_Pedagogiques" },
-        { type: "number", name: "Frais_Hebergement", label: "Frais_Hebergement" },
-        { type: "number", name: "Frais_Transport", label: "Frais_Transport" },
+        { type: "number", name: "Mode_Financement", label: "Mode_Financement (KDA)" },
+        { type: "number", name: "Frais_Pedagogiques", label: "Frais_Pedagogiques (KDA)" },
+        { type: "number", name: "Frais_Hebergement", label: "Frais_Hebergement (KDA)" },
+        { type: "number", name: "Frais_Transport", label: "Frais_Transport (KDA)" },
         { type: "number", name: "Presalaire", label: "Presalaire" },
         { type: "number", name: "Dont_Devise", label: "Dont_Devise" },
         {
@@ -100,6 +100,7 @@ export default function PlanNotifieeFormUpdate() {
     // }, [Formation]);
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        console.log("Submitting form with data:", editFormData);
         try {
             const response = await fetch(
                 `http://127.0.0.1:8000/api/plannotifie/modify`,
@@ -121,14 +122,13 @@ export default function PlanNotifieeFormUpdate() {
             const errorData = await response.json();
             dispatch(NotifeeActions.ShowNotification({
                 IsVisible: true,
-                status: errorData.success ? "success" : "failed",
-                message:"Erreur lors de la mise à jour",
+                status: "failed",
+                message:errorData.message,
             }));
             return navigate('/homePage/planNotifie');
         }
 
         const data = await response.json();
-        // console.log('Update successful:', data);
         dispatch(NotifeeActions.ShowNotification({
             IsVisible: true,
             status: "success",

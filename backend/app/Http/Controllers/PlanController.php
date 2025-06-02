@@ -461,24 +461,32 @@ class PlanController extends Controller
     }
     public function notifieadd(Request $request)
     {
-        $validatedData = $request->validate([
-            'Matricule' => 'required|string|exists:employes,Matricule',
-            'ID_Formation' => 'required|exists:formations,ID_Formation',
-            'Mode_Financement' => 'nullable|integer',
-            'Frais_Pedagogiques' => 'nullable|numeric|min:0',
-            'Frais_Hebergement' => 'nullable|numeric|min:0',
-            'Frais_Transport' => 'nullable|numeric|min:0',
-            'Observation' => 'nullable|string|max:500',
-            'Type_Pension' => 'nullable|string',
-            'Observation_pre_arbitrage' => 'nullable|string',
-            'Observation_arbitrage' => 'nullable|string',
-            'Autres_charges' => 'nullable|numeric',
-            'Presalaire' => 'nullable|numeric',
-            'Dont_Devise' => 'nullable|numeric',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'Matricule' => 'required|string|exists:employes,Matricule',
+                'ID_Formation' => 'required|exists:formations,ID_Formation',
+                'Mode_Financement' => 'nullable|integer',
+                'Frais_Pedagogiques' => 'nullable|numeric|min:0',
+                'Frais_Hebergement' => 'nullable|numeric|min:0',
+                'Frais_Transport' => 'nullable|numeric|min:0',
+                'Observation' => 'nullable|string|max:500',
+                'Type_Pension' => 'nullable|string',
+                'Observation_pre_arbitrage' => 'nullable|string',
+                'Observation_arbitrage' => 'nullable|string',
+                'Autres_charges' => 'nullable|numeric',
+                'Presalaire' => 'nullable|numeric',
+                'Dont_Devise' => 'nullable|numeric',
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 500,
+                'success' => false,
+                'message' => "Matricule d'employé inexistant",
+                'error' => "Matricule d'employé existant",
+            ], 500);
+        }
         $Exercice = $request->header('Year');
         try {
-
             // Find the formation to get its ID
             $formation = Formation::where('ID_Formation', $validatedData['ID_Formation'])->firstOrFail();
             $existingPlan = Plan::where('Exercice', $Exercice)->where('Matricule', $validatedData['Matricule'])
@@ -532,7 +540,24 @@ class PlanController extends Controller
             'Presalaire' => 'nullable|numeric',
             'Dont_Devise' => 'nullable|numeric',
         ]);
+        $Exercice = $request->header('Year');
         try {
+            // Find the formation to get its ID
+            $existingPlan = Plan::where('Exercice', $Exercice)
+                ->where('Matricule', $validatedData['Matricule'])
+                ->where('ID_Formation', $validatedData['ID_Formation'])
+                ->where('etat', 'validé')
+                ->where('ID_N', '!=', $validatedData['ID_N'])
+                ->first();
+
+            if ($existingPlan) {
+                return response()->json([
+                    'status' => 500,
+                    'success' => false,
+                    'message' => 'cette Prévisions existe déja'
+                ]);
+            }
+
             Plan::where('ID_N', $validatedData['ID_N'])->update($validatedData);
 
             return response()->json([
